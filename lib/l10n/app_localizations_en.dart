@@ -24,6 +24,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonDelete => 'Delete';
 
   @override
+  String get commonSave => 'Save';
+
+  @override
+  String get commonRefresh => 'Refresh';
+
+  @override
   String get unlock => 'Unlock';
 
   @override
@@ -69,6 +75,145 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serverDetail => 'Server Details';
 
   @override
+  String get offline => 'Offline';
+
+  @override
+  String get addServer => 'Add Server';
+
+  @override
+  String get editServer => 'Edit Server';
+
+  @override
+  String get serverName => 'Server Name';
+
+  @override
+  String get serverHost => 'Host';
+
+  @override
+  String get serverPort => 'Port';
+
+  @override
+  String get serverUsername => 'Username';
+
+  @override
+  String get serverOsType => 'OS Type';
+
+  @override
+  String get serverAuthType => 'Auth Method';
+
+  @override
+  String get authPassword => 'Password';
+
+  @override
+  String get authPrivateKey => 'Private Key';
+
+  @override
+  String get authPassphrase => 'Passphrase';
+
+  @override
+  String get authSelectKey => 'Select Key';
+
+  @override
+  String get authNoKey => 'No key selected';
+
+  @override
+  String get serverTags => 'Tags';
+
+  @override
+  String get serverTagsHint => 'tag1, tag2, ...';
+
+  @override
+  String get selectOsType => 'Select OS Type';
+
+  @override
+  String get deleteServerTitle => 'Delete Server';
+
+  @override
+  String deleteServerContent(String name) {
+    return 'Are you sure you want to delete \"$name\"? This cannot be undone.';
+  }
+
+  @override
+  String get keyManagement => 'Key Management';
+
+  @override
+  String get keyManagementDesc => 'Import, generate, and manage SSH keys';
+
+  @override
+  String get keyListTitle => 'Key Management';
+
+  @override
+  String get addKey => 'Add Key';
+
+  @override
+  String get editKey => 'Edit Key';
+
+  @override
+  String get importKey => 'Import Key';
+
+  @override
+  String get generateKey => 'Generate Key';
+
+  @override
+  String get keyName => 'Key Name';
+
+  @override
+  String get keyType => 'Key Type';
+
+  @override
+  String get keyPrivate => 'Private Key Content';
+
+  @override
+  String get keyPublic => 'Public Key';
+
+  @override
+  String get keyPassphrase => 'Passphrase';
+
+  @override
+  String get keyCreatedAt => 'Created';
+
+  @override
+  String get deleteKeyTitle => 'Delete Key';
+
+  @override
+  String deleteKeyContent(String name) {
+    return 'Are you sure you want to delete key \"$name\"? Servers using this key will be affected.';
+  }
+
+  @override
+  String get keyGenerating => 'Generating key...';
+
+  @override
+  String get keyGenerated => 'Key generated';
+
+  @override
+  String get keyCopied => 'Copied to clipboard';
+
+  @override
+  String get keyNoPublicKey => 'No public key for imported key';
+
+  @override
+  String get keyCopyPublicKey => 'Copy Public Key';
+
+  @override
+  String get noKeys => 'No Keys';
+
+  @override
+  String get noKeysSubtitle => 'Tap + to add or generate';
+
+  @override
+  String get selectKey => 'Select Key';
+
+  @override
+  String get validationRequired => 'Required';
+
+  @override
+  String get validationInvalidPort => 'Port must be 1-65535';
+
+  @override
+  String get validationInvalidHost => 'Invalid host';
+
+  @override
   String get statusTab => 'Status';
 
   @override
@@ -97,6 +242,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scriptsDev => 'Script Runner (WIP)';
+
+  @override
+  String get settingsServerSection => 'Server Management';
+
+  @override
+  String get settingsGroups => 'Server Groups';
+
+  @override
+  String get settingsGroupsDesc => 'Manage server tags and groups';
 
   @override
   String get settingsToolsSection => 'Tools';
@@ -135,15 +289,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsSyncDesc => 'Backup and sync server configs';
 
   @override
-  String get settingsServerSection => 'Server Management';
-
-  @override
-  String get settingsGroups => 'Server Groups';
-
-  @override
-  String get settingsGroupsDesc => 'Manage server tags and groups';
-
-  @override
   String get settingsAppSection => 'Application';
 
   @override
@@ -171,6 +316,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inDevelopment => 'In Development';
 
   @override
+  String get securityTitle => 'Security';
+
+  @override
+  String get securityCurrentTier => 'Current Protection';
+
+  @override
+  String get securityDeviceEncryption => 'Device Encryption';
+
+  @override
+  String get securityDeviceEncryptionDesc =>
+      'Server data is encrypted by the OS keychain';
+
+  @override
+  String get securityAdditional => 'Additional Protection';
+
+  @override
+  String get securityAppPassword => 'App Password';
+
+  @override
+  String get securityBiometric => 'Biometric Unlock';
+
+  @override
   String get appearanceTitle => 'Appearance & Language';
 
   @override
@@ -196,4 +363,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageEn => 'English';
+
+  @override
+  String get serverActions => 'Server Actions';
+
+  @override
+  String get actionRefresh => 'Refresh Status';
+
+  @override
+  String get actionLogs => 'View Logs';
+
+  @override
+  String get actionConnect => 'Connect Terminal';
+
+  @override
+  String get actionFileManager => 'File Manager';
+
+  @override
+  String get actionDocker => 'Docker Manager';
+
+  @override
+  String get actionScripts => 'Run Scripts';
+
+  @override
+  String get actionEdit => 'Edit Server';
+
+  @override
+  String get actionDelete => 'Delete Server';
+
+  @override
+  String get sshConnecting => 'Connecting...';
+
+  @override
+  String get sshConnectionFailed => 'Connection failed';
+
+  @override
+  String get sshDisconnected => 'Not connected';
+
+  @override
+  String get metricCpu => 'CPU';
+
+  @override
+  String get metricMemory => 'Mem';
+
+  @override
+  String get metricDisk => 'Disk';
+
+  @override
+  String get metricNetwork => 'Network';
+
+  @override
+  String get metricIo => 'I/O';
+
+  @override
+  String get serverLogsTitle => 'Server Logs';
+
+  @override
+  String get serverLogsEmpty => 'No logs yet';
+
+  @override
+  String get serverLogsEmptySubtitle =>
+      'Connections, status requests, and errors appear here';
+
+  @override
+  String get serverLogLevelInfo => 'Info';
+
+  @override
+  String get serverLogLevelError => 'Error';
+
+  @override
+  String get serverLogLevelCommand => 'Command';
+
+  @override
+  String get settingsServers => 'Server List';
+
+  @override
+  String get settingsServersDesc => 'Add, edit, and manage servers';
+
+  @override
+  String serverCount(int count) {
+    return '$count servers';
+  }
 }

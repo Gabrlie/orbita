@@ -128,6 +128,18 @@ abstract class AppLocalizations {
   /// **'删除'**
   String get commonDelete;
 
+  /// No description provided for @commonSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存'**
+  String get commonSave;
+
+  /// No description provided for @commonRefresh.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新'**
+  String get commonRefresh;
+
   /// No description provided for @unlock.
   ///
   /// In zh, this message translates to:
@@ -218,6 +230,276 @@ abstract class AppLocalizations {
   /// **'服务器详情'**
   String get serverDetail;
 
+  /// No description provided for @offline.
+  ///
+  /// In zh, this message translates to:
+  /// **'离线'**
+  String get offline;
+
+  /// No description provided for @addServer.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加服务器'**
+  String get addServer;
+
+  /// No description provided for @editServer.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑服务器'**
+  String get editServer;
+
+  /// No description provided for @serverName.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器名称'**
+  String get serverName;
+
+  /// No description provided for @serverHost.
+  ///
+  /// In zh, this message translates to:
+  /// **'主机地址'**
+  String get serverHost;
+
+  /// No description provided for @serverPort.
+  ///
+  /// In zh, this message translates to:
+  /// **'端口'**
+  String get serverPort;
+
+  /// No description provided for @serverUsername.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户名'**
+  String get serverUsername;
+
+  /// No description provided for @serverOsType.
+  ///
+  /// In zh, this message translates to:
+  /// **'操作系统'**
+  String get serverOsType;
+
+  /// No description provided for @serverAuthType.
+  ///
+  /// In zh, this message translates to:
+  /// **'认证方式'**
+  String get serverAuthType;
+
+  /// No description provided for @authPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码'**
+  String get authPassword;
+
+  /// No description provided for @authPrivateKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥'**
+  String get authPrivateKey;
+
+  /// No description provided for @authPassphrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥口令'**
+  String get authPassphrase;
+
+  /// No description provided for @authSelectKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择密钥'**
+  String get authSelectKey;
+
+  /// No description provided for @authNoKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'未选择密钥'**
+  String get authNoKey;
+
+  /// No description provided for @serverTags.
+  ///
+  /// In zh, this message translates to:
+  /// **'标签'**
+  String get serverTags;
+
+  /// No description provided for @serverTagsHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'标签1, 标签2, ...'**
+  String get serverTagsHint;
+
+  /// No description provided for @selectOsType.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择操作系统'**
+  String get selectOsType;
+
+  /// No description provided for @deleteServerTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除服务器'**
+  String get deleteServerTitle;
+
+  /// No description provided for @deleteServerContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要删除「{name}」吗？此操作不可撤销。'**
+  String deleteServerContent(String name);
+
+  /// No description provided for @keyManagement.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥管理'**
+  String get keyManagement;
+
+  /// No description provided for @keyManagementDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'SSH 密钥的导入、生成与管理'**
+  String get keyManagementDesc;
+
+  /// No description provided for @keyListTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥管理'**
+  String get keyListTitle;
+
+  /// No description provided for @addKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加密钥'**
+  String get addKey;
+
+  /// No description provided for @editKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑密钥'**
+  String get editKey;
+
+  /// No description provided for @importKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入密钥'**
+  String get importKey;
+
+  /// No description provided for @generateKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'生成密钥'**
+  String get generateKey;
+
+  /// No description provided for @keyName.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥名称'**
+  String get keyName;
+
+  /// No description provided for @keyType.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥类型'**
+  String get keyType;
+
+  /// No description provided for @keyPrivate.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥内容'**
+  String get keyPrivate;
+
+  /// No description provided for @keyPublic.
+  ///
+  /// In zh, this message translates to:
+  /// **'公钥'**
+  String get keyPublic;
+
+  /// No description provided for @keyPassphrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥口令'**
+  String get keyPassphrase;
+
+  /// No description provided for @keyCreatedAt.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建时间'**
+  String get keyCreatedAt;
+
+  /// No description provided for @deleteKeyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除密钥'**
+  String get deleteKeyTitle;
+
+  /// No description provided for @deleteKeyContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要删除密钥「{name}」吗？使用此密钥的服务器将受影响。'**
+  String deleteKeyContent(String name);
+
+  /// No description provided for @keyGenerating.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在生成密钥...'**
+  String get keyGenerating;
+
+  /// No description provided for @keyGenerated.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥已生成'**
+  String get keyGenerated;
+
+  /// No description provided for @keyCopied.
+  ///
+  /// In zh, this message translates to:
+  /// **'已复制到剪贴板'**
+  String get keyCopied;
+
+  /// No description provided for @keyNoPublicKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入的密钥无公钥'**
+  String get keyNoPublicKey;
+
+  /// No description provided for @keyCopyPublicKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制公钥'**
+  String get keyCopyPublicKey;
+
+  /// No description provided for @noKeys.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无密钥'**
+  String get noKeys;
+
+  /// No description provided for @noKeysSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击 + 添加或生成'**
+  String get noKeysSubtitle;
+
+  /// No description provided for @selectKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择密钥'**
+  String get selectKey;
+
+  /// No description provided for @validationRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'必填'**
+  String get validationRequired;
+
+  /// No description provided for @validationInvalidPort.
+  ///
+  /// In zh, this message translates to:
+  /// **'端口范围 1-65535'**
+  String get validationInvalidPort;
+
+  /// No description provided for @validationInvalidHost.
+  ///
+  /// In zh, this message translates to:
+  /// **'主机地址无效'**
+  String get validationInvalidHost;
+
   /// No description provided for @statusTab.
   ///
   /// In zh, this message translates to:
@@ -277,6 +559,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'脚本执行（开发中）'**
   String get scriptsDev;
+
+  /// No description provided for @settingsServerSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器管理'**
+  String get settingsServerSection;
+
+  /// No description provided for @settingsGroups.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器分组'**
+  String get settingsGroups;
+
+  /// No description provided for @settingsGroupsDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'管理服务器标签与分组'**
+  String get settingsGroupsDesc;
 
   /// No description provided for @settingsToolsSection.
   ///
@@ -350,24 +650,6 @@ abstract class AppLocalizations {
   /// **'备份与同步服务器配置'**
   String get settingsSyncDesc;
 
-  /// No description provided for @settingsServerSection.
-  ///
-  /// In zh, this message translates to:
-  /// **'服务器管理'**
-  String get settingsServerSection;
-
-  /// No description provided for @settingsGroups.
-  ///
-  /// In zh, this message translates to:
-  /// **'服务器分组'**
-  String get settingsGroups;
-
-  /// No description provided for @settingsGroupsDesc.
-  ///
-  /// In zh, this message translates to:
-  /// **'管理服务器标签与分组'**
-  String get settingsGroupsDesc;
-
   /// No description provided for @settingsAppSection.
   ///
   /// In zh, this message translates to:
@@ -422,6 +704,48 @@ abstract class AppLocalizations {
   /// **'开发中'**
   String get inDevelopment;
 
+  /// No description provided for @securityTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'安全设置'**
+  String get securityTitle;
+
+  /// No description provided for @securityCurrentTier.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前保护'**
+  String get securityCurrentTier;
+
+  /// No description provided for @securityDeviceEncryption.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备加密'**
+  String get securityDeviceEncryption;
+
+  /// No description provided for @securityDeviceEncryptionDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器数据由系统钥匙串加密保护'**
+  String get securityDeviceEncryptionDesc;
+
+  /// No description provided for @securityAdditional.
+  ///
+  /// In zh, this message translates to:
+  /// **'额外保护'**
+  String get securityAdditional;
+
+  /// No description provided for @securityAppPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'应用密码'**
+  String get securityAppPassword;
+
+  /// No description provided for @securityBiometric.
+  ///
+  /// In zh, this message translates to:
+  /// **'生物识别解锁'**
+  String get securityBiometric;
+
   /// No description provided for @appearanceTitle.
   ///
   /// In zh, this message translates to:
@@ -475,6 +799,162 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'English'**
   String get languageEn;
+
+  /// No description provided for @serverActions.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器操作'**
+  String get serverActions;
+
+  /// No description provided for @actionRefresh.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新状态'**
+  String get actionRefresh;
+
+  /// No description provided for @actionLogs.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看日志'**
+  String get actionLogs;
+
+  /// No description provided for @actionConnect.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接终端'**
+  String get actionConnect;
+
+  /// No description provided for @actionFileManager.
+  ///
+  /// In zh, this message translates to:
+  /// **'文件管理'**
+  String get actionFileManager;
+
+  /// No description provided for @actionDocker.
+  ///
+  /// In zh, this message translates to:
+  /// **'Docker 管理'**
+  String get actionDocker;
+
+  /// No description provided for @actionScripts.
+  ///
+  /// In zh, this message translates to:
+  /// **'执行脚本'**
+  String get actionScripts;
+
+  /// No description provided for @actionEdit.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑服务器'**
+  String get actionEdit;
+
+  /// No description provided for @actionDelete.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除服务器'**
+  String get actionDelete;
+
+  /// No description provided for @sshConnecting.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在连接...'**
+  String get sshConnecting;
+
+  /// No description provided for @sshConnectionFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接失败'**
+  String get sshConnectionFailed;
+
+  /// No description provided for @sshDisconnected.
+  ///
+  /// In zh, this message translates to:
+  /// **'未连接'**
+  String get sshDisconnected;
+
+  /// No description provided for @metricCpu.
+  ///
+  /// In zh, this message translates to:
+  /// **'CPU'**
+  String get metricCpu;
+
+  /// No description provided for @metricMemory.
+  ///
+  /// In zh, this message translates to:
+  /// **'内存'**
+  String get metricMemory;
+
+  /// No description provided for @metricDisk.
+  ///
+  /// In zh, this message translates to:
+  /// **'磁盘'**
+  String get metricDisk;
+
+  /// No description provided for @metricNetwork.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络'**
+  String get metricNetwork;
+
+  /// No description provided for @metricIo.
+  ///
+  /// In zh, this message translates to:
+  /// **'I/O'**
+  String get metricIo;
+
+  /// No description provided for @serverLogsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器日志'**
+  String get serverLogsTitle;
+
+  /// No description provided for @serverLogsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无日志'**
+  String get serverLogsEmpty;
+
+  /// No description provided for @serverLogsEmptySubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接、状态请求和错误会显示在这里'**
+  String get serverLogsEmptySubtitle;
+
+  /// No description provided for @serverLogLevelInfo.
+  ///
+  /// In zh, this message translates to:
+  /// **'信息'**
+  String get serverLogLevelInfo;
+
+  /// No description provided for @serverLogLevelError.
+  ///
+  /// In zh, this message translates to:
+  /// **'错误'**
+  String get serverLogLevelError;
+
+  /// No description provided for @serverLogLevelCommand.
+  ///
+  /// In zh, this message translates to:
+  /// **'命令'**
+  String get serverLogLevelCommand;
+
+  /// No description provided for @settingsServers.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器列表'**
+  String get settingsServers;
+
+  /// No description provided for @settingsServersDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加、编辑和管理服务器'**
+  String get settingsServersDesc;
+
+  /// No description provided for @serverCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 台服务器'**
+  String serverCount(int count);
 }
 
 class _AppLocalizationsDelegate

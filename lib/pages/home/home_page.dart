@@ -1,111 +1,251 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/models/server.dart';
+import 'package:orbita/providers/server_monitor_provider.dart';
+import 'package:orbita/providers/server_provider.dart';
+import 'package:orbita/providers/server_refresh_provider.dart';
+import 'package:orbita/utils/format_utils.dart';
 import 'package:orbita/widgets/common.dart';
 import 'package:orbita/widgets/server_card.dart';
-import 'package:orbita/widgets/os_icon.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-
-    final mockServers = [
-      ServerCard(
-        name: 'NAS',
-        osType: OsType.debian,
-        online: true,
-        uptime: '16天11时14分',
-        load: '0.6',
-        cpuPercent: 0.03,
-        cpuSub: '12 C',
-        memPercent: 0.61,
-        memSub: '30.8 GB',
-        diskPercent: 0.22,
-        diskSub: '1.4 TB',
-        netUp: '0 B',
-        netUpTotal: '113.8 GB',
-        netDown: '0 B',
-        netDownTotal: '76.5 GB',
-        ioWrite: '0 B',
-        ioWriteTotal: '37.0 GB',
-        ioRead: '0 B',
-        ioReadTotal: '801.5 GB',
-        onTap: () => context.go('/home/server/1'),
-      ),
-      ServerCard(
-        name: 'Web Server',
-        osType: OsType.ubuntu,
-        online: true,
-        uptime: '142天3时',
-        load: '1.2',
-        cpuPercent: 0.45,
-        cpuSub: '4 C',
-        memPercent: 0.78,
-        memSub: '6.2 GB',
-        diskPercent: 0.55,
-        diskSub: '44 GB',
-        netUp: '1.2 KB',
-        netUpTotal: '2.1 TB',
-        netDown: '3.5 KB',
-        netDownTotal: '1.8 TB',
-        ioWrite: '512 B',
-        ioWriteTotal: '120 GB',
-        ioRead: '1.0 KB',
-        ioReadTotal: '450 GB',
-        onTap: () => context.go('/home/server/2'),
-      ),
-      ServerCard(
-        name: 'Backup Node',
-        osType: OsType.alpine,
-        online: false,
-        onTap: () => context.go('/home/server/3'),
-      ),
-    ];
+    final serversAsync = ref.watch(serverListProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.servers),
-        actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-        ],
+        actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {})],
       ),
-      body: Column(
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                FilterChip(label: Text(l10n.all), selected: true, onSelected: (_) {}),
-                const SizedBox(width: 8),
-                FilterChip(label: Text(l10n.production), selected: false, onSelected: (_) {}),
-                const SizedBox(width: 8),
-                FilterChip(label: Text(l10n.test), selected: false, onSelected: (_) {}),
-              ],
-            ),
-          ),
-          Expanded(
-            child: mockServers.isEmpty
-                ? EmptyState(
-                    icon: Icons.dns,
-                    title: l10n.noServersTitle,
-                    subtitle: l10n.noServersSubtitle,
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    itemCount: mockServers.length,
-                    itemBuilder: (context, index) => mockServers[index],
-                  ),
-          ),
-        ],
+      body: serversAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('$e')),
+        data: (servers) => RefreshIndicator(
+          onRefresh: () async {
+            ref
+                .read(serverRefreshControllerProvider.notifier)
+                .refreshAll(servers.map((server) => server.id));
+          },
+          child: servers.isEmpty
+              ? ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.sizeOf(context).height * 0.6,
+                      child: EmptyState(
+                        icon: Icons.dns,
+                        title: l10n.noServersTitle,
+                        subtitle: l10n.noServersSubtitle,
+                      ),
+                    ),
+                  ],
+                )
+              : ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  itemCount: servers.length,
+                  itemBuilder: (context, index) {
+                    final s = servers[index];
+                    return _ServerCardItem(server: s);
+                  },
+                ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => context.go('/home/server/add'),
         child: const Icon(Icons.add),
       ),
     );
+  }
+}
+
+/// Wraps ServerCard with live status from SSH and popup menu.
+class _ServerCardItem extends ConsumerWidget {
+  final Server server;
+  const _ServerCardItem({required this.server});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final statusAsync = ref.watch(serverStatusProvider(server.id));
+    final status = statusAsync.value;
+    final online = status != null;
+
+    // Determine status message for offline state
+    String? statusMessage;
+    if (!online) {
+      if (statusAsync.isLoading) {
+        statusMessage = l10n.sshConnecting;
+      } else if (statusAsync.hasError) {
+        statusMessage = '${l10n.sshConnectionFailed}: ${statusAsync.error}';
+      } else {
+        // AsyncData(null) → connection failed or returned null
+        statusMessage = l10n.sshConnectionFailed;
+      }
+    }
+
+    return ServerCard(
+      name: server.name,
+      subtitle: '${server.host}:${server.port}',
+      osType: server.osType,
+      online: online,
+      statusMessage: statusMessage,
+      uptime: status?.uptimeStr ?? '',
+      load: status?.loadAvg ?? '',
+      cpuPercent: status?.cpuPercent ?? 0,
+      cpuSub: status?.cpuSub ?? '',
+      memPercent: status?.memPercent ?? 0,
+      memSub: status?.memSub ?? '',
+      diskPercent: status?.diskPercent ?? 0,
+      diskSub: status?.diskSub ?? '',
+      netUp: status != null ? formatRate(status.netUpRate) : '',
+      netUpTotal: status != null ? formatBytes(status.netTxTotal) : '',
+      netDown: status != null ? formatRate(status.netDownRate) : '',
+      netDownTotal: status != null ? formatBytes(status.netRxTotal) : '',
+      ioWrite: status != null ? formatRate(status.ioWriteRate) : '',
+      ioWriteTotal: status != null ? formatBytes(status.ioWriteTotal) : '',
+      ioRead: status != null ? formatRate(status.ioReadRate) : '',
+      ioReadTotal: status != null ? formatBytes(status.ioReadTotal) : '',
+      onTap: () => context.go('/home/server/${server.id}'),
+      onLongPress: (position) =>
+          _showServerMenu(context, ref, server, position),
+    );
+  }
+
+  void _showServerMenu(
+    BuildContext context,
+    WidgetRef ref,
+    Server server,
+    Offset position,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final relativeRect = RelativeRect.fromRect(
+      Rect.fromLTWH(position.dx, position.dy, 0, 0),
+      Offset.zero & overlay.size,
+    );
+
+    final disabledStyle = TextStyle(color: theme.disabledColor);
+    final errorStyle = TextStyle(color: theme.colorScheme.error);
+
+    showMenu<String>(
+      context: context,
+      position: relativeRect,
+      items: [
+        PopupMenuItem(
+          enabled: false,
+          child: Text(
+            '${l10n.actionConnect} (${l10n.inDevelopment})',
+            style: disabledStyle,
+          ),
+        ),
+        PopupMenuItem(
+          enabled: false,
+          child: Text(
+            '${l10n.actionFileManager} (${l10n.inDevelopment})',
+            style: disabledStyle,
+          ),
+        ),
+        PopupMenuItem(
+          enabled: false,
+          child: Text(
+            '${l10n.actionDocker} (${l10n.inDevelopment})',
+            style: disabledStyle,
+          ),
+        ),
+        PopupMenuItem(
+          enabled: false,
+          child: Text(
+            '${l10n.actionScripts} (${l10n.inDevelopment})',
+            style: disabledStyle,
+          ),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
+          value: 'refresh',
+          child: Row(
+            children: [
+              const Icon(Icons.refresh, size: 18),
+              const SizedBox(width: 8),
+              Text(l10n.actionRefresh),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'logs',
+          child: Row(
+            children: [
+              const Icon(Icons.receipt_long_outlined, size: 18),
+              const SizedBox(width: 8),
+              Text(l10n.actionLogs),
+            ],
+          ),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
+          value: 'edit',
+          child: Row(
+            children: [
+              const Icon(Icons.edit_outlined, size: 18),
+              const SizedBox(width: 8),
+              Text(l10n.actionEdit),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(
+                Icons.delete_outline,
+                size: 18,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(width: 8),
+              Text(l10n.actionDelete, style: errorStyle),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) {
+      if (value == null || !context.mounted) return;
+      switch (value) {
+        case 'refresh':
+          ref
+              .read(serverRefreshControllerProvider.notifier)
+              .refreshServer(server.id);
+        case 'logs':
+          context.go('/home/server/${server.id}/logs');
+        case 'edit':
+          context.go('/home/server/${server.id}/edit');
+        case 'delete':
+          _confirmDelete(context, ref, server);
+      }
+    });
+  }
+
+  void _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    Server server,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l10n.deleteServerTitle,
+      content: l10n.deleteServerContent(server.name),
+      confirmLabel: l10n.commonDelete,
+      destructive: true,
+    );
+    if (confirmed) {
+      ref.read(serverListProvider.notifier).deleteServer(server.id);
+    }
   }
 }

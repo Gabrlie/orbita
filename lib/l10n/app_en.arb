@@ -5,6 +5,8 @@
   "commonCancel": "Cancel",
   "commonConfirm": "Confirm",
   "commonDelete": "Delete",
+  "commonSave": "Save",
+  "commonRefresh": "Refresh",
 
   "unlock": "Unlock",
   "password": "Password",
@@ -23,6 +25,63 @@
   "noServersTitle": "No Servers",
   "noServersSubtitle": "Tap + to add",
   "serverDetail": "Server Details",
+  "offline": "Offline",
+
+  "addServer": "Add Server",
+  "editServer": "Edit Server",
+  "serverName": "Server Name",
+  "serverHost": "Host",
+  "serverPort": "Port",
+  "serverUsername": "Username",
+  "serverOsType": "OS Type",
+  "serverAuthType": "Auth Method",
+  "authPassword": "Password",
+  "authPrivateKey": "Private Key",
+  "authPassphrase": "Passphrase",
+  "authSelectKey": "Select Key",
+  "authNoKey": "No key selected",
+  "serverTags": "Tags",
+  "serverTagsHint": "tag1, tag2, ...",
+  "selectOsType": "Select OS Type",
+  "deleteServerTitle": "Delete Server",
+  "deleteServerContent": "Are you sure you want to delete \"{name}\"? This cannot be undone.",
+  "@deleteServerContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "keyManagement": "Key Management",
+  "keyManagementDesc": "Import, generate, and manage SSH keys",
+  "keyListTitle": "Key Management",
+  "addKey": "Add Key",
+  "editKey": "Edit Key",
+  "importKey": "Import Key",
+  "generateKey": "Generate Key",
+  "keyName": "Key Name",
+  "keyType": "Key Type",
+  "keyPrivate": "Private Key Content",
+  "keyPublic": "Public Key",
+  "keyPassphrase": "Passphrase",
+  "keyCreatedAt": "Created",
+  "deleteKeyTitle": "Delete Key",
+  "deleteKeyContent": "Are you sure you want to delete key \"{name}\"? Servers using this key will be affected.",
+  "@deleteKeyContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "keyGenerating": "Generating key...",
+  "keyGenerated": "Key generated",
+  "keyCopied": "Copied to clipboard",
+  "keyNoPublicKey": "No public key for imported key",
+  "keyCopyPublicKey": "Copy Public Key",
+  "noKeys": "No Keys",
+  "noKeysSubtitle": "Tap + to add or generate",
+  "selectKey": "Select Key",
+  "validationRequired": "Required",
+  "validationInvalidPort": "Port must be 1-65535",
+  "validationInvalidHost": "Invalid host",
 
   "statusTab": "Status",
   "terminalTab": "Terminal",
@@ -35,6 +94,9 @@
   "dockerDev": "Docker Manager (WIP)",
   "scriptsDev": "Script Runner (WIP)",
 
+  "settingsServerSection": "Server Management",
+  "settingsGroups": "Server Groups",
+  "settingsGroupsDesc": "Manage server tags and groups",
   "settingsToolsSection": "Tools",
   "settingsScripts": "Scripts",
   "settingsScriptsDesc": "Manage and run remote scripts",
@@ -42,17 +104,11 @@
   "settingsSnippetsDesc": "Quick-access command bookmarks",
   "scriptsTitle": "Scripts",
   "snippetsTitle": "Snippets",
-
   "settingsSecuritySection": "Security & Sync",
   "settingsSecurity": "Security",
   "settingsSecurityDesc": "Password & biometrics",
   "settingsSync": "WebDAV Sync",
   "settingsSyncDesc": "Backup and sync server configs",
-
-  "settingsServerSection": "Server Management",
-  "settingsGroups": "Server Groups",
-  "settingsGroupsDesc": "Manage server tags and groups",
-
   "settingsAppSection": "Application",
   "settingsAppearance": "Appearance & Language",
   "settingsAppearanceDesc": "Theme mode and display language",
@@ -60,9 +116,16 @@
   "settingsNetworkDesc": "Cloudflared / Tailscale",
   "settingsAbout": "About Orbita",
   "settingsAboutDesc": "Version info and update check",
-
   "comingSoon": "Coming Soon",
   "inDevelopment": "In Development",
+
+  "securityTitle": "Security",
+  "securityCurrentTier": "Current Protection",
+  "securityDeviceEncryption": "Device Encryption",
+  "securityDeviceEncryptionDesc": "Server data is encrypted by the OS keychain",
+  "securityAdditional": "Additional Protection",
+  "securityAppPassword": "App Password",
+  "securityBiometric": "Biometric Unlock",
 
   "appearanceTitle": "Appearance & Language",
   "themeMode": "Theme Mode",
@@ -72,5 +135,39 @@
   "language": "Language",
   "languageSystem": "Follow System",
   "languageZh": "中文",
-  "languageEn": "English"
+  "languageEn": "English",
+
+  "serverActions": "Server Actions",
+  "actionRefresh": "Refresh Status",
+  "actionLogs": "View Logs",
+  "actionConnect": "Connect Terminal",
+  "actionFileManager": "File Manager",
+  "actionDocker": "Docker Manager",
+  "actionScripts": "Run Scripts",
+  "actionEdit": "Edit Server",
+  "actionDelete": "Delete Server",
+
+  "sshConnecting": "Connecting...",
+  "sshConnectionFailed": "Connection failed",
+  "sshDisconnected": "Not connected",
+  "metricCpu": "CPU",
+  "metricMemory": "Mem",
+  "metricDisk": "Disk",
+  "metricNetwork": "Network",
+  "metricIo": "I/O",
+  "serverLogsTitle": "Server Logs",
+  "serverLogsEmpty": "No logs yet",
+  "serverLogsEmptySubtitle": "Connections, status requests, and errors appear here",
+  "serverLogLevelInfo": "Info",
+  "serverLogLevelError": "Error",
+  "serverLogLevelCommand": "Command",
+
+  "settingsServers": "Server List",
+  "settingsServersDesc": "Add, edit, and manage servers",
+  "serverCount": "{count} servers",
+  "@serverCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

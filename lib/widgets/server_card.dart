@@ -1,12 +1,21 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
+import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/widgets/circular_metric.dart';
 import 'package:orbita/widgets/os_icon.dart';
+import 'package:orbita/widgets/text_metric.dart';
 
 /// Rich server status card for the home page.
 class ServerCard extends StatelessWidget {
   final String name;
+  final String? subtitle;
   final OsType osType;
   final bool online;
+
+  /// Shown in the metrics area when [online] is false.
+  final String? statusMessage;
+
   final String uptime;
   final String load;
   final double cpuPercent;
@@ -25,11 +34,16 @@ class ServerCard extends StatelessWidget {
   final String ioReadTotal;
   final VoidCallback? onTap;
 
+  /// Long-press callback with the global position (for popup menu).
+  final void Function(Offset position)? onLongPress;
+
   const ServerCard({
     super.key,
     required this.name,
+    this.subtitle,
     this.osType = OsType.unknown,
     this.online = false,
+    this.statusMessage,
     this.uptime = '',
     this.load = '',
     this.cpuPercent = 0,
@@ -47,11 +61,16 @@ class ServerCard extends StatelessWidget {
     this.ioRead = '',
     this.ioReadTotal = '',
     this.onTap,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    // Capture pointer position for long-press popup menu.
+    var pointerPosition = Offset.zero;
 
     return Card(
       elevation: 0,
@@ -65,26 +84,36 @@ class ServerCard extends StatelessWidget {
       ),
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(theme),
-              if (online) ...[
+      child: Listener(
+        onPointerDown: (event) => pointerPosition = event.position,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress != null
+              ? () => onLongPress!(pointerPosition)
+              : null,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _buildHeader(context, theme),
+                ),
                 const SizedBox(height: 16),
-                _buildMetrics(theme),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _buildMetricsArea(theme, l10n),
+                ),
               ],
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(ThemeData theme) {
+  Widget _buildHeader(BuildContext context, ThemeData theme) {
     return Row(
       children: [
         OsIcon(type: osType, size: 20),
@@ -93,38 +122,111 @@ class ServerCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(name,
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600)),
-              if (!online)
-                Text('离线',
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: theme.colorScheme.outlineVariant)),
+              Text(
+                name,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (subtitle != null)
+                Text(
+                  subtitle!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
             ],
           ),
         ),
         if (online && uptime.isNotEmpty) ...[
-          Icon(Icons.power_settings_new, size: 14,
-              color: theme.colorScheme.onSurfaceVariant),
+          Icon(
+            Icons.power_settings_new,
+            size: 14,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 4),
-          Text(uptime,
-              style: theme.textTheme.labelSmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            uptime,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(width: 12),
         ],
         if (online && load.isNotEmpty) ...[
-          Icon(Icons.show_chart, size: 14,
-              color: theme.colorScheme.onSurfaceVariant),
+          Icon(
+            Icons.show_chart,
+            size: 14,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 4),
-          Text(load,
-              style: theme.textTheme.labelSmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            load,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ],
     );
   }
 
-  Widget _buildMetrics(ThemeData theme) {
+  /// Always renders metrics; overlays gaussian blur + status text when offline.
+  Widget _buildMetricsArea(ThemeData theme, AppLocalizations l10n) {
+    final metrics = _buildMetrics(theme, l10n);
+    if (online) return metrics;
+
+    // Offline: metrics underneath with blur overlay + centered message
+    return ClipRect(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Render metrics as placeholder (values will be 0 / empty)
+          metrics,
+          // Gaussian blur overlay
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: Container(
+                color: theme.colorScheme.surfaceContainerHighest.withAlpha(120),
+                alignment: Alignment.center,
+                child: _buildStatusLabel(theme),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusLabel(ThemeData theme) {
+    if (statusMessage == null || statusMessage!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final isLoading = statusMessage!.contains('...');
+    final color = isLoading
+        ? theme.colorScheme.onSurfaceVariant
+        : theme.colorScheme.error;
+    final icon = isLoading ? Icons.sync : Icons.error_outline;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            statusMessage!,
+            style: theme.textTheme.bodySmall?.copyWith(color: color),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMetrics(ThemeData theme, AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -133,11 +235,20 @@ class ServerCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               CircularMetric(
-                  label: 'CPU', percent: cpuPercent, subtitle: cpuSub),
+                label: l10n.metricCpu,
+                percent: cpuPercent,
+                subtitle: cpuSub,
+              ),
               CircularMetric(
-                  label: 'Mem', percent: memPercent, subtitle: memSub),
+                label: l10n.metricMemory,
+                percent: memPercent,
+                subtitle: memSub,
+              ),
               CircularMetric(
-                  label: '磁盘', percent: diskPercent, subtitle: diskSub),
+                label: l10n.metricDisk,
+                percent: diskPercent,
+                subtitle: diskSub,
+              ),
             ],
           ),
         ),
@@ -146,77 +257,26 @@ class ServerCard extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                  child: _TextMetric(
-                      label: '网络',
-                      up: netUp,
-                      upTotal: netUpTotal,
-                      down: netDown,
-                      downTotal: netDownTotal)),
+                child: TextMetric(
+                  label: l10n.metricNetwork,
+                  up: netUp,
+                  upTotal: netUpTotal,
+                  down: netDown,
+                  downTotal: netDownTotal,
+                ),
+              ),
               Expanded(
-                  child: _TextMetric(
-                      label: 'I/O',
-                      up: ioWrite,
-                      upTotal: ioWriteTotal,
-                      down: ioRead,
-                      downTotal: ioReadTotal)),
+                child: TextMetric(
+                  label: l10n.metricIo,
+                  up: ioWrite,
+                  upTotal: ioWriteTotal,
+                  down: ioRead,
+                  downTotal: ioReadTotal,
+                ),
+              ),
             ],
           ),
         ),
-      ],
-    );
-  }
-}
-
-class _TextMetric extends StatelessWidget {
-  final String label;
-  final String up;
-  final String upTotal;
-  final String down;
-  final String downTotal;
-
-  const _TextMetric({
-    required this.label,
-    required this.up,
-    required this.upTotal,
-    required this.down,
-    required this.downTotal,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final sub = theme.textTheme.labelSmall?.copyWith(fontSize: 10);
-    final val = theme.textTheme.labelSmall?.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-      fontSize: 10,
-    );
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(label,
-            style: theme.textTheme.labelSmall
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-        const SizedBox(height: 6),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('↑ ', style: sub?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            Flexible(
-                child: Text(up, style: sub, overflow: TextOverflow.ellipsis)),
-          ],
-        ),
-        Text(upTotal, style: val),
-        const SizedBox(height: 2),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('↓ ', style: sub?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            Flexible(
-                child: Text(down, style: sub, overflow: TextOverflow.ellipsis)),
-          ],
-        ),
-        Text(downTotal, style: val),
       ],
     );
   }

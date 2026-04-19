@@ -20,30 +20,36 @@ class AppearancePage extends ConsumerWidget {
           // -- Theme Section --
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            child: Text(l10n.themeMode,
-                style: theme.textTheme.titleSmall
-                    ?.copyWith(color: theme.colorScheme.primary)),
+            child: Text(
+              l10n.themeMode,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+            ),
           ),
           _buildOption(
             context,
             label: l10n.themeModeSystem,
-            icon: Icons.brightness_auto,
+            icon: Icons.brightness_auto_outlined,
             selected: currentTheme == ThemeMode.system,
-            onTap: () => ref.read(themeModeProvider.notifier).set(ThemeMode.system),
+            onTap: () =>
+                ref.read(themeModeProvider.notifier).set(ThemeMode.system),
           ),
           _buildOption(
             context,
             label: l10n.themeModeLight,
-            icon: Icons.light_mode,
+            icon: Icons.light_mode_outlined,
             selected: currentTheme == ThemeMode.light,
-            onTap: () => ref.read(themeModeProvider.notifier).set(ThemeMode.light),
+            onTap: () =>
+                ref.read(themeModeProvider.notifier).set(ThemeMode.light),
           ),
           _buildOption(
             context,
             label: l10n.themeModeDark,
-            icon: Icons.dark_mode,
+            icon: Icons.dark_mode_outlined,
             selected: currentTheme == ThemeMode.dark,
-            onTap: () => ref.read(themeModeProvider.notifier).set(ThemeMode.dark),
+            onTap: () =>
+                ref.read(themeModeProvider.notifier).set(ThemeMode.dark),
           ),
 
           const Divider(height: 32),
@@ -51,9 +57,12 @@ class AppearancePage extends ConsumerWidget {
           // -- Language Section --
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: Text(l10n.language,
-                style: theme.textTheme.titleSmall
-                    ?.copyWith(color: theme.colorScheme.primary)),
+            child: Text(
+              l10n.language,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+            ),
           ),
           _buildOption(
             context,
@@ -65,13 +74,15 @@ class AppearancePage extends ConsumerWidget {
             context,
             label: l10n.languageZh,
             selected: currentLocale?.languageCode == 'zh',
-            onTap: () => ref.read(localeProvider.notifier).set(const Locale('zh')),
+            onTap: () =>
+                ref.read(localeProvider.notifier).set(const Locale('zh')),
           ),
           _buildOption(
             context,
             label: l10n.languageEn,
             selected: currentLocale?.languageCode == 'en',
-            onTap: () => ref.read(localeProvider.notifier).set(const Locale('en')),
+            onTap: () =>
+                ref.read(localeProvider.notifier).set(const Locale('en')),
           ),
         ],
       ),
@@ -89,7 +100,10 @@ class AppearancePage extends ConsumerWidget {
       leading: icon != null ? Icon(icon) : null,
       title: Text(label),
       trailing: selected
-          ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
+          ? Icon(
+              Icons.check_circle_outline,
+              color: Theme.of(context).colorScheme.primary,
+            )
           : null,
       onTap: onTap,
     );

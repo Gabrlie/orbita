@@ -5,6 +5,8 @@
   "commonCancel": "取消",
   "commonConfirm": "确认",
   "commonDelete": "删除",
+  "commonSave": "保存",
+  "commonRefresh": "刷新",
 
   "unlock": "解锁",
   "password": "密码",
@@ -23,6 +25,63 @@
   "noServersTitle": "暂无服务器",
   "noServersSubtitle": "点击 + 添加",
   "serverDetail": "服务器详情",
+  "offline": "离线",
+
+  "addServer": "添加服务器",
+  "editServer": "编辑服务器",
+  "serverName": "服务器名称",
+  "serverHost": "主机地址",
+  "serverPort": "端口",
+  "serverUsername": "用户名",
+  "serverOsType": "操作系统",
+  "serverAuthType": "认证方式",
+  "authPassword": "密码",
+  "authPrivateKey": "私钥",
+  "authPassphrase": "密钥口令",
+  "authSelectKey": "选择密钥",
+  "authNoKey": "未选择密钥",
+  "serverTags": "标签",
+  "serverTagsHint": "标签1, 标签2, ...",
+  "selectOsType": "选择操作系统",
+  "deleteServerTitle": "删除服务器",
+  "deleteServerContent": "确定要删除「{name}」吗？此操作不可撤销。",
+  "@deleteServerContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "keyManagement": "密钥管理",
+  "keyManagementDesc": "SSH 密钥的导入、生成与管理",
+  "keyListTitle": "密钥管理",
+  "addKey": "添加密钥",
+  "editKey": "编辑密钥",
+  "importKey": "导入密钥",
+  "generateKey": "生成密钥",
+  "keyName": "密钥名称",
+  "keyType": "密钥类型",
+  "keyPrivate": "私钥内容",
+  "keyPublic": "公钥",
+  "keyPassphrase": "密钥口令",
+  "keyCreatedAt": "创建时间",
+  "deleteKeyTitle": "删除密钥",
+  "deleteKeyContent": "确定要删除密钥「{name}」吗？使用此密钥的服务器将受影响。",
+  "@deleteKeyContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "keyGenerating": "正在生成密钥...",
+  "keyGenerated": "密钥已生成",
+  "keyCopied": "已复制到剪贴板",
+  "keyNoPublicKey": "导入的密钥无公钥",
+  "keyCopyPublicKey": "复制公钥",
+  "noKeys": "暂无密钥",
+  "noKeysSubtitle": "点击 + 添加或生成",
+  "selectKey": "选择密钥",
+  "validationRequired": "必填",
+  "validationInvalidPort": "端口范围 1-65535",
+  "validationInvalidHost": "主机地址无效",
 
   "statusTab": "状态",
   "terminalTab": "终端",
@@ -35,6 +94,9 @@
   "dockerDev": "Docker管理（开发中）",
   "scriptsDev": "脚本执行（开发中）",
 
+  "settingsServerSection": "服务器管理",
+  "settingsGroups": "服务器分组",
+  "settingsGroupsDesc": "管理服务器标签与分组",
   "settingsToolsSection": "工具",
   "settingsScripts": "脚本管理",
   "settingsScriptsDesc": "管理和执行远程脚本",
@@ -42,17 +104,11 @@
   "settingsSnippetsDesc": "常用命令快捷收藏",
   "scriptsTitle": "脚本",
   "snippetsTitle": "片段",
-
   "settingsSecuritySection": "安全与同步",
   "settingsSecurity": "安全设置",
   "settingsSecurityDesc": "密码与生物识别",
   "settingsSync": "WebDAV 同步",
   "settingsSyncDesc": "备份与同步服务器配置",
-
-  "settingsServerSection": "服务器管理",
-  "settingsGroups": "服务器分组",
-  "settingsGroupsDesc": "管理服务器标签与分组",
-
   "settingsAppSection": "应用",
   "settingsAppearance": "外观与语言",
   "settingsAppearanceDesc": "主题模式和显示语言",
@@ -60,9 +116,16 @@
   "settingsNetworkDesc": "Cloudflared / Tailscale",
   "settingsAbout": "关于 Orbita",
   "settingsAboutDesc": "版本信息与更新检查",
-
   "comingSoon": "即将推出",
   "inDevelopment": "开发中",
+
+  "securityTitle": "安全设置",
+  "securityCurrentTier": "当前保护",
+  "securityDeviceEncryption": "设备加密",
+  "securityDeviceEncryptionDesc": "服务器数据由系统钥匙串加密保护",
+  "securityAdditional": "额外保护",
+  "securityAppPassword": "应用密码",
+  "securityBiometric": "生物识别解锁",
 
   "appearanceTitle": "外观与语言",
   "themeMode": "主题模式",
@@ -72,5 +135,39 @@
   "language": "语言",
   "languageSystem": "跟随系统",
   "languageZh": "中文",
-  "languageEn": "English"
+  "languageEn": "English",
+
+  "serverActions": "服务器操作",
+  "actionRefresh": "刷新状态",
+  "actionLogs": "查看日志",
+  "actionConnect": "连接终端",
+  "actionFileManager": "文件管理",
+  "actionDocker": "Docker 管理",
+  "actionScripts": "执行脚本",
+  "actionEdit": "编辑服务器",
+  "actionDelete": "删除服务器",
+
+  "sshConnecting": "正在连接...",
+  "sshConnectionFailed": "连接失败",
+  "sshDisconnected": "未连接",
+  "metricCpu": "CPU",
+  "metricMemory": "内存",
+  "metricDisk": "磁盘",
+  "metricNetwork": "网络",
+  "metricIo": "I/O",
+  "serverLogsTitle": "服务器日志",
+  "serverLogsEmpty": "暂无日志",
+  "serverLogsEmptySubtitle": "连接、状态请求和错误会显示在这里",
+  "serverLogLevelInfo": "信息",
+  "serverLogLevelError": "错误",
+  "serverLogLevelCommand": "命令",
+
+  "settingsServers": "服务器列表",
+  "settingsServersDesc": "添加、编辑和管理服务器",
+  "serverCount": "{count} 台服务器",
+  "@serverCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }
