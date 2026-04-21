@@ -29,10 +29,18 @@ class ServerListPage extends ConsumerWidget {
                 subtitle: l10n.noServersSubtitle,
               )
             : ListView.builder(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
                 itemCount: servers.length,
                 itemBuilder: (context, index) {
                   final s = servers[index];
-                  return _ServerListTile(server: s);
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    clipBehavior: Clip.antiAlias,
+                    child: _ServerListTile(server: s),
+                  );
                 },
               ),
       ),
@@ -53,13 +61,27 @@ class _ServerListTile extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return ListTile(
-      leading: OsIcon(type: server.osType, size: 24),
-      title: Text(server.name),
-      subtitle: Text(
-        '${server.host}:${server.port} · ${server.username}',
-        style: theme.textTheme.bodySmall,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      leading: OsIcon(type: server.osType, size: 22),
+      minLeadingWidth: 24,
+      title: Text(
+        server.name,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
       ),
-      trailing: const Icon(Ionicons.chevron_forward),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 2),
+        child: Text(
+          '${server.host}:${server.port} · ${server.username}',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ),
+      trailing: Icon(
+        Ionicons.chevron_forward,
+        color: theme.colorScheme.outline,
+        size: 18,
+      ),
       onTap: () => context.go('/settings/servers/${server.id}/edit'),
       onLongPress: () => _confirmDelete(context, ref, server),
     );

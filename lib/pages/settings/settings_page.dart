@@ -124,12 +124,16 @@ class _SettingsSection extends StatelessWidget {
       children: [
         SectionHeader(
           title: title,
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+          padding: const EdgeInsets.fromLTRB(28, 24, 24, 8),
         ),
-        for (var i = 0; i < children.length; i++) ...[
-          if (i > 0) const Divider(height: 1, indent: 72, endIndent: 24),
-          children[i],
-        ],
+        Column(
+          children: [
+            for (var i = 0; i < children.length; i++) ...[
+              if (i > 0) const Divider(height: 1, indent: 24, endIndent: 24),
+              children[i],
+            ],
+          ],
+        ),
       ],
     );
   }
@@ -161,14 +165,31 @@ class _SettingsItem extends StatelessWidget {
         : disabledColor;
 
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 2),
-      leading: Icon(icon, color: iconColor),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+      leading: Icon(icon, color: iconColor, size: 20),
       minLeadingWidth: 24,
-      horizontalTitleGap: 16,
-      title: Text(title, style: TextStyle(color: titleColor)),
-      subtitle: Text(subtitle, style: TextStyle(color: subtitleColor)),
+      horizontalTitleGap: 14,
+      title: Text(
+        title,
+        style: TextStyle(
+          color: titleColor,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 2),
+        child: Text(
+          subtitle,
+          style: TextStyle(color: subtitleColor, fontSize: 12, height: 1.25),
+        ),
+      ),
       trailing: onTap != null
-          ? Icon(Ionicons.chevron_forward, color: theme.colorScheme.outline)
+          ? Icon(
+              Ionicons.chevron_forward,
+              color: theme.colorScheme.outline,
+              size: 18,
+            )
           : null,
       enabled: enabled,
       onTap: enabled ? onTap : null,

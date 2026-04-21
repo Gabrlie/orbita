@@ -356,15 +356,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dynamicColor => 'Dynamic Color';
 
   @override
-  String get dynamicColorDesc =>
-      'Use system wallpaper colors; when enabled, the theme color below will not affect the app';
-
-  @override
   String get themeColor => 'Theme Color';
-
-  @override
-  String get themeColorDesc =>
-      'Choose a popular theme color to use after dynamic color is turned off';
 
   @override
   String get themeColorIndigo => 'Indigo';

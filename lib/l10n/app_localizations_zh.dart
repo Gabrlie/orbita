@@ -355,13 +355,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dynamicColor => '动态取色';
 
   @override
-  String get dynamicColorDesc => '根据系统壁纸自动生成主题色，开启后不受下方主题色影响';
-
-  @override
   String get themeColor => '主题色';
-
-  @override
-  String get themeColorDesc => '选择一个常用主题色，关闭动态取色后生效';
 
   @override
   String get themeColorIndigo => '靛蓝';

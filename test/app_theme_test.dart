@@ -57,4 +57,12 @@ void main() {
 
     expect(teal.primary, isNot(indigo.primary));
   });
+
+  test('app theme does not force filled input backgrounds', () {
+    final theme = AppTheme.themeFromScheme(
+      AppTheme.lightScheme(AppThemeSeed.indigo.color),
+    );
+
+    expect(theme.inputDecorationTheme.filled, isNot(isTrue));
+  });
 }

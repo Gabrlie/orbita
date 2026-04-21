@@ -27,6 +27,7 @@ class ResponsiveScaffold extends StatelessWidget {
         color: states.contains(WidgetState.selected)
             ? selectedColor
             : unselectedColor,
+        fontSize: 11,
         fontWeight: states.contains(WidgetState.selected)
             ? FontWeight.w600
             : FontWeight.w400,
@@ -44,24 +45,40 @@ class ResponsiveScaffold extends StatelessWidget {
     if (width < 600) {
       return Scaffold(
         body: navigationShell,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: navigationShell.currentIndex,
-          onDestinationSelected: _onNavigate,
-          height: 68,
-          indicatorColor: Colors.transparent,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          labelTextStyle: navLabelStyle,
-          destinations: [
-            for (final d in destinations)
-              NavigationDestination(
-                icon: _BottomNavIcon(icon: d.icon, color: unselectedColor),
-                selectedIcon: _BottomNavIcon(
-                  icon: d.selectedIcon,
-                  color: selectedColor,
-                ),
-                label: d.label,
+        bottomNavigationBar: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withAlpha(28),
+                blurRadius: 18,
+                offset: const Offset(0, -4),
               ),
-          ],
+            ],
+          ),
+          child: NavigationBar(
+            selectedIndex: navigationShell.currentIndex,
+            onDestinationSelected: _onNavigate,
+            height: 62,
+            elevation: 0,
+            backgroundColor: colorScheme.surface,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            indicatorColor: Colors.transparent,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            labelTextStyle: navLabelStyle,
+            destinations: [
+              for (final d in destinations)
+                NavigationDestination(
+                  icon: _BottomNavIcon(icon: d.icon, color: unselectedColor),
+                  selectedIcon: _BottomNavIcon(
+                    icon: d.selectedIcon,
+                    color: selectedColor,
+                  ),
+                  label: d.label,
+                ),
+            ],
+          ),
         ),
       );
     }
@@ -86,7 +103,7 @@ class ResponsiveScaffold extends StatelessWidget {
                   ),
               ],
             ),
-            const VerticalDivider(thickness: 1, width: 1),
+            const SizedBox(width: 8),
             Expanded(child: navigationShell),
           ],
         ),
@@ -106,9 +123,13 @@ class ResponsiveScaffold extends StatelessWidget {
               unselectedIconTheme: IconThemeData(color: unselectedColor),
               selectedLabelTextStyle: TextStyle(
                 color: selectedColor,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
-              unselectedLabelTextStyle: TextStyle(color: unselectedColor),
+              unselectedLabelTextStyle: TextStyle(
+                color: unselectedColor,
+                fontSize: 12,
+              ),
               destinations: [
                 for (final d in destinations)
                   NavigationRailDestination(
@@ -118,7 +139,7 @@ class ResponsiveScaffold extends StatelessWidget {
                   ),
               ],
             ),
-            const VerticalDivider(thickness: 1, width: 1),
+            const SizedBox(width: 8),
             Expanded(child: navigationShell),
           ],
         ),
@@ -146,10 +167,13 @@ class ResponsiveScaffold extends StatelessWidget {
               onDestinationSelected: _onNavigate,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 16, 16, 10),
+                  padding: const EdgeInsets.fromLTRB(28, 24, 16, 24),
                   child: Text(
                     l10n.appName,
-                    style: Theme.of(context).textTheme.titleSmall,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: selectedColor,
+                    ),
                   ),
                 ),
                 for (final d in destinations)
@@ -161,7 +185,7 @@ class ResponsiveScaffold extends StatelessWidget {
               ],
             ),
           ),
-          const VerticalDivider(thickness: 1, width: 1),
+          const SizedBox(width: 12),
           Expanded(child: navigationShell),
         ],
       ),
@@ -185,8 +209,8 @@ class _BottomNavIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.translate(
-      offset: const Offset(0, 2),
-      child: Icon(icon, color: color),
+      offset: const Offset(0, 1),
+      child: Icon(icon, color: color, size: 22),
     );
   }
 }

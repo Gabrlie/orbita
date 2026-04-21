@@ -86,22 +86,24 @@ class _KeyImportPageState extends ConsumerState<KeyImportPage> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(24),
           children: [
             TextFormField(
               controller: _name,
-              decoration: InputDecoration(
-                labelText: l10n.keyName,
-                border: const OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: l10n.keyName),
               validator: (v) => v == null || v.trim().isEmpty
                   ? l10n.validationRequired
                   : null,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(l10n.keyType, style: theme.textTheme.titleSmall),
+              child: Text(
+                l10n.keyType,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
             ),
             SegmentedButton<SshKeyType>(
               segments: const [
@@ -114,7 +116,7 @@ class _KeyImportPageState extends ConsumerState<KeyImportPage> {
               selected: {_keyType},
               onSelectionChanged: (s) => setState(() => _keyType = s.first),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             TextFormField(
               controller: _privateKey,
               maxLines: 8,
@@ -122,7 +124,6 @@ class _KeyImportPageState extends ConsumerState<KeyImportPage> {
               decoration: InputDecoration(
                 labelText: l10n.keyPrivate,
                 hintText: '-----BEGIN OPENSSH PRIVATE KEY-----',
-                border: const OutlineInputBorder(),
                 alignLabelWithHint: true,
               ),
               validator: (v) => v == null || v.trim().isEmpty
@@ -135,7 +136,7 @@ class _KeyImportPageState extends ConsumerState<KeyImportPage> {
                 }
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             // Public key field
             TextFormField(
               controller: _publicKey,
@@ -144,7 +145,6 @@ class _KeyImportPageState extends ConsumerState<KeyImportPage> {
               decoration: InputDecoration(
                 labelText: l10n.keyPublic,
                 hintText: 'ssh-ed25519 AAAA...',
-                border: const OutlineInputBorder(),
                 alignLabelWithHint: true,
                 suffixIcon: _publicKey.text.isNotEmpty
                     ? IconButton(
@@ -171,14 +171,11 @@ class _KeyImportPageState extends ConsumerState<KeyImportPage> {
                     : null,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             TextFormField(
               controller: _passphrase,
               obscureText: true,
-              decoration: InputDecoration(
-                labelText: l10n.keyPassphrase,
-                border: const OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: l10n.keyPassphrase),
             ),
           ],
         ),

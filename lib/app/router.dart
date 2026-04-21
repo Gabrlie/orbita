@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 
 import '../widgets/responsive_scaffold.dart';
@@ -17,6 +18,7 @@ import '../pages/settings/keys/key_import_page.dart';
 import '../pages/settings/keys/key_generate_page.dart';
 import '../pages/scripts/scripts_library_page.dart';
 import '../pages/snippets/snippets_page.dart';
+import '../widgets/common.dart';
 
 final router = GoRouter(
   initialLocation: '/home',
@@ -61,7 +63,7 @@ final router = GoRouter(
             GoRoute(
               path: '/files',
               builder: (context, state) => _PlaceholderPage(
-                icon: Icons.folder_outlined,
+                icon: Ionicons.folder,
                 title: AppLocalizations.of(context)!.navFiles,
               ),
             ),
@@ -72,7 +74,7 @@ final router = GoRouter(
             GoRoute(
               path: '/terminal',
               builder: (context, state) => _PlaceholderPage(
-                icon: Icons.terminal,
+                icon: Ionicons.terminal,
                 title: AppLocalizations.of(context)!.navTerminal,
               ),
             ),
@@ -83,7 +85,7 @@ final router = GoRouter(
             GoRoute(
               path: '/docker',
               builder: (context, state) => _PlaceholderPage(
-                icon: Icons.widgets_outlined,
+                icon: Ionicons.cube,
                 title: AppLocalizations.of(context)!.navDocker,
               ),
             ),
@@ -162,25 +164,12 @@ class _PlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 64, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(height: 16),
-            Text(l10n.noServersTitle, style: theme.textTheme.titleLarge),
-            const SizedBox(height: 4),
-            Text(
-              l10n.noServersSubtitle,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
+      body: EmptyState(
+        icon: icon,
+        title: l10n.noServersTitle,
+        subtitle: l10n.noServersSubtitle,
       ),
     );
   }

@@ -19,8 +19,11 @@ class SectionHeader extends StatelessWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-            ),
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w700,
+          fontSize: 12,
+          letterSpacing: 0,
+        ),
       ),
     );
   }
@@ -46,14 +49,23 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 64, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(height: 16),
-          Text(title, style: theme.textTheme.titleLarge),
+          Icon(icon, size: 52, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(height: 18),
+          Text(
+            title,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
           if (subtitle != null) ...[
-            const SizedBox(height: 4),
-            Text(subtitle!, style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            )),
+            const SizedBox(height: 6),
+            Text(
+              subtitle!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
         ],
       ),
@@ -73,24 +85,30 @@ Future<bool> showConfirmDialog(
   final l10n = AppLocalizations.of(context)!;
   final result = await showDialog<bool>(
     context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title),
-      content: Text(content),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(cancelLabel ?? l10n.commonCancel),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          style: destructive
-              ? TextButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.error)
-              : null,
-          child: Text(confirmLabel ?? l10n.commonConfirm),
-        ),
-      ],
-    ),
+    builder: (context) {
+      final theme = Theme.of(context);
+      return AlertDialog(
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        content: Text(content),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(cancelLabel ?? l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: destructive
+                ? FilledButton.styleFrom(
+                    backgroundColor: theme.colorScheme.error,
+                    foregroundColor: theme.colorScheme.onError,
+                  )
+                : null,
+            child: Text(confirmLabel ?? l10n.commonConfirm),
+          ),
+        ],
+      );
+    },
   );
   return result ?? false;
 }
@@ -105,10 +123,11 @@ Future<void> showInfoDialog(
   await showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(title),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
       content: Text(content),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       actions: [
-        TextButton(
+        FilledButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.commonOk),
         ),

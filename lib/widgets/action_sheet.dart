@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:orbita/l10n/app_localizations.dart';
 
 /// A single action item for [showActionSheet].
 class ActionSheetItem {
@@ -34,6 +35,7 @@ Future<void> showActionSheet(
   return showModalBottomSheet(
     context: context,
     builder: (ctx) {
+      final l10n = AppLocalizations.of(ctx)!;
       final theme = Theme.of(ctx);
       final disabledColor = theme.colorScheme.onSurface.withAlpha(97);
 
@@ -42,28 +44,42 @@ Future<void> showActionSheet(
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(title, style: theme.textTheme.titleMedium),
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+              child: Text(
+                title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.primary,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            const Divider(height: 1),
+            const Divider(height: 1, indent: 24, endIndent: 24),
+            const SizedBox(height: 8),
             for (final item in items)
               ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24),
                 leading: Icon(
                   item.icon,
+                  size: 20,
                   color: item.wip
                       ? disabledColor
                       : item.destructive
-                          ? theme.colorScheme.error
-                          : null,
+                      ? theme.colorScheme.error
+                      : theme.colorScheme.primary,
                 ),
                 title: Text(
-                  item.wip ? '${item.label}（开发中）' : item.label,
+                  item.wip
+                      ? '${item.label} (${l10n.inDevelopment})'
+                      : item.label,
                   style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                     color: item.wip
                         ? disabledColor
                         : item.destructive
-                            ? theme.colorScheme.error
-                            : null,
+                        ? theme.colorScheme.error
+                        : theme.colorScheme.onSurface,
                   ),
                 ),
                 onTap: item.wip
@@ -73,6 +89,7 @@ Future<void> showActionSheet(
                         item.onTap?.call();
                       },
               ),
+            const SizedBox(height: 16),
           ],
         ),
       );

@@ -42,19 +42,21 @@ class _KeyGeneratePageState extends ConsumerState<KeyGeneratePage> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         children: [
           TextField(
             controller: _nameController,
-            decoration: InputDecoration(
-              labelText: l10n.keyName,
-              border: const OutlineInputBorder(),
-            ),
+            decoration: InputDecoration(labelText: l10n.keyName),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(l10n.keyType, style: theme.textTheme.titleSmall),
+            child: Text(
+              l10n.keyType,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+            ),
           ),
           SegmentedButton<SshKeyType>(
             segments: const [
@@ -103,8 +105,8 @@ class _KeyGeneratePageState extends ConsumerState<KeyGeneratePage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: theme.colorScheme.outlineVariant),
               ),
               child: SelectableText(
                 _generated!.publicKey ?? '',

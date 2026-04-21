@@ -73,16 +73,12 @@ class ServerCard extends StatelessWidget {
     var pointerPosition = Offset.zero;
 
     return Card(
-      elevation: 0,
-      color: theme.colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withAlpha(120),
-          width: 1,
-        ),
-      ),
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+      elevation: 3,
+      shadowColor: theme.colorScheme.shadow.withAlpha(36),
+      surfaceTintColor: Colors.transparent,
+      color: theme.colorScheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       clipBehavior: Clip.antiAlias,
       child: Listener(
         onPointerDown: (event) => pointerPosition = event.position,
@@ -97,12 +93,12 @@ class ServerCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: _buildHeader(context, theme),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: _buildMetricsArea(theme, l10n),
                 ),
               ],
@@ -186,9 +182,12 @@ class ServerCard extends StatelessWidget {
           // Gaussian blur overlay
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: Container(
-                color: theme.colorScheme.surfaceContainerHighest.withAlpha(120),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface.withAlpha(180),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 alignment: Alignment.center,
                 child: _buildStatusLabel(theme),
               ),
@@ -209,20 +208,30 @@ class ServerCard extends StatelessWidget {
         : theme.colorScheme.error;
     final icon = isLoading ? Icons.sync : Icons.error_outline;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 16, color: color),
-        const SizedBox(width: 6),
-        Flexible(
-          child: Text(
-            statusMessage!,
-            style: theme.textTheme.bodySmall?.copyWith(color: color),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withAlpha(20),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              statusMessage!,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

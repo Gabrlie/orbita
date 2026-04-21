@@ -782,23 +782,11 @@ abstract class AppLocalizations {
   /// **'动态取色'**
   String get dynamicColor;
 
-  /// No description provided for @dynamicColorDesc.
-  ///
-  /// In zh, this message translates to:
-  /// **'根据系统壁纸自动生成主题色，开启后不受下方主题色影响'**
-  String get dynamicColorDesc;
-
   /// No description provided for @themeColor.
   ///
   /// In zh, this message translates to:
   /// **'主题色'**
   String get themeColor;
-
-  /// No description provided for @themeColorDesc.
-  ///
-  /// In zh, this message translates to:
-  /// **'选择一个常用主题色，关闭动态取色后生效'**
-  String get themeColorDesc;
 
   /// No description provided for @themeColorIndigo.
   ///

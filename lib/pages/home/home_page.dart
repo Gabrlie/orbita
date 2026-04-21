@@ -53,11 +53,12 @@ class HomePage extends ConsumerWidget {
           child: servers.isEmpty
               ? ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(top: 32),
                   children: [
                     SizedBox(
                       height: MediaQuery.sizeOf(context).height * 0.6,
                       child: EmptyState(
-                        icon: Icons.dns,
+                        icon: Ionicons.server,
                         title: l10n.noServersTitle,
                         subtitle: l10n.noServersSubtitle,
                       ),
@@ -188,46 +189,62 @@ class _ServerCardItem extends ConsumerWidget {
         const PopupMenuDivider(),
         PopupMenuItem(
           value: 'refresh',
+          height: 48,
           child: Row(
             children: [
-              const Icon(Icons.refresh, size: 18),
-              const SizedBox(width: 8),
-              Text(l10n.actionRefresh),
+              const Icon(Icons.refresh, size: 20),
+              const SizedBox(width: 12),
+              Text(
+                l10n.actionRefresh,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
             ],
           ),
         ),
         PopupMenuItem(
           value: 'logs',
+          height: 48,
           child: Row(
             children: [
-              const Icon(Icons.receipt_long_outlined, size: 18),
-              const SizedBox(width: 8),
-              Text(l10n.actionLogs),
+              const Icon(Icons.receipt_long_outlined, size: 20),
+              const SizedBox(width: 12),
+              Text(
+                l10n.actionLogs,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
             ],
           ),
         ),
         const PopupMenuDivider(),
         PopupMenuItem(
           value: 'edit',
+          height: 48,
           child: Row(
             children: [
-              const Icon(Icons.edit_outlined, size: 18),
-              const SizedBox(width: 8),
-              Text(l10n.actionEdit),
+              const Icon(Icons.edit_outlined, size: 20),
+              const SizedBox(width: 12),
+              Text(
+                l10n.actionEdit,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
             ],
           ),
         ),
         PopupMenuItem(
           value: 'delete',
+          height: 48,
           child: Row(
             children: [
               Icon(
                 Icons.delete_outline,
-                size: 18,
+                size: 20,
                 color: theme.colorScheme.error,
               ),
-              const SizedBox(width: 8),
-              Text(l10n.actionDelete, style: errorStyle),
+              const SizedBox(width: 12),
+              Text(
+                l10n.actionDelete,
+                style: errorStyle.copyWith(fontWeight: FontWeight.w600),
+              ),
             ],
           ),
         ),
