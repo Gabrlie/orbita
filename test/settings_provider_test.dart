@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:orbita/models/app_theme_seed.dart';
+import 'package:orbita/providers/settings_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  test('theme seed defaults to indigo and persists changes', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    expect(container.read(themeSeedProvider), AppThemeSeed.indigo);
+
+    await container.read(themeSeedProvider.notifier).set(AppThemeSeed.teal);
+
+    expect(container.read(themeSeedProvider), AppThemeSeed.teal);
+    expect(prefs.getString('theme_seed'), 'teal');
+  });
+
+  test('theme seed falls back to indigo for unknown stored values', () async {
+    SharedPreferences.setMockInitialValues({'theme_seed': 'unknown'});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    expect(container.read(themeSeedProvider), AppThemeSeed.indigo);
+  });
+
+  test('dynamic color defaults to enabled and persists changes', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    expect(container.read(dynamicColorProvider), isTrue);
+
+    await container.read(dynamicColorProvider.notifier).set(false);
+
+    expect(container.read(dynamicColorProvider), isFalse);
+    expect(prefs.getBool('dynamic_color'), isFalse);
+  });
+
+  test('stored theme mode and locale still load from preferences', () async {
+    SharedPreferences.setMockInitialValues({
+      'theme_mode': 'dark',
+      'locale': 'en',
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    expect(container.read(themeModeProvider), ThemeMode.dark);
+    expect(container.read(localeProvider)?.languageCode, 'en');
+  });
+}

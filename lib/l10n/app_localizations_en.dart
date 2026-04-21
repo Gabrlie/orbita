@@ -353,6 +353,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeModeDark => 'Dark';
 
   @override
+  String get dynamicColor => 'Dynamic Color';
+
+  @override
+  String get dynamicColorDesc =>
+      'Use system wallpaper colors; when enabled, the theme color below will not affect the app';
+
+  @override
+  String get themeColor => 'Theme Color';
+
+  @override
+  String get themeColorDesc =>
+      'Choose a popular theme color to use after dynamic color is turned off';
+
+  @override
+  String get themeColorIndigo => 'Indigo';
+
+  @override
+  String get themeColorBlue => 'Blue';
+
+  @override
+  String get themeColorViolet => 'Violet';
+
+  @override
+  String get themeColorTeal => 'Teal';
+
+  @override
+  String get themeColorEmerald => 'Emerald';
+
+  @override
+  String get themeColorOrange => 'Orange';
+
+  @override
+  String get themeColorRose => 'Rose';
+
+  @override
   String get language => 'Language';
 
   @override
@@ -433,6 +468,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get serverLogLevelCommand => 'Command';
+
+  @override
+  String get homeMoreActions => 'More actions';
+
+  @override
+  String get homeLayoutOptions => 'Layout Options';
 
   @override
   String get settingsServers => 'Server List';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:uuid/uuid.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/ssh_key.dart';
@@ -75,7 +76,7 @@ class _KeyGeneratePageState extends ConsumerState<KeyGeneratePage> {
                       height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.auto_fix_high_outlined),
+                  : const Icon(Ionicons.sparkles_outline),
               label: Text(_generating ? l10n.keyGenerating : l10n.generateKey),
             )
           else ...[
@@ -86,7 +87,7 @@ class _KeyGeneratePageState extends ConsumerState<KeyGeneratePage> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.check_circle_outline,
+                      Ionicons.checkmark_circle_outline,
                       color: theme.colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
@@ -122,7 +123,7 @@ class _KeyGeneratePageState extends ConsumerState<KeyGeneratePage> {
                     context,
                   ).showSnackBar(SnackBar(content: Text(l10n.keyCopied)));
                 },
-                icon: const Icon(Icons.copy_outlined, size: 16),
+                icon: const Icon(Ionicons.copy_outline, size: 16),
                 label: Text(l10n.keyPublic),
               ),
             ),

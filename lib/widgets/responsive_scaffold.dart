@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 
 class ResponsiveScaffold extends StatelessWidget {
@@ -33,15 +34,11 @@ class ResponsiveScaffold extends StatelessWidget {
     );
 
     final destinations = [
-      _Dest(
-        Icons.space_dashboard_outlined,
-        Icons.space_dashboard,
-        l10n.navHome,
-      ),
-      _Dest(Icons.folder_open_outlined, Icons.folder_open, l10n.navFiles),
-      _Dest(Icons.terminal_outlined, Icons.terminal, l10n.navTerminal),
-      _Dest(Icons.inventory_2_outlined, Icons.inventory_2, l10n.navDocker),
-      _Dest(Icons.tune_outlined, Icons.tune, l10n.navSettings),
+      _Dest(Ionicons.server_outline, Ionicons.server, l10n.navHome),
+      _Dest(Ionicons.folder_outline, Ionicons.folder, l10n.navFiles),
+      _Dest(Ionicons.terminal_outline, Ionicons.terminal, l10n.navTerminal),
+      _Dest(Ionicons.cube_outline, Ionicons.cube, l10n.navDocker),
+      _Dest(Ionicons.settings_outline, Ionicons.settings, l10n.navSettings),
     ];
 
     if (width < 600) {
@@ -50,13 +47,18 @@ class ResponsiveScaffold extends StatelessWidget {
         bottomNavigationBar: NavigationBar(
           selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: _onNavigate,
+          height: 68,
           indicatorColor: Colors.transparent,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           labelTextStyle: navLabelStyle,
           destinations: [
             for (final d in destinations)
               NavigationDestination(
-                icon: Icon(d.icon, color: unselectedColor),
-                selectedIcon: Icon(d.selectedIcon, color: selectedColor),
+                icon: _BottomNavIcon(icon: d.icon, color: unselectedColor),
+                selectedIcon: _BottomNavIcon(
+                  icon: d.selectedIcon,
+                  color: selectedColor,
+                ),
                 label: d.label,
               ),
           ],
@@ -172,4 +174,19 @@ class _Dest {
   final IconData selectedIcon;
   final String label;
   const _Dest(this.icon, this.selectedIcon, this.label);
+}
+
+class _BottomNavIcon extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+
+  const _BottomNavIcon({required this.icon, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: const Offset(0, 2),
+      child: Icon(icon, color: color),
+    );
+  }
 }

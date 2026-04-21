@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
 import 'package:orbita/providers/server_monitor_provider.dart';
@@ -21,7 +22,24 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.servers),
-        actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {})],
+        actions: [
+          PopupMenuButton<String>(
+            tooltip: l10n.homeMoreActions,
+            icon: const Icon(Ionicons.ellipsis_horizontal),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                enabled: false,
+                child: Text(
+                  '${l10n.homeLayoutOptions} (${l10n.inDevelopment})',
+                ),
+              ),
+              PopupMenuItem(
+                enabled: false,
+                child: Text('${l10n.settingsGroups} (${l10n.inDevelopment})'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: serversAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

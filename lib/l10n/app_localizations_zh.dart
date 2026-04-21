@@ -352,6 +352,39 @@ class AppLocalizationsZh extends AppLocalizations {
   String get themeModeDark => '深色';
 
   @override
+  String get dynamicColor => '动态取色';
+
+  @override
+  String get dynamicColorDesc => '根据系统壁纸自动生成主题色，开启后不受下方主题色影响';
+
+  @override
+  String get themeColor => '主题色';
+
+  @override
+  String get themeColorDesc => '选择一个常用主题色，关闭动态取色后生效';
+
+  @override
+  String get themeColorIndigo => '靛蓝';
+
+  @override
+  String get themeColorBlue => '蓝色';
+
+  @override
+  String get themeColorViolet => '紫色';
+
+  @override
+  String get themeColorTeal => '青色';
+
+  @override
+  String get themeColorEmerald => '绿色';
+
+  @override
+  String get themeColorOrange => '橙色';
+
+  @override
+  String get themeColorRose => '玫红';
+
+  @override
   String get language => '语言';
 
   @override
@@ -431,6 +464,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get serverLogLevelCommand => '命令';
+
+  @override
+  String get homeMoreActions => '更多操作';
+
+  @override
+  String get homeLayoutOptions => '调整布局';
 
   @override
   String get settingsServers => '服务器列表';

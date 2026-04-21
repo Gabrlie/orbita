@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/widgets/common.dart';
 
@@ -18,20 +19,20 @@ class SecurityPage extends StatelessWidget {
           SectionHeader(title: l10n.securityCurrentTier),
           ListTile(
             leading: Icon(
-              Icons.phone_android_outlined,
+              Ionicons.phone_portrait_outline,
               color: theme.colorScheme.primary,
             ),
             title: Text(l10n.securityDeviceEncryption),
             subtitle: Text(l10n.securityDeviceEncryptionDesc),
             trailing: Icon(
-              Icons.check_circle_outline,
+              Ionicons.checkmark_circle_outline,
               color: theme.colorScheme.primary,
             ),
           ),
 
           SectionHeader(title: l10n.securityAdditional),
           ListTile(
-            leading: Icon(Icons.lock_outlined, color: disabledColor),
+            leading: Icon(Ionicons.lock_closed_outline, color: disabledColor),
             title: Text(
               l10n.securityAppPassword,
               style: TextStyle(color: disabledColor),
@@ -42,7 +43,7 @@ class SecurityPage extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.fingerprint_outlined, color: disabledColor),
+            leading: Icon(Ionicons.finger_print_outline, color: disabledColor),
             title: Text(
               l10n.securityBiometric,
               style: TextStyle(color: disabledColor),
@@ -60,7 +61,10 @@ class SecurityPage extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: theme.colorScheme.primary),
+                    Icon(
+                      Ionicons.information_circle_outline,
+                      color: theme.colorScheme.primary,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(

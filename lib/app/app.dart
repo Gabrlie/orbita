@@ -15,18 +15,26 @@ class OrbitaApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final locale = ref.watch(localeProvider);
+    final useDynamicColor = ref.watch(dynamicColorProvider);
+    final themeSeed = ref.watch(themeSeedProvider);
 
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        final lightScheme =
-            lightDynamic?.harmonized() ?? AppTheme.lightTheme.colorScheme;
-        final darkScheme =
-            darkDynamic?.harmonized() ?? AppTheme.darkTheme.colorScheme;
+        final lightScheme = AppTheme.resolveLightScheme(
+          useDynamicColor: useDynamicColor,
+          seed: themeSeed,
+          dynamicScheme: lightDynamic?.harmonized(),
+        );
+        final darkScheme = AppTheme.resolveDarkScheme(
+          useDynamicColor: useDynamicColor,
+          seed: themeSeed,
+          dynamicScheme: darkDynamic?.harmonized(),
+        );
 
         return MaterialApp.router(
           title: 'Orbita',
-          theme: AppTheme.lightTheme.copyWith(colorScheme: lightScheme),
-          darkTheme: AppTheme.darkTheme.copyWith(colorScheme: darkScheme),
+          theme: AppTheme.themeFromScheme(lightScheme),
+          darkTheme: AppTheme.themeFromScheme(darkScheme),
           themeMode: themeMode,
           locale: locale,
           localizationsDelegates: const [
@@ -35,10 +43,7 @@ class OrbitaApp extends ConsumerWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('zh'),
-            Locale('en'),
-          ],
+          supportedLocales: const [Locale('zh'), Locale('en')],
           routerConfig: router,
         );
       },

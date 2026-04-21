@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:uuid/uuid.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/ssh_key.dart';
@@ -147,7 +148,7 @@ class _KeyImportPageState extends ConsumerState<KeyImportPage> {
                 alignLabelWithHint: true,
                 suffixIcon: _publicKey.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.copy_outlined, size: 18),
+                        icon: const Icon(Ionicons.copy_outline, size: 18),
                         tooltip: l10n.keyCopyPublicKey,
                         onPressed: () {
                           Clipboard.setData(

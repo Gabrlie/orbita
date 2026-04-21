@@ -776,6 +776,72 @@ abstract class AppLocalizations {
   /// **'深色'**
   String get themeModeDark;
 
+  /// No description provided for @dynamicColor.
+  ///
+  /// In zh, this message translates to:
+  /// **'动态取色'**
+  String get dynamicColor;
+
+  /// No description provided for @dynamicColorDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'根据系统壁纸自动生成主题色，开启后不受下方主题色影响'**
+  String get dynamicColorDesc;
+
+  /// No description provided for @themeColor.
+  ///
+  /// In zh, this message translates to:
+  /// **'主题色'**
+  String get themeColor;
+
+  /// No description provided for @themeColorDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择一个常用主题色，关闭动态取色后生效'**
+  String get themeColorDesc;
+
+  /// No description provided for @themeColorIndigo.
+  ///
+  /// In zh, this message translates to:
+  /// **'靛蓝'**
+  String get themeColorIndigo;
+
+  /// No description provided for @themeColorBlue.
+  ///
+  /// In zh, this message translates to:
+  /// **'蓝色'**
+  String get themeColorBlue;
+
+  /// No description provided for @themeColorViolet.
+  ///
+  /// In zh, this message translates to:
+  /// **'紫色'**
+  String get themeColorViolet;
+
+  /// No description provided for @themeColorTeal.
+  ///
+  /// In zh, this message translates to:
+  /// **'青色'**
+  String get themeColorTeal;
+
+  /// No description provided for @themeColorEmerald.
+  ///
+  /// In zh, this message translates to:
+  /// **'绿色'**
+  String get themeColorEmerald;
+
+  /// No description provided for @themeColorOrange.
+  ///
+  /// In zh, this message translates to:
+  /// **'橙色'**
+  String get themeColorOrange;
+
+  /// No description provided for @themeColorRose.
+  ///
+  /// In zh, this message translates to:
+  /// **'玫红'**
+  String get themeColorRose;
+
   /// No description provided for @language.
   ///
   /// In zh, this message translates to:
@@ -937,6 +1003,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'命令'**
   String get serverLogLevelCommand;
+
+  /// No description provided for @homeMoreActions.
+  ///
+  /// In zh, this message translates to:
+  /// **'更多操作'**
+  String get homeMoreActions;
+
+  /// No description provided for @homeLayoutOptions.
+  ///
+  /// In zh, this message translates to:
+  /// **'调整布局'**
+  String get homeLayoutOptions;
 
   /// No description provided for @settingsServers.
   ///

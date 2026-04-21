@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/providers/key_provider.dart';
@@ -23,7 +24,7 @@ class KeyListPage extends ConsumerWidget {
         error: (e, _) => Center(child: Text('$e')),
         data: (keys) => keys.isEmpty
             ? EmptyState(
-                icon: Icons.key_outlined,
+                icon: Ionicons.key_outline,
                 title: l10n.noKeys,
                 subtitle: l10n.noKeysSubtitle,
               )
@@ -34,8 +35,8 @@ class KeyListPage extends ConsumerWidget {
                   return ListTile(
                     leading: Icon(
                       k.keyType == SshKeyType.rsa
-                          ? Icons.security_outlined
-                          : Icons.enhanced_encryption_outlined,
+                          ? Ionicons.shield_checkmark_outline
+                          : Ionicons.key_outline,
                       color: theme.colorScheme.primary,
                     ),
                     title: Text(k.name),
@@ -48,7 +49,11 @@ class KeyListPage extends ConsumerWidget {
                       children: [
                         if (k.publicKey != null)
                           IconButton(
-                            icon: const Icon(Icons.copy_outlined, size: 20),
+                            icon: Icon(
+                              Ionicons.copy_outline,
+                              color: theme.colorScheme.primary,
+                              size: 20,
+                            ),
                             tooltip: l10n.keyPublic,
                             onPressed: () {
                               Clipboard.setData(
@@ -59,7 +64,7 @@ class KeyListPage extends ConsumerWidget {
                               );
                             },
                           ),
-                        const Icon(Icons.chevron_right),
+                        const Icon(Ionicons.chevron_forward),
                       ],
                     ),
                     onTap: () => context.go('/settings/keys/${k.id}/edit'),
@@ -70,13 +75,14 @@ class KeyListPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddOptions(context),
-        child: const Icon(Icons.add),
+        child: const Icon(Ionicons.add),
       ),
     );
   }
 
   void _showAddOptions(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
       builder: (ctx) => SafeArea(
@@ -84,7 +90,10 @@ class KeyListPage extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.file_download_outlined),
+              leading: Icon(
+                Ionicons.download_outline,
+                color: theme.colorScheme.primary,
+              ),
               title: Text(l10n.importKey),
               onTap: () {
                 Navigator.pop(ctx);
@@ -92,7 +101,10 @@ class KeyListPage extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.auto_fix_high_outlined),
+              leading: Icon(
+                Ionicons.sparkles_outline,
+                color: theme.colorScheme.primary,
+              ),
               title: Text(l10n.generateKey),
               onTap: () {
                 Navigator.pop(ctx);

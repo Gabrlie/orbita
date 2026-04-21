@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
 import 'package:orbita/providers/server_provider.dart';
@@ -23,7 +24,7 @@ class ServerListPage extends ConsumerWidget {
         error: (e, _) => Center(child: Text('$e')),
         data: (servers) => servers.isEmpty
             ? EmptyState(
-                icon: Icons.storage_outlined,
+                icon: Ionicons.server_outline,
                 title: l10n.noServersTitle,
                 subtitle: l10n.noServersSubtitle,
               )
@@ -37,7 +38,7 @@ class ServerListPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.go('/settings/servers/add'),
-        child: const Icon(Icons.add),
+        child: const Icon(Ionicons.add),
       ),
     );
   }
@@ -58,7 +59,7 @@ class _ServerListTile extends ConsumerWidget {
         '${server.host}:${server.port} · ${server.username}',
         style: theme.textTheme.bodySmall,
       ),
-      trailing: const Icon(Icons.chevron_right),
+      trailing: const Icon(Ionicons.chevron_forward),
       onTap: () => context.go('/settings/servers/${server.id}/edit'),
       onLongPress: () => _confirmDelete(context, ref, server),
     );
