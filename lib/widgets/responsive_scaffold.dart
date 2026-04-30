@@ -5,8 +5,13 @@ import 'package:orbita/l10n/app_localizations.dart';
 
 class ResponsiveScaffold extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
+  final bool hideNavigation;
 
-  const ResponsiveScaffold({super.key, required this.navigationShell});
+  const ResponsiveScaffold({
+    super.key,
+    required this.navigationShell,
+    this.hideNavigation = false,
+  });
 
   void _onNavigate(int index) {
     navigationShell.goBranch(
@@ -41,6 +46,10 @@ class ResponsiveScaffold extends StatelessWidget {
       _Dest(Ionicons.cube_outline, Ionicons.cube, l10n.navDocker),
       _Dest(Ionicons.settings_outline, Ionicons.settings, l10n.navSettings),
     ];
+
+    if (hideNavigation) {
+      return Scaffold(body: navigationShell);
+    }
 
     if (width < 600) {
       return Scaffold(

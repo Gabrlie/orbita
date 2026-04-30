@@ -181,6 +181,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get deleteKeyInUseTitle => 'Cannot Delete Key';
+
+  @override
+  String deleteKeyInUseContent(String key, String servers) {
+    return '\"$key\" is used by these servers:\n$servers';
+  }
+
+  @override
   String get keyGenerating => 'Generating key...';
 
   @override
@@ -392,6 +400,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEn => 'English';
 
   @override
+  String get terminalAppearance => 'Terminal Appearance';
+
+  @override
+  String get terminalFontFamily => 'Terminal Font';
+
+  @override
+  String get terminalFontJetBrainsMono => 'JetBrains Mono';
+
+  @override
+  String get terminalFontSystem => 'System Default';
+
+  @override
+  String get terminalFontMonospace => 'Monospace';
+
+  @override
+  String get terminalFontCustom => 'Custom Font';
+
+  @override
+  String get terminalCustomFontFamily => 'Font Family Name';
+
+  @override
+  String get terminalFontSize => 'Font Size';
+
+  @override
+  String get terminalForegroundColor => 'Text Color';
+
+  @override
+  String get terminalBackgroundColor => 'Background Color';
+
+  @override
+  String get terminalDashboard => 'Metrics Dashboard';
+
+  @override
+  String get terminalConnectOptions => 'Terminal Connection';
+
+  @override
+  String get terminalConnectTmux => 'Reuse tmux Session';
+
+  @override
+  String get terminalTmuxUnavailable => 'tmux is not installed on this server';
+
+  @override
+  String terminalTmuxAttaching(String session) {
+    return 'Attaching tmux session: $session';
+  }
+
+  @override
   String get serverActions => 'Server Actions';
 
   @override
@@ -460,6 +515,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get serverLogLevelCommand => 'Command';
+
+  @override
+  String get serverSearchTitle => 'Search Servers';
+
+  @override
+  String get serverSearchHint => 'Name, IP, user, tags';
+
+  @override
+  String get serverSearchNoResults => 'No matching servers';
+
+  @override
+  String get serverSearchNoResultsSubtitle => 'Try another keyword';
 
   @override
   String get homeMoreActions => 'More actions';

@@ -186,7 +186,19 @@ class KeyListPage extends ConsumerWidget {
       destructive: true,
     );
     if (confirmed) {
-      ref.read(keyListProvider.notifier).deleteKey(key.id);
+      try {
+        await ref.read(keyListProvider.notifier).deleteKey(key.id);
+      } on KeyInUseException catch (error) {
+        if (!context.mounted) return;
+        final serverNames = error.servers
+            .map((server) => server.name)
+            .join('\n');
+        showInfoDialog(
+          context,
+          title: l10n.deleteKeyInUseTitle,
+          content: l10n.deleteKeyInUseContent(key.name, serverNames),
+        );
+      }
     }
   }
 

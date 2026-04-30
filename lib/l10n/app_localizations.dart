@@ -434,6 +434,18 @@ abstract class AppLocalizations {
   /// **'确定要删除密钥「{name}」吗？使用此密钥的服务器将受影响。'**
   String deleteKeyContent(String name);
 
+  /// No description provided for @deleteKeyInUseTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法删除密钥'**
+  String get deleteKeyInUseTitle;
+
+  /// No description provided for @deleteKeyInUseContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'「{key}」正在被以下服务器使用：\n{servers}'**
+  String deleteKeyInUseContent(String key, String servers);
+
   /// No description provided for @keyGenerating.
   ///
   /// In zh, this message translates to:
@@ -854,6 +866,96 @@ abstract class AppLocalizations {
   /// **'English'**
   String get languageEn;
 
+  /// No description provided for @terminalAppearance.
+  ///
+  /// In zh, this message translates to:
+  /// **'终端外观'**
+  String get terminalAppearance;
+
+  /// No description provided for @terminalFontFamily.
+  ///
+  /// In zh, this message translates to:
+  /// **'终端字体'**
+  String get terminalFontFamily;
+
+  /// No description provided for @terminalFontJetBrainsMono.
+  ///
+  /// In zh, this message translates to:
+  /// **'JetBrains Mono'**
+  String get terminalFontJetBrainsMono;
+
+  /// No description provided for @terminalFontSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统默认'**
+  String get terminalFontSystem;
+
+  /// No description provided for @terminalFontMonospace.
+  ///
+  /// In zh, this message translates to:
+  /// **'等宽字体'**
+  String get terminalFontMonospace;
+
+  /// No description provided for @terminalFontCustom.
+  ///
+  /// In zh, this message translates to:
+  /// **'自定义字体'**
+  String get terminalFontCustom;
+
+  /// No description provided for @terminalCustomFontFamily.
+  ///
+  /// In zh, this message translates to:
+  /// **'字体族名称'**
+  String get terminalCustomFontFamily;
+
+  /// No description provided for @terminalFontSize.
+  ///
+  /// In zh, this message translates to:
+  /// **'字体大小'**
+  String get terminalFontSize;
+
+  /// No description provided for @terminalForegroundColor.
+  ///
+  /// In zh, this message translates to:
+  /// **'字体颜色'**
+  String get terminalForegroundColor;
+
+  /// No description provided for @terminalBackgroundColor.
+  ///
+  /// In zh, this message translates to:
+  /// **'背景颜色'**
+  String get terminalBackgroundColor;
+
+  /// No description provided for @terminalDashboard.
+  ///
+  /// In zh, this message translates to:
+  /// **'指标仪表盘'**
+  String get terminalDashboard;
+
+  /// No description provided for @terminalConnectOptions.
+  ///
+  /// In zh, this message translates to:
+  /// **'终端连接'**
+  String get terminalConnectOptions;
+
+  /// No description provided for @terminalConnectTmux.
+  ///
+  /// In zh, this message translates to:
+  /// **'复用 tmux 会话'**
+  String get terminalConnectTmux;
+
+  /// No description provided for @terminalTmuxUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器未安装 tmux'**
+  String get terminalTmuxUnavailable;
+
+  /// No description provided for @terminalTmuxAttaching.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在连接 tmux 会话：{session}'**
+  String terminalTmuxAttaching(String session);
+
   /// No description provided for @serverActions.
   ///
   /// In zh, this message translates to:
@@ -991,6 +1093,30 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'命令'**
   String get serverLogLevelCommand;
+
+  /// No description provided for @serverSearchTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索服务器'**
+  String get serverSearchTitle;
+
+  /// No description provided for @serverSearchHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称、IP、用户、标签'**
+  String get serverSearchHint;
+
+  /// No description provided for @serverSearchNoResults.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有匹配的服务器'**
+  String get serverSearchNoResults;
+
+  /// No description provided for @serverSearchNoResultsSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'换个关键词试试'**
+  String get serverSearchNoResultsSubtitle;
 
   /// No description provided for @homeMoreActions.
   ///

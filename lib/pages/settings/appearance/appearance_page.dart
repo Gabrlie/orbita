@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/pages/settings/appearance/terminal_appearance_section.dart';
 import 'package:orbita/pages/settings/appearance/theme_color_picker.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/widgets/common.dart';
@@ -65,6 +66,7 @@ class AppearancePage extends ConsumerWidget {
               onChanged: (option) => _setLanguage(ref, option),
             ),
           ),
+          const TerminalAppearanceSection(),
         ],
       ),
     );

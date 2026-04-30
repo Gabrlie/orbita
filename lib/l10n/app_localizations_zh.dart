@@ -181,6 +181,14 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get deleteKeyInUseTitle => '无法删除密钥';
+
+  @override
+  String deleteKeyInUseContent(String key, String servers) {
+    return '「$key」正在被以下服务器使用：\n$servers';
+  }
+
+  @override
   String get keyGenerating => '正在生成密钥...';
 
   @override
@@ -391,6 +399,53 @@ class AppLocalizationsZh extends AppLocalizations {
   String get languageEn => 'English';
 
   @override
+  String get terminalAppearance => '终端外观';
+
+  @override
+  String get terminalFontFamily => '终端字体';
+
+  @override
+  String get terminalFontJetBrainsMono => 'JetBrains Mono';
+
+  @override
+  String get terminalFontSystem => '系统默认';
+
+  @override
+  String get terminalFontMonospace => '等宽字体';
+
+  @override
+  String get terminalFontCustom => '自定义字体';
+
+  @override
+  String get terminalCustomFontFamily => '字体族名称';
+
+  @override
+  String get terminalFontSize => '字体大小';
+
+  @override
+  String get terminalForegroundColor => '字体颜色';
+
+  @override
+  String get terminalBackgroundColor => '背景颜色';
+
+  @override
+  String get terminalDashboard => '指标仪表盘';
+
+  @override
+  String get terminalConnectOptions => '终端连接';
+
+  @override
+  String get terminalConnectTmux => '复用 tmux 会话';
+
+  @override
+  String get terminalTmuxUnavailable => '服务器未安装 tmux';
+
+  @override
+  String terminalTmuxAttaching(String session) {
+    return '正在连接 tmux 会话：$session';
+  }
+
+  @override
   String get serverActions => '服务器操作';
 
   @override
@@ -458,6 +513,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get serverLogLevelCommand => '命令';
+
+  @override
+  String get serverSearchTitle => '搜索服务器';
+
+  @override
+  String get serverSearchHint => '名称、IP、用户、标签';
+
+  @override
+  String get serverSearchNoResults => '没有匹配的服务器';
+
+  @override
+  String get serverSearchNoResultsSubtitle => '换个关键词试试';
 
   @override
   String get homeMoreActions => '更多操作';

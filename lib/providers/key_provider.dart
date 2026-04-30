@@ -6,13 +6,13 @@ import 'package:dartssh2/dartssh2.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pinenacl/ed25519.dart' as ed25519;
 import 'package:pointycastle/export.dart';
+import 'package:orbita/models/server.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/providers/server_provider.dart';
 
 // -- SSH Key List --
 
-final keyListProvider =
-    AsyncNotifierProvider<KeyListNotifier, List<SshKey>>(
+final keyListProvider = AsyncNotifierProvider<KeyListNotifier, List<SshKey>>(
   KeyListNotifier.new,
 );
 
@@ -37,8 +37,13 @@ class KeyListNotifier extends AsyncNotifier<List<SshKey>> {
   }
 
   Future<void> deleteKey(String id) async {
-    final current =
-        (state.value ?? []).where((k) => k.id != id).toList();
+    final servers = await ref.read(serverListProvider.future);
+    final usedBy = serversUsingKey(servers, id);
+    if (usedBy.isNotEmpty) {
+      throw KeyInUseException(usedBy);
+    }
+
+    final current = (state.value ?? []).where((k) => k.id != id).toList();
     await ref.read(storageServiceProvider).saveKeys(current);
     state = AsyncData(current);
   }
@@ -81,10 +86,12 @@ class KeyListNotifier extends AsyncNotifier<List<SshKey>> {
 
   static OpenSSHRsaKeyPair _generateRsa(int bits) {
     final keyGen = RSAKeyGenerator()
-      ..init(ParametersWithRandom(
-        RSAKeyGeneratorParameters(BigInt.parse('65537'), bits, 64),
-        FortunaRandom()..seed(KeyParameter(_randomBytes(32))),
-      ));
+      ..init(
+        ParametersWithRandom(
+          RSAKeyGeneratorParameters(BigInt.parse('65537'), bits, 64),
+          FortunaRandom()..seed(KeyParameter(_randomBytes(32))),
+        ),
+      );
     final pair = keyGen.generateKeyPair();
     final pub = pair.publicKey;
     final priv = pair.privateKey;
@@ -92,7 +99,13 @@ class KeyListNotifier extends AsyncNotifier<List<SshKey>> {
     final iqmp = priv.q!.modInverse(priv.p!);
     return OpenSSHRsaKeyPair(
       // ignore: deprecated_member_use
-      pub.n!, pub.publicExponent!, priv.privateExponent!, iqmp, priv.p!, priv.q!, 'orbita',
+      pub.n!,
+      pub.publicExponent!,
+      priv.privateExponent!,
+      iqmp,
+      priv.p!,
+      priv.q!,
+      'orbita',
     );
   }
 
@@ -117,6 +130,20 @@ class KeyListNotifier extends AsyncNotifier<List<SshKey>> {
       return null;
     }
   }
+}
+
+List<Server> serversUsingKey(List<Server> servers, String keyId) {
+  return servers
+      .where(
+        (server) => server.authType == AuthType.key && server.keyId == keyId,
+      )
+      .toList();
+}
+
+class KeyInUseException implements Exception {
+  final List<Server> servers;
+
+  const KeyInUseException(this.servers);
 }
 
 final keyByIdProvider = Provider.family<SshKey?, String>((ref, id) {

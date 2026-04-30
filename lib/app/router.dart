@@ -6,6 +6,7 @@ import 'package:orbita/l10n/app_localizations.dart';
 import '../widgets/responsive_scaffold.dart';
 import '../pages/lock/lock_page.dart';
 import '../pages/home/home_page.dart';
+import '../pages/home/home_search_page.dart';
 import '../pages/server/server_detail_page.dart';
 import '../pages/server/server_form_page.dart';
 import '../pages/server/logs/server_log_page.dart';
@@ -17,6 +18,9 @@ import '../pages/settings/keys/key_list_page.dart';
 import '../pages/settings/keys/key_import_page.dart';
 import '../pages/settings/keys/key_generate_page.dart';
 import '../pages/scripts/scripts_library_page.dart';
+import '../pages/server/terminal/terminal_launch_mode.dart';
+import '../pages/server/terminal/terminal_page.dart';
+import '../pages/terminal/terminal_server_picker_page.dart';
 import '../pages/snippets/snippets_page.dart';
 import '../widgets/common.dart';
 
@@ -26,7 +30,10 @@ final router = GoRouter(
     GoRoute(path: '/lock', builder: (context, state) => const LockPage()),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        return ResponsiveScaffold(navigationShell: navigationShell);
+        return ResponsiveScaffold(
+          navigationShell: navigationShell,
+          hideNavigation: state.uri.path.startsWith('/terminal/'),
+        );
       },
       branches: [
         StatefulShellBranch(
@@ -35,6 +42,10 @@ final router = GoRouter(
               path: '/home',
               builder: (context, state) => const HomePage(),
               routes: [
+                GoRoute(
+                  path: 'search',
+                  builder: (context, state) => const HomeSearchPage(),
+                ),
                 GoRoute(
                   path: 'server/add',
                   builder: (context, state) => const ServerFormPage(),
@@ -73,10 +84,18 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/terminal',
-              builder: (context, state) => _PlaceholderPage(
-                icon: Ionicons.terminal,
-                title: AppLocalizations.of(context)!.navTerminal,
-              ),
+              builder: (context, state) => const TerminalServerPickerPage(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) => TerminalPage(
+                    serverId: state.pathParameters['id']!,
+                    launchMode: terminalLaunchModeFromQuery(
+                      state.uri.queryParameters['mode'],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

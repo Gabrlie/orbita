@@ -63,4 +63,41 @@ void main() {
     expect(container.read(themeModeProvider), ThemeMode.dark);
     expect(container.read(localeProvider)?.languageCode, 'en');
   });
+
+  test('terminal appearance defaults and persists changes', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    expect(
+      container.read(terminalAppearanceProvider),
+      const TerminalAppearance(
+        fontFamily: TerminalFontFamily.jetbrainsMono,
+        customFontFamily: '',
+        fontSize: 14,
+        foregroundColor: Color(0xFFECEFF4),
+        backgroundColor: Color(0xFF0B1020),
+      ),
+    );
+
+    const appearance = TerminalAppearance(
+      fontFamily: TerminalFontFamily.custom,
+      customFontFamily: 'Cascadia Mono',
+      fontSize: 16,
+      foregroundColor: Color(0xFFFFFFFF),
+      backgroundColor: Color(0xFF111111),
+    );
+
+    await container.read(terminalAppearanceProvider.notifier).set(appearance);
+
+    expect(container.read(terminalAppearanceProvider), appearance);
+    expect(prefs.getString('terminal_font_family'), 'custom');
+    expect(prefs.getString('terminal_custom_font_family'), 'Cascadia Mono');
+    expect(prefs.getDouble('terminal_font_size'), 16);
+    expect(prefs.getInt('terminal_foreground_color'), 0xFFFFFFFF);
+    expect(prefs.getInt('terminal_background_color'), 0xFF111111);
+  });
 }

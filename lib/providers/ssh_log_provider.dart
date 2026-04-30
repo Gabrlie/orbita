@@ -4,11 +4,10 @@ import 'package:orbita/models/ssh_log.dart';
 /// Global SSH log store keyed by serverId.
 final _sshLogStoreProvider =
     NotifierProvider<_SshLogStoreNotifier, Map<String, List<SshLogEntry>>>(
-  _SshLogStoreNotifier.new,
-);
+      _SshLogStoreNotifier.new,
+    );
 
-class _SshLogStoreNotifier
-    extends Notifier<Map<String, List<SshLogEntry>>> {
+class _SshLogStoreNotifier extends Notifier<Map<String, List<SshLogEntry>>> {
   @override
   Map<String, List<SshLogEntry>> build() => {};
 
@@ -26,20 +25,29 @@ class _SshLogStoreNotifier
 }
 
 /// Per-server log accessor (read-only).
-final sshLogProvider =
-    Provider.family<List<SshLogEntry>, String>((ref, serverId) {
+final sshLogProvider = Provider.family<List<SshLogEntry>, String>((
+  ref,
+  serverId,
+) {
   return ref.watch(_sshLogStoreProvider)[serverId] ?? [];
 });
 
 /// Utility class for adding logs from other providers.
 class SshLogger {
-  final Ref _ref;
-  final String _serverId;
+  final void Function(SshLogEntry entry) _add;
 
-  SshLogger(this._ref, this._serverId);
+  SshLogger(Ref ref, String serverId)
+    : _add = ((entry) {
+        ref.read(_sshLogStoreProvider.notifier).add(serverId, entry);
+      });
+
+  SshLogger.fromWidget(WidgetRef ref, String serverId)
+    : _add = ((entry) {
+        ref.read(_sshLogStoreProvider.notifier).add(serverId, entry);
+      });
 
   void add(SshLogEntry entry) {
-    _ref.read(_sshLogStoreProvider.notifier).add(_serverId, entry);
+    _add(entry);
   }
 
   void info(String message) => add(SshLogEntry.info(message));

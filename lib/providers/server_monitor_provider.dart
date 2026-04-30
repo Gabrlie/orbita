@@ -3,10 +3,11 @@ import 'package:orbita/models/server.dart';
 import 'package:orbita/models/server_status.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/providers/key_provider.dart';
+import 'package:orbita/providers/ssh_connection_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/server_refresh_provider.dart';
 import 'package:orbita/providers/ssh_log_provider.dart';
-import 'package:orbita/services/ssh_service.dart';
+import 'package:orbita/services/ssh_connection_manager.dart';
 import 'package:orbita/widgets/os_icon.dart';
 
 /// Streams live [ServerStatus] for a single server via SSH.
@@ -21,9 +22,9 @@ final serverStatusProvider = StreamProvider.autoDispose
       }
 
       final log = SshLogger(ref, serverId);
-      final ssh = SshService();
+      SshConnectionLease? lease;
       ref.onDispose(() {
-        ssh.disconnect();
+        lease?.release();
         log.info('Monitoring stopped');
       });
 
@@ -44,19 +45,16 @@ final serverStatusProvider = StreamProvider.autoDispose
       // Connect
       try {
         log.info('Connecting to ${server.host}:${server.port}...');
-        await ssh.connect(
-          host: server.host,
-          port: server.port,
-          username: server.username,
-          password: server.password,
-          key: key,
-        );
+        lease = await ref
+            .read(sshConnectionManagerProvider)
+            .acquire(server, key: key);
         log.info('Connected');
       } catch (e) {
         log.error('Connection failed', '$e');
         yield null;
         return;
       }
+      final ssh = lease.service;
 
       // Auto-detect OS on first connection
       try {

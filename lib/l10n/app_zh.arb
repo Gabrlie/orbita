@@ -71,6 +71,14 @@
       "name": { "type": "String" }
     }
   },
+  "deleteKeyInUseTitle": "无法删除密钥",
+  "deleteKeyInUseContent": "「{key}」正在被以下服务器使用：\n{servers}",
+  "@deleteKeyInUseContent": {
+    "placeholders": {
+      "key": { "type": "String" },
+      "servers": { "type": "String" }
+    }
+  },
   "keyGenerating": "正在生成密钥...",
   "keyGenerated": "密钥已生成",
   "keyCopied": "已复制到剪贴板",
@@ -145,6 +153,26 @@
   "languageSystem": "跟随系统",
   "languageZh": "中文",
   "languageEn": "English",
+  "terminalAppearance": "终端外观",
+  "terminalFontFamily": "终端字体",
+  "terminalFontJetBrainsMono": "JetBrains Mono",
+  "terminalFontSystem": "系统默认",
+  "terminalFontMonospace": "等宽字体",
+  "terminalFontCustom": "自定义字体",
+  "terminalCustomFontFamily": "字体族名称",
+  "terminalFontSize": "字体大小",
+  "terminalForegroundColor": "字体颜色",
+  "terminalBackgroundColor": "背景颜色",
+  "terminalDashboard": "指标仪表盘",
+  "terminalConnectOptions": "终端连接",
+  "terminalConnectTmux": "复用 tmux 会话",
+  "terminalTmuxUnavailable": "服务器未安装 tmux",
+  "terminalTmuxAttaching": "正在连接 tmux 会话：{session}",
+  "@terminalTmuxAttaching": {
+    "placeholders": {
+      "session": { "type": "String" }
+    }
+  },
 
   "serverActions": "服务器操作",
   "actionRefresh": "刷新状态",
@@ -170,6 +198,10 @@
   "serverLogLevelInfo": "信息",
   "serverLogLevelError": "错误",
   "serverLogLevelCommand": "命令",
+  "serverSearchTitle": "搜索服务器",
+  "serverSearchHint": "名称、IP、用户、标签",
+  "serverSearchNoResults": "没有匹配的服务器",
+  "serverSearchNoResultsSubtitle": "换个关键词试试",
   "homeMoreActions": "更多操作",
   "homeLayoutOptions": "调整布局",
 

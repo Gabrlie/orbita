@@ -71,6 +71,14 @@
       "name": { "type": "String" }
     }
   },
+  "deleteKeyInUseTitle": "Cannot Delete Key",
+  "deleteKeyInUseContent": "\"{key}\" is used by these servers:\n{servers}",
+  "@deleteKeyInUseContent": {
+    "placeholders": {
+      "key": { "type": "String" },
+      "servers": { "type": "String" }
+    }
+  },
   "keyGenerating": "Generating key...",
   "keyGenerated": "Key generated",
   "keyCopied": "Copied to clipboard",
@@ -145,6 +153,26 @@
   "languageSystem": "Follow System",
   "languageZh": "中文",
   "languageEn": "English",
+  "terminalAppearance": "Terminal Appearance",
+  "terminalFontFamily": "Terminal Font",
+  "terminalFontJetBrainsMono": "JetBrains Mono",
+  "terminalFontSystem": "System Default",
+  "terminalFontMonospace": "Monospace",
+  "terminalFontCustom": "Custom Font",
+  "terminalCustomFontFamily": "Font Family Name",
+  "terminalFontSize": "Font Size",
+  "terminalForegroundColor": "Text Color",
+  "terminalBackgroundColor": "Background Color",
+  "terminalDashboard": "Metrics Dashboard",
+  "terminalConnectOptions": "Terminal Connection",
+  "terminalConnectTmux": "Reuse tmux Session",
+  "terminalTmuxUnavailable": "tmux is not installed on this server",
+  "terminalTmuxAttaching": "Attaching tmux session: {session}",
+  "@terminalTmuxAttaching": {
+    "placeholders": {
+      "session": { "type": "String" }
+    }
+  },
 
   "serverActions": "Server Actions",
   "actionRefresh": "Refresh Status",
@@ -170,6 +198,10 @@
   "serverLogLevelInfo": "Info",
   "serverLogLevelError": "Error",
   "serverLogLevelCommand": "Command",
+  "serverSearchTitle": "Search Servers",
+  "serverSearchHint": "Name, IP, user, tags",
+  "serverSearchNoResults": "No matching servers",
+  "serverSearchNoResultsSubtitle": "Try another keyword",
   "homeMoreActions": "More actions",
   "homeLayoutOptions": "Layout Options",
 
