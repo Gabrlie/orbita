@@ -8,6 +8,7 @@ import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/server_refresh_provider.dart';
 import 'package:orbita/providers/ssh_log_provider.dart';
 import 'package:orbita/services/ssh_connection_manager.dart';
+import 'package:orbita/services/ssh_service.dart';
 import 'package:orbita/widgets/os_icon.dart';
 
 /// Streams live [ServerStatus] for a single server via SSH.
@@ -42,54 +43,88 @@ final serverStatusProvider = StreamProvider.autoDispose
         return;
       }
 
-      // Connect
-      try {
-        log.info('Connecting to ${server.host}:${server.port}...');
-        lease = await ref
-            .read(sshConnectionManagerProvider)
-            .acquire(server, key: key);
-        log.info('Connected');
-      } catch (e) {
-        log.error('Connection failed', '$e');
-        yield null;
-        return;
-      }
-      final ssh = lease.service;
-
-      // Auto-detect OS on first connection
-      try {
-        final osOutput = await ssh.execute(
-          r'(. /etc/os-release 2>/dev/null && echo "$ID") || echo unknown',
-        );
-        final detectedOs = osTypeFromString(osOutput.trim());
-        if (detectedOs != OsType.unknown && detectedOs != server.osType) {
-          ref
-              .read(serverListProvider.notifier)
-              .updateServer(server.copyWith(osType: detectedOs));
-          log.info('Detected OS: ${detectedOs.name}');
-        }
-      } catch (_) {}
-
-      // Poll loop
-      RawNetIoSnapshot? prevSnapshot;
-      while (!ssh.isClosed) {
+      var reconnectDelay = const Duration(seconds: 2);
+      while (true) {
         try {
-          final output = await ssh.execute(monitorCommand);
-          log.command('status', output);
-          final status = parseMonitorOutput(output, prevSnapshot);
-          prevSnapshot = status.snapshot;
-          yield status;
+          log.info('Connecting to ${server.host}:${server.port}...');
+          lease = await ref
+              .read(sshConnectionManagerProvider)
+              .acquire(server, key: key);
+          log.info('Connected');
         } catch (e) {
-          log.error('Fetch failed', '$e');
+          log.error('Connection failed', '$e');
           yield null;
-          return;
+          if (_isAuthenticationFailure(e)) return;
+          await Future.delayed(reconnectDelay);
+          reconnectDelay = _nextReconnectDelay(reconnectDelay);
+          continue;
         }
-        await Future.delayed(const Duration(seconds: 10));
-      }
 
-      log.error('Connection lost');
-      yield null;
+        final ssh = lease.service;
+        await _detectServerOs(ref, server, ssh, log);
+        reconnectDelay = const Duration(seconds: 2);
+
+        RawNetIoSnapshot? prevSnapshot;
+        while (!ssh.isClosed) {
+          try {
+            final output = await ssh.execute(monitorCommand);
+            log.command('status', output);
+            final status = parseMonitorOutput(output, prevSnapshot);
+            prevSnapshot = status.snapshot;
+            yield status;
+          } catch (e) {
+            log.error('Fetch failed', '$e');
+            ref
+                .read(sshConnectionManagerProvider)
+                .markUnhealthy(server.id, ssh);
+            yield null;
+            break;
+          }
+          await Future.delayed(const Duration(seconds: 10));
+        }
+
+        if (ssh.isClosed) {
+          log.error('Connection lost');
+          yield null;
+        }
+
+        lease.release();
+        lease = null;
+        await Future.delayed(reconnectDelay);
+        reconnectDelay = _nextReconnectDelay(reconnectDelay);
+      }
     });
+
+Future<void> _detectServerOs(
+  Ref ref,
+  Server server,
+  SshClientSession ssh,
+  SshLogger log,
+) async {
+  try {
+    final osOutput = await ssh.execute(
+      r'(. /etc/os-release 2>/dev/null && echo "$ID") || echo unknown',
+    );
+    final detectedOs = osTypeFromString(osOutput.trim());
+    if (detectedOs != OsType.unknown && detectedOs != server.osType) {
+      ref
+          .read(serverListProvider.notifier)
+          .updateServer(server.copyWith(osType: detectedOs));
+      log.info('Detected OS: ${detectedOs.name}');
+    }
+  } catch (_) {}
+}
+
+Duration _nextReconnectDelay(Duration current) {
+  final nextSeconds = current.inSeconds * 2;
+  return Duration(seconds: nextSeconds > 30 ? 30 : nextSeconds);
+}
+
+bool _isAuthenticationFailure(Object error) {
+  final message = error.toString();
+  return message.contains('SSHAuthFailError') ||
+      message.contains('All authentication methods failed');
+}
 
 Future<SshKey?> resolveServerKey(
   Server server,

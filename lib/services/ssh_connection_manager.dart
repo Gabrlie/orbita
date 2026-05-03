@@ -36,10 +36,14 @@ class SshConnectionLease {
 }
 
 class SshConnectionManager {
-  SshConnectionManager({SshServiceConnector? connector})
-    : _connector = connector ?? SshService.connect;
+  SshConnectionManager({
+    SshServiceConnector? connector,
+    Duration idleTimeout = const Duration(minutes: 2),
+  }) : _connector = connector ?? SshService.connect,
+       _idleTimeout = idleTimeout;
 
   final SshServiceConnector _connector;
+  final Duration _idleTimeout;
   final Map<String, _ManagedSshConnection> _connections = {};
 
   Future<SshClientSession> getOrConnect(Server server, {SshKey? key}) {
@@ -68,6 +72,14 @@ class SshConnectionManager {
     _closeEntry(serverId, entry, dispose: true);
   }
 
+  void markUnhealthy(String serverId, SshClientSession service) {
+    final entry = _connections[serverId];
+    if (entry == null || !identical(entry.service, service)) {
+      return;
+    }
+    _closeEntry(serverId, entry);
+  }
+
   Future<void> disconnectAll() async {
     final serverIds = _connections.keys.toList();
     for (final serverId in serverIds) {
@@ -84,6 +96,7 @@ class SshConnectionManager {
     final fingerprint = _connectionFingerprint(server, key);
 
     if (retain) {
+      entry.cancelIdleClose();
       entry.refCount += 1;
     }
 
@@ -175,9 +188,37 @@ class SshConnectionManager {
       return;
     }
 
-    if (identical(entry.service, service) || entry.service == null) {
-      _closeEntry(serverId, entry, dispose: true);
+    if (!identical(entry.service, service) && entry.service != null) {
+      return;
     }
+
+    if (entry.service == null) {
+      _disposeEntry(serverId, entry);
+      return;
+    }
+
+    _scheduleIdleClose(serverId, entry, service);
+  }
+
+  void _scheduleIdleClose(
+    String serverId,
+    _ManagedSshConnection entry,
+    SshClientSession service,
+  ) {
+    entry.cancelIdleClose();
+    if (_idleTimeout <= Duration.zero) {
+      _closeEntry(serverId, entry, dispose: true);
+      return;
+    }
+    entry.idleCloseTimer = Timer(_idleTimeout, () {
+      final latest = _connections[serverId];
+      if (latest == null ||
+          latest.refCount > 0 ||
+          !identical(latest.service, service)) {
+        return;
+      }
+      _closeEntry(serverId, latest, dispose: true);
+    });
   }
 
   void _rollbackRetain(String serverId, _ManagedSshConnection entry) {
@@ -196,6 +237,7 @@ class SshConnectionManager {
     _ManagedSshConnection entry, {
     bool dispose = false,
   }) {
+    entry.cancelIdleClose();
     final service = entry.service;
     entry.service = null;
     entry.connecting = null;
@@ -210,6 +252,7 @@ class SshConnectionManager {
   }
 
   void _disposeEntry(String serverId, _ManagedSshConnection entry) {
+    entry.cancelIdleClose();
     _connections.remove(serverId);
     if (!entry.controller.isClosed) {
       entry.controller.close();
@@ -248,6 +291,7 @@ class _ManagedSshConnection {
   String? fingerprint;
   int refCount = 0;
   SshConnectionLifecycleState state = SshConnectionLifecycleState.disconnected;
+  Timer? idleCloseTimer;
 
   _ManagedSshConnection(this.serverId);
 
@@ -256,5 +300,10 @@ class _ManagedSshConnection {
     if (!controller.isClosed) {
       controller.add(nextState);
     }
+  }
+
+  void cancelIdleClose() {
+    idleCloseTimer?.cancel();
+    idleCloseTimer = null;
   }
 }

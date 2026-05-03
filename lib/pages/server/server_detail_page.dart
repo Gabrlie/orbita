@@ -83,7 +83,7 @@ class _ServerDetailPageState extends ConsumerState<ServerDetailPage>
             showAppBar: false,
             launchMode: _terminalLaunchMode,
           ),
-          const FilesPage(),
+          FilesPage(serverId: widget.id, showAppBar: false),
           const DockerPage(),
           const ScriptsPage(),
         ],

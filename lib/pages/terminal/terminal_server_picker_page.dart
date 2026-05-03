@@ -19,7 +19,7 @@ class TerminalServerPickerPage extends ConsumerWidget {
     final serversAsync = ref.watch(serverListProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.navTerminal)),
+      appBar: AppBar(),
       body: serversAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text('$error')),

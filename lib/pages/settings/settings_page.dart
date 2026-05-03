@@ -15,7 +15,7 @@ class SettingsPage extends ConsumerWidget {
     final serverCount = ref.watch(serverListProvider).value?.length ?? 0;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.navSettings)),
+      appBar: AppBar(),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 24),
         children: [

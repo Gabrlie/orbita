@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/pages/settings/appearance/terminal_color_picker_dialog.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/widgets/common.dart';
 
@@ -40,17 +41,31 @@ class TerminalAppearanceSection extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Column(
             children: [
-              _FontFamilyField(appearance: appearance),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 360),
+                  child: _FontFamilyField(appearance: appearance),
+                ),
+              ),
               if (appearance.fontFamily == TerminalFontFamily.custom) ...[
                 const SizedBox(height: 12),
-                TextFormField(
-                  initialValue: appearance.customFontFamily,
-                  decoration: InputDecoration(
-                    labelText: l10n.terminalCustomFontFamily,
-                    prefixIcon: const Icon(Ionicons.text_outline),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: TextFormField(
+                      initialValue: appearance.customFontFamily,
+                      decoration: InputDecoration(
+                        labelText: l10n.terminalCustomFontFamily,
+                        prefixIcon: const Icon(Ionicons.text_outline),
+                      ),
+                      onChanged: (value) => _set(
+                        ref,
+                        appearance.copyWith(customFontFamily: value),
+                      ),
+                    ),
                   ),
-                  onChanged: (value) =>
-                      _set(ref, appearance.copyWith(customFontFamily: value)),
                 ),
               ],
               const SizedBox(height: 16),
@@ -161,9 +176,9 @@ class _FontSizeSlider extends ConsumerWidget {
         ),
         Slider(
           value: appearance.fontSize,
-          min: 12,
+          min: 8,
           max: 24,
-          divisions: 12,
+          divisions: 16,
           onChanged: (value) {
             ref
                 .read(terminalAppearanceProvider.notifier)
@@ -199,29 +214,64 @@ class _TerminalColorRow extends StatelessWidget {
           spacing: 8,
           children: [
             for (final color in colors)
-              InkWell(
+              _TerminalColorOption(
+                color: color,
+                selected: selected == color,
                 onTap: () => onSelected(color),
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: theme.colorScheme.outlineVariant),
-                  ),
-                  child: selected == color
-                      ? Icon(
-                          Ionicons.checkmark,
-                          size: 18,
-                          color: _checkColor(color),
-                        )
-                      : null,
-                ),
               ),
+            _TerminalColorOption(
+              color: selected,
+              selected: !colors.contains(selected),
+              icon: Ionicons.color_palette_outline,
+              onTap: () async {
+                final color = await showDialog<Color>(
+                  context: context,
+                  builder: (context) =>
+                      TerminalColorPickerDialog(initialColor: selected),
+                );
+                if (color != null) onSelected(color);
+              },
+            ),
           ],
         ),
       ],
+    );
+  }
+}
+
+class _TerminalColorOption extends StatelessWidget {
+  final Color color;
+  final bool selected;
+  final IconData? icon;
+  final VoidCallback onTap;
+
+  const _TerminalColorOption({
+    required this.color,
+    required this.selected,
+    required this.onTap,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: theme.colorScheme.outlineVariant),
+        ),
+        child: icon != null
+            ? Icon(icon, size: 17, color: _checkColor(color))
+            : selected
+            ? Icon(Ionicons.checkmark, size: 18, color: _checkColor(color))
+            : null,
+      ),
     );
   }
 

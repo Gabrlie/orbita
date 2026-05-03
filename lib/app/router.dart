@@ -10,6 +10,8 @@ import '../pages/home/home_search_page.dart';
 import '../pages/server/server_detail_page.dart';
 import '../pages/server/server_form_page.dart';
 import '../pages/server/logs/server_log_page.dart';
+import '../pages/server/files/files_page.dart';
+import '../pages/server/files/files_server_picker_page.dart';
 import '../pages/settings/settings_page.dart';
 import '../pages/settings/server_list_page.dart';
 import '../pages/settings/appearance/appearance_page.dart';
@@ -73,10 +75,14 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/files',
-              builder: (context, state) => _PlaceholderPage(
-                icon: Ionicons.folder,
-                title: AppLocalizations.of(context)!.navFiles,
-              ),
+              builder: (context, state) => const FilesServerPickerPage(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) =>
+                      FilesPage(serverId: state.pathParameters['id']!),
+                ),
+              ],
             ),
           ],
         ),
@@ -103,10 +109,8 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/docker',
-              builder: (context, state) => _PlaceholderPage(
-                icon: Ionicons.cube,
-                title: AppLocalizations.of(context)!.navDocker,
-              ),
+              builder: (context, state) =>
+                  const _PlaceholderPage(icon: Ionicons.cube),
             ),
           ],
         ),
@@ -177,14 +181,13 @@ final router = GoRouter(
 
 class _PlaceholderPage extends StatelessWidget {
   final IconData icon;
-  final String title;
-  const _PlaceholderPage({required this.icon, required this.title});
+  const _PlaceholderPage({required this.icon});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(),
       body: EmptyState(
         icon: icon,
         title: l10n.noServersTitle,

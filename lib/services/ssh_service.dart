@@ -5,6 +5,8 @@ import 'package:dartssh2/dartssh2.dart';
 import 'package:orbita/models/ssh_key.dart';
 
 abstract interface class SshClientSession {
+  Future<SftpClient> openSftp();
+
   Future<SshShellSession> openShell({
     required int columns,
     required int rows,
@@ -13,6 +15,11 @@ abstract interface class SshClientSession {
   });
 
   Future<String> execute(String command);
+
+  Future<String> executeStreaming(
+    String command, {
+    required void Function(String chunk) onOutput,
+  });
 
   Future<void> get done;
 
@@ -89,6 +96,14 @@ class SshService implements SshClientSession {
   }
 
   @override
+  Future<SftpClient> openSftp() async {
+    if (isClosed) {
+      throw StateError('SSH client not connected');
+    }
+    return _client.sftp();
+  }
+
+  @override
   Future<String> execute(String command) async {
     if (isClosed) {
       throw StateError('SSH client not connected');
@@ -97,6 +112,36 @@ class SshService implements SshClientSession {
     final stdout = await utf8.decodeStream(session.stdout);
     session.close();
     return stdout;
+  }
+
+  @override
+  Future<String> executeStreaming(
+    String command, {
+    required void Function(String chunk) onOutput,
+  }) async {
+    if (isClosed) {
+      throw StateError('SSH client not connected');
+    }
+    final session = await _client.execute(command);
+    final output = StringBuffer();
+    final stdout = session.stdout.listen((bytes) {
+      final chunk = utf8.decode(bytes, allowMalformed: true);
+      output.write(chunk);
+      onOutput(chunk);
+    });
+    final stderr = session.stderr.listen((bytes) {
+      final chunk = utf8.decode(bytes, allowMalformed: true);
+      output.write(chunk);
+      onOutput(chunk);
+    });
+    try {
+      await session.done;
+      return output.toString();
+    } finally {
+      await stdout.cancel();
+      await stderr.cancel();
+      session.close();
+    }
   }
 
   @override

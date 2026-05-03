@@ -152,6 +152,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importKey => '导入密钥';
 
   @override
+  String get keyImportLocal => '导入本地密钥';
+
+  @override
+  String get keyImportLocalNone => '没有发现可导入的本地密钥';
+
+  @override
+  String keyImportLocalResult(int count) {
+    return '已导入 $count 个本地密钥';
+  }
+
+  @override
   String get generateKey => '生成密钥';
 
   @override
@@ -429,6 +440,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminalBackgroundColor => '背景颜色';
 
   @override
+  String get terminalColorPicker => '选择颜色';
+
+  @override
   String get terminalDashboard => '指标仪表盘';
 
   @override
@@ -531,6 +545,245 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeLayoutOptions => '调整布局';
+
+  @override
+  String get fileServerMissing => '服务器不存在';
+
+  @override
+  String get fileServerMissingSubtitle => '返回文件列表后重新选择一台服务器。';
+
+  @override
+  String get fileLoadingDirectory => '正在加载目录...';
+
+  @override
+  String get fileLoadingFile => '正在加载文件...';
+
+  @override
+  String get fileLoadFailed => '文件加载失败';
+
+  @override
+  String get fileEmptyDirectory => '当前目录为空';
+
+  @override
+  String get fileNewFile => '新建文件';
+
+  @override
+  String get fileNewFolder => '新建文件夹';
+
+  @override
+  String get fileName => '名称';
+
+  @override
+  String get fileGoRoot => '回到根目录';
+
+  @override
+  String get fileEdit => '编辑';
+
+  @override
+  String get fileRename => '重命名';
+
+  @override
+  String get fileDeleteTitle => '确认删除';
+
+  @override
+  String get fileDeleteFailed => '删除失败，请检查目录权限后重试。';
+
+  @override
+  String fileDeleteFileContent(String name) {
+    return '确定删除「$name」吗？此操作不可撤销。';
+  }
+
+  @override
+  String fileDeleteDirectoryContent(String name) {
+    return '确定删除文件夹「$name」及其中的所有内容吗？此操作不可撤销。';
+  }
+
+  @override
+  String get fileOpenUnsupportedTitle => '暂不支持打开';
+
+  @override
+  String get fileOpenUnsupportedContent =>
+      '当前版本优先支持文本文件编辑和压缩包预览，图片和二进制文件预览会在后续版本完善。';
+
+  @override
+  String get fileTooLarge => '文件超过 1 MB，暂不支持在应用内编辑。';
+
+  @override
+  String get fileBinaryUnsupported => '检测到二进制内容，暂不支持在应用内编辑。';
+
+  @override
+  String get fileInvalidTarget => '不能操作根目录或父目录占位项。';
+
+  @override
+  String get fileInvalidName => '名称不能为空，且不能包含 /、. 或 ..。';
+
+  @override
+  String get fileSaveSuccess => '已保存';
+
+  @override
+  String get fileSaveFailed => '保存失败';
+
+  @override
+  String get fileDiscardTitle => '放弃修改';
+
+  @override
+  String get fileDiscardContent => '当前文件还有未保存的修改，确定直接返回吗？';
+
+  @override
+  String get fileDiscardConfirm => '放弃';
+
+  @override
+  String get fileCopy => '复制';
+
+  @override
+  String get fileMove => '移动';
+
+  @override
+  String get filePaste => '粘贴';
+
+  @override
+  String get fileTools => '工具';
+
+  @override
+  String get fileProperties => '属性';
+
+  @override
+  String get fileCompress => '压缩';
+
+  @override
+  String get fileExtract => '解压';
+
+  @override
+  String get fileDownload => '下载';
+
+  @override
+  String get fileDownloadCenter => '下载中心';
+
+  @override
+  String get fileNoDownloads => '暂无下载记录';
+
+  @override
+  String fileCopyPending(String name) {
+    return '复制：$name';
+  }
+
+  @override
+  String fileMovePending(String name) {
+    return '移动：$name';
+  }
+
+  @override
+  String get fileOverwriteTitle => '覆盖已有项目';
+
+  @override
+  String fileOverwriteContent(String name) {
+    return '当前目录已存在「$name」，是否覆盖？';
+  }
+
+  @override
+  String get fileOverwrite => '覆盖';
+
+  @override
+  String get fileKeepBoth => '保留两者';
+
+  @override
+  String get fileArchiveFormat => '压缩格式';
+
+  @override
+  String get fileUsePassword => '使用密码';
+
+  @override
+  String get filePasswordWarning => '密码会交给远程系统工具处理，请确认服务器可信。';
+
+  @override
+  String get fileMissingToolsTitle => '缺少远程工具';
+
+  @override
+  String fileMissingToolsContent(String tools) {
+    return '服务器缺少以下工具：$tools。是否自动安装？';
+  }
+
+  @override
+  String get fileInstallTools => '安装工具';
+
+  @override
+  String fileInstallingTools(String tools) {
+    return '正在安装：$tools';
+  }
+
+  @override
+  String get fileInstallWaiting => '等待远程服务器输出...';
+
+  @override
+  String get fileInstallSucceeded => '安装完成';
+
+  @override
+  String get fileInstallFailed => '安装失败';
+
+  @override
+  String get fileCommandFailed => '远程命令执行失败';
+
+  @override
+  String get fileArchivePreview => '压缩包预览';
+
+  @override
+  String get fileArchivePreviewEmpty => '压缩包为空';
+
+  @override
+  String get fileArchivePreviewFailed => '压缩包预览失败';
+
+  @override
+  String get fileDownloadAdded => '已添加到下载中心';
+
+  @override
+  String get fileDownloadDirectoryUnsupported => '当前版本暂不支持直接下载文件夹，请先压缩后下载。';
+
+  @override
+  String get fileDownloadQueued => '等待中';
+
+  @override
+  String get fileDownloading => '下载中';
+
+  @override
+  String get fileDownloadPaused => '已暂停';
+
+  @override
+  String get fileDownloadCompleted => '已完成';
+
+  @override
+  String get fileDownloadFailed => '下载失败';
+
+  @override
+  String get fileDownloadCanceled => '已取消';
+
+  @override
+  String get filePause => '暂停';
+
+  @override
+  String get fileResume => '继续';
+
+  @override
+  String get fileDeleteLocalTitle => '删除本地文件';
+
+  @override
+  String fileDeleteLocalContent(String name) {
+    return '确定删除本地文件「$name」吗？此操作不可撤销。';
+  }
+
+  @override
+  String get filePath => '路径';
+
+  @override
+  String get fileType => '类型';
+
+  @override
+  String get fileSize => '大小';
+
+  @override
+  String get fileMode => '权限';
+
+  @override
+  String get fileModified => '修改时间';
 
   @override
   String get settingsServers => '服务器列表';

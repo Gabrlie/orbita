@@ -152,6 +152,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importKey => 'Import Key';
 
   @override
+  String get keyImportLocal => 'Import Local Keys';
+
+  @override
+  String get keyImportLocalNone => 'No local keys found to import';
+
+  @override
+  String keyImportLocalResult(int count) {
+    return 'Imported $count local keys';
+  }
+
+  @override
   String get generateKey => 'Generate Key';
 
   @override
@@ -430,6 +441,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminalBackgroundColor => 'Background Color';
 
   @override
+  String get terminalColorPicker => 'Choose Color';
+
+  @override
   String get terminalDashboard => 'Metrics Dashboard';
 
   @override
@@ -533,6 +547,254 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeLayoutOptions => 'Layout Options';
+
+  @override
+  String get fileServerMissing => 'Server not found';
+
+  @override
+  String get fileServerMissingSubtitle =>
+      'Return to the files list and choose another server.';
+
+  @override
+  String get fileLoadingDirectory => 'Loading directory...';
+
+  @override
+  String get fileLoadingFile => 'Loading file...';
+
+  @override
+  String get fileLoadFailed => 'File load failed';
+
+  @override
+  String get fileEmptyDirectory => 'This directory is empty';
+
+  @override
+  String get fileNewFile => 'New File';
+
+  @override
+  String get fileNewFolder => 'New Folder';
+
+  @override
+  String get fileName => 'Name';
+
+  @override
+  String get fileGoRoot => 'Go to Root';
+
+  @override
+  String get fileEdit => 'Edit';
+
+  @override
+  String get fileRename => 'Rename';
+
+  @override
+  String get fileDeleteTitle => 'Confirm Delete';
+
+  @override
+  String get fileDeleteFailed =>
+      'Delete failed. Check directory permissions and try again.';
+
+  @override
+  String fileDeleteFileContent(String name) {
+    return 'Delete \"$name\"? This cannot be undone.';
+  }
+
+  @override
+  String fileDeleteDirectoryContent(String name) {
+    return 'Delete folder \"$name\" and all of its contents? This cannot be undone.';
+  }
+
+  @override
+  String get fileOpenUnsupportedTitle => 'Cannot Open Yet';
+
+  @override
+  String get fileOpenUnsupportedContent =>
+      'This version focuses on text editing and archive previews. Image and binary previews will be added later.';
+
+  @override
+  String get fileTooLarge =>
+      'Files larger than 1 MB cannot be edited in the app yet.';
+
+  @override
+  String get fileBinaryUnsupported =>
+      'Binary content was detected and cannot be edited in the app yet.';
+
+  @override
+  String get fileInvalidTarget =>
+      'Cannot operate on the root directory or parent placeholder.';
+
+  @override
+  String get fileInvalidName =>
+      'The name cannot be empty or contain /, ., or ..';
+
+  @override
+  String get fileSaveSuccess => 'Saved';
+
+  @override
+  String get fileSaveFailed => 'Save failed';
+
+  @override
+  String get fileDiscardTitle => 'Discard Changes';
+
+  @override
+  String get fileDiscardContent =>
+      'This file has unsaved changes. Leave without saving?';
+
+  @override
+  String get fileDiscardConfirm => 'Discard';
+
+  @override
+  String get fileCopy => 'Copy';
+
+  @override
+  String get fileMove => 'Move';
+
+  @override
+  String get filePaste => 'Paste';
+
+  @override
+  String get fileTools => 'Tools';
+
+  @override
+  String get fileProperties => 'Properties';
+
+  @override
+  String get fileCompress => 'Compress';
+
+  @override
+  String get fileExtract => 'Extract';
+
+  @override
+  String get fileDownload => 'Download';
+
+  @override
+  String get fileDownloadCenter => 'Download Center';
+
+  @override
+  String get fileNoDownloads => 'No downloads yet';
+
+  @override
+  String fileCopyPending(String name) {
+    return 'Copy: $name';
+  }
+
+  @override
+  String fileMovePending(String name) {
+    return 'Move: $name';
+  }
+
+  @override
+  String get fileOverwriteTitle => 'Overwrite Existing Item';
+
+  @override
+  String fileOverwriteContent(String name) {
+    return '\"$name\" already exists in this directory. Overwrite it?';
+  }
+
+  @override
+  String get fileOverwrite => 'Overwrite';
+
+  @override
+  String get fileKeepBoth => 'Keep Both';
+
+  @override
+  String get fileArchiveFormat => 'Archive Format';
+
+  @override
+  String get fileUsePassword => 'Use Password';
+
+  @override
+  String get filePasswordWarning =>
+      'The password is passed to the remote system tool. Only continue on trusted servers.';
+
+  @override
+  String get fileMissingToolsTitle => 'Missing Remote Tools';
+
+  @override
+  String fileMissingToolsContent(String tools) {
+    return 'This server is missing: $tools. Install automatically?';
+  }
+
+  @override
+  String get fileInstallTools => 'Install Tools';
+
+  @override
+  String fileInstallingTools(String tools) {
+    return 'Installing: $tools';
+  }
+
+  @override
+  String get fileInstallWaiting => 'Waiting for remote output...';
+
+  @override
+  String get fileInstallSucceeded => 'Installation completed';
+
+  @override
+  String get fileInstallFailed => 'Installation failed';
+
+  @override
+  String get fileCommandFailed => 'Remote command failed';
+
+  @override
+  String get fileArchivePreview => 'Archive Preview';
+
+  @override
+  String get fileArchivePreviewEmpty => 'Archive is empty';
+
+  @override
+  String get fileArchivePreviewFailed => 'Archive preview failed';
+
+  @override
+  String get fileDownloadAdded => 'Added to Download Center';
+
+  @override
+  String get fileDownloadDirectoryUnsupported =>
+      'Folder download is not supported yet. Compress it first, then download.';
+
+  @override
+  String get fileDownloadQueued => 'Queued';
+
+  @override
+  String get fileDownloading => 'Downloading';
+
+  @override
+  String get fileDownloadPaused => 'Paused';
+
+  @override
+  String get fileDownloadCompleted => 'Completed';
+
+  @override
+  String get fileDownloadFailed => 'Download failed';
+
+  @override
+  String get fileDownloadCanceled => 'Canceled';
+
+  @override
+  String get filePause => 'Pause';
+
+  @override
+  String get fileResume => 'Resume';
+
+  @override
+  String get fileDeleteLocalTitle => 'Delete Local File';
+
+  @override
+  String fileDeleteLocalContent(String name) {
+    return 'Delete local file \"$name\"? This cannot be undone.';
+  }
+
+  @override
+  String get filePath => 'Path';
+
+  @override
+  String get fileType => 'Type';
+
+  @override
+  String get fileSize => 'Size';
+
+  @override
+  String get fileMode => 'Mode';
+
+  @override
+  String get fileModified => 'Modified';
 
   @override
   String get settingsServers => 'Server List';

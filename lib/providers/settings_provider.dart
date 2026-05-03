@@ -171,7 +171,9 @@ class TerminalAppearanceNotifier extends Notifier<TerminalAppearance> {
       customFontFamily:
           prefs.getString(_keyTerminalCustomFontFamily) ??
           _default.customFontFamily,
-      fontSize: prefs.getDouble(_keyTerminalFontSize) ?? _default.fontSize,
+      fontSize: (prefs.getDouble(_keyTerminalFontSize) ?? _default.fontSize)
+          .clamp(8, 24)
+          .toDouble(),
       foregroundColor: Color(
         prefs.getInt(_keyTerminalForegroundColor) ??
             _default.foregroundColor.toARGB32(),

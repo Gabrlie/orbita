@@ -57,6 +57,14 @@
   "addKey": "添加密钥",
   "editKey": "编辑密钥",
   "importKey": "导入密钥",
+  "keyImportLocal": "导入本地密钥",
+  "keyImportLocalNone": "没有发现可导入的本地密钥",
+  "keyImportLocalResult": "已导入 {count} 个本地密钥",
+  "@keyImportLocalResult": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "generateKey": "生成密钥",
   "keyName": "密钥名称",
   "keyType": "密钥类型",
@@ -163,6 +171,7 @@
   "terminalFontSize": "字体大小",
   "terminalForegroundColor": "字体颜色",
   "terminalBackgroundColor": "背景颜色",
+  "terminalColorPicker": "选择颜色",
   "terminalDashboard": "指标仪表盘",
   "terminalConnectOptions": "终端连接",
   "terminalConnectTmux": "复用 tmux 会话",
@@ -204,6 +213,121 @@
   "serverSearchNoResultsSubtitle": "换个关键词试试",
   "homeMoreActions": "更多操作",
   "homeLayoutOptions": "调整布局",
+
+  "fileServerMissing": "服务器不存在",
+  "fileServerMissingSubtitle": "返回文件列表后重新选择一台服务器。",
+  "fileLoadingDirectory": "正在加载目录...",
+  "fileLoadingFile": "正在加载文件...",
+  "fileLoadFailed": "文件加载失败",
+  "fileEmptyDirectory": "当前目录为空",
+  "fileNewFile": "新建文件",
+  "fileNewFolder": "新建文件夹",
+  "fileName": "名称",
+  "fileGoRoot": "回到根目录",
+  "fileEdit": "编辑",
+  "fileRename": "重命名",
+  "fileDeleteTitle": "确认删除",
+  "fileDeleteFailed": "删除失败，请检查目录权限后重试。",
+  "fileDeleteFileContent": "确定删除「{name}」吗？此操作不可撤销。",
+  "@fileDeleteFileContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileDeleteDirectoryContent": "确定删除文件夹「{name}」及其中的所有内容吗？此操作不可撤销。",
+  "@fileDeleteDirectoryContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileOpenUnsupportedTitle": "暂不支持打开",
+  "fileOpenUnsupportedContent": "当前版本优先支持文本文件编辑和压缩包预览，图片和二进制文件预览会在后续版本完善。",
+  "fileTooLarge": "文件超过 1 MB，暂不支持在应用内编辑。",
+  "fileBinaryUnsupported": "检测到二进制内容，暂不支持在应用内编辑。",
+  "fileInvalidTarget": "不能操作根目录或父目录占位项。",
+  "fileInvalidName": "名称不能为空，且不能包含 /、. 或 ..。",
+  "fileSaveSuccess": "已保存",
+  "fileSaveFailed": "保存失败",
+  "fileDiscardTitle": "放弃修改",
+  "fileDiscardContent": "当前文件还有未保存的修改，确定直接返回吗？",
+  "fileDiscardConfirm": "放弃",
+  "fileCopy": "复制",
+  "fileMove": "移动",
+  "filePaste": "粘贴",
+  "fileTools": "工具",
+  "fileProperties": "属性",
+  "fileCompress": "压缩",
+  "fileExtract": "解压",
+  "fileDownload": "下载",
+  "fileDownloadCenter": "下载中心",
+  "fileNoDownloads": "暂无下载记录",
+  "fileCopyPending": "复制：{name}",
+  "@fileCopyPending": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileMovePending": "移动：{name}",
+  "@fileMovePending": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileOverwriteTitle": "覆盖已有项目",
+  "fileOverwriteContent": "当前目录已存在「{name}」，是否覆盖？",
+  "@fileOverwriteContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileOverwrite": "覆盖",
+  "fileKeepBoth": "保留两者",
+  "fileArchiveFormat": "压缩格式",
+  "fileUsePassword": "使用密码",
+  "filePasswordWarning": "密码会交给远程系统工具处理，请确认服务器可信。",
+  "fileMissingToolsTitle": "缺少远程工具",
+  "fileMissingToolsContent": "服务器缺少以下工具：{tools}。是否自动安装？",
+  "@fileMissingToolsContent": {
+    "placeholders": {
+      "tools": { "type": "String" }
+    }
+  },
+  "fileInstallTools": "安装工具",
+  "fileInstallingTools": "正在安装：{tools}",
+  "@fileInstallingTools": {
+    "placeholders": {
+      "tools": { "type": "String" }
+    }
+  },
+  "fileInstallWaiting": "等待远程服务器输出...",
+  "fileInstallSucceeded": "安装完成",
+  "fileInstallFailed": "安装失败",
+  "fileCommandFailed": "远程命令执行失败",
+  "fileArchivePreview": "压缩包预览",
+  "fileArchivePreviewEmpty": "压缩包为空",
+  "fileArchivePreviewFailed": "压缩包预览失败",
+  "fileDownloadAdded": "已添加到下载中心",
+  "fileDownloadDirectoryUnsupported": "当前版本暂不支持直接下载文件夹，请先压缩后下载。",
+  "fileDownloadQueued": "等待中",
+  "fileDownloading": "下载中",
+  "fileDownloadPaused": "已暂停",
+  "fileDownloadCompleted": "已完成",
+  "fileDownloadFailed": "下载失败",
+  "fileDownloadCanceled": "已取消",
+  "filePause": "暂停",
+  "fileResume": "继续",
+  "fileDeleteLocalTitle": "删除本地文件",
+  "fileDeleteLocalContent": "确定删除本地文件「{name}」吗？此操作不可撤销。",
+  "@fileDeleteLocalContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "filePath": "路径",
+  "fileType": "类型",
+  "fileSize": "大小",
+  "fileMode": "权限",
+  "fileModified": "修改时间",
 
   "settingsServers": "服务器列表",
   "settingsServersDesc": "添加、编辑和管理服务器",

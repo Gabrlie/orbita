@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 
-class ResponsiveScaffold extends StatelessWidget {
+class ResponsiveScaffold extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
   final bool hideNavigation;
 
@@ -13,10 +13,17 @@ class ResponsiveScaffold extends StatelessWidget {
     this.hideNavigation = false,
   });
 
+  @override
+  State<ResponsiveScaffold> createState() => _ResponsiveScaffoldState();
+}
+
+class _ResponsiveScaffoldState extends State<ResponsiveScaffold> {
+  var _railExpanded = true;
+
   void _onNavigate(int index) {
-    navigationShell.goBranch(
+    widget.navigationShell.goBranch(
       index,
-      initialLocation: index == navigationShell.currentIndex,
+      initialLocation: index == widget.navigationShell.currentIndex,
     );
   }
 
@@ -47,13 +54,13 @@ class ResponsiveScaffold extends StatelessWidget {
       _Dest(Ionicons.settings_outline, Ionicons.settings, l10n.navSettings),
     ];
 
-    if (hideNavigation) {
-      return Scaffold(body: navigationShell);
+    if (widget.hideNavigation) {
+      return Scaffold(body: widget.navigationShell);
     }
 
     if (width < 600) {
       return Scaffold(
-        body: navigationShell,
+        body: widget.navigationShell,
         bottomNavigationBar: DecoratedBox(
           decoration: BoxDecoration(
             color: colorScheme.surface,
@@ -66,7 +73,7 @@ class ResponsiveScaffold extends StatelessWidget {
             ],
           ),
           child: NavigationBar(
-            selectedIndex: navigationShell.currentIndex,
+            selectedIndex: widget.navigationShell.currentIndex,
             onDestinationSelected: _onNavigate,
             height: 62,
             elevation: 0,
@@ -92,112 +99,89 @@ class ResponsiveScaffold extends StatelessWidget {
       );
     }
 
-    if (width < 840) {
-      return Scaffold(
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: navigationShell.currentIndex,
-              onDestinationSelected: _onNavigate,
-              labelType: NavigationRailLabelType.none,
-              useIndicator: false,
-              selectedIconTheme: IconThemeData(color: selectedColor),
-              unselectedIconTheme: IconThemeData(color: unselectedColor),
-              destinations: [
-                for (final d in destinations)
-                  NavigationRailDestination(
-                    icon: Icon(d.icon),
-                    selectedIcon: Icon(d.selectedIcon),
-                    label: Text(d.label),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 8),
-            Expanded(child: navigationShell),
-          ],
-        ),
-      );
-    }
-
-    if (width < 1200) {
-      return Scaffold(
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: navigationShell.currentIndex,
-              onDestinationSelected: _onNavigate,
-              labelType: NavigationRailLabelType.all,
-              useIndicator: false,
-              selectedIconTheme: IconThemeData(color: selectedColor),
-              unselectedIconTheme: IconThemeData(color: unselectedColor),
-              selectedLabelTextStyle: TextStyle(
-                color: selectedColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelTextStyle: TextStyle(
-                color: unselectedColor,
-                fontSize: 12,
-              ),
-              destinations: [
-                for (final d in destinations)
-                  NavigationRailDestination(
-                    icon: Icon(d.icon),
-                    selectedIcon: Icon(d.selectedIcon),
-                    label: Text(d.label),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 8),
-            Expanded(child: navigationShell),
-          ],
-        ),
-      );
-    }
-
-    // Desktop
+    final expanded = width >= 840 && _railExpanded;
     return Scaffold(
-      body: Row(
-        children: [
-          NavigationDrawerTheme(
-            data: NavigationDrawerThemeData(
-              indicatorColor: Colors.transparent,
-              iconTheme: WidgetStateProperty.resolveWith(
-                (states) => IconThemeData(
-                  color: states.contains(WidgetState.selected)
-                      ? selectedColor
-                      : unselectedColor,
-                ),
+      body: _RailLayout(
+        expanded: expanded,
+        currentIndex: widget.navigationShell.currentIndex,
+        destinations: destinations,
+        selectedColor: selectedColor,
+        unselectedColor: unselectedColor,
+        onNavigate: _onNavigate,
+        onToggle: () => setState(() => _railExpanded = !_railExpanded),
+        child: widget.navigationShell,
+      ),
+    );
+  }
+}
+
+class _RailLayout extends StatelessWidget {
+  final bool expanded;
+  final int currentIndex;
+  final List<_Dest> destinations;
+  final Color selectedColor;
+  final Color unselectedColor;
+  final ValueChanged<int> onNavigate;
+  final VoidCallback onToggle;
+  final Widget child;
+
+  const _RailLayout({
+    required this.expanded,
+    required this.currentIndex,
+    required this.destinations,
+    required this.selectedColor,
+    required this.unselectedColor,
+    required this.onNavigate,
+    required this.onToggle,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        NavigationRail(
+          selectedIndex: currentIndex,
+          onDestinationSelected: onNavigate,
+          extended: expanded,
+          minWidth: 58,
+          minExtendedWidth: 156,
+          labelType: NavigationRailLabelType.none,
+          useIndicator: false,
+          selectedIconTheme: IconThemeData(color: selectedColor, size: 22),
+          unselectedIconTheme: IconThemeData(color: unselectedColor, size: 22),
+          selectedLabelTextStyle: TextStyle(
+            color: selectedColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelTextStyle: TextStyle(
+            color: unselectedColor,
+            fontSize: 12,
+          ),
+          leading: Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 12),
+            child: IconButton(
+              icon: Icon(
+                expanded
+                    ? Ionicons.chevron_back_outline
+                    : Ionicons.chevron_forward_outline,
               ),
-              labelTextStyle: navLabelStyle,
-            ),
-            child: NavigationDrawer(
-              selectedIndex: navigationShell.currentIndex,
-              onDestinationSelected: _onNavigate,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 24, 16, 24),
-                  child: Text(
-                    l10n.appName,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: selectedColor,
-                    ),
-                  ),
-                ),
-                for (final d in destinations)
-                  NavigationDrawerDestination(
-                    icon: Icon(d.icon),
-                    selectedIcon: Icon(d.selectedIcon),
-                    label: Text(d.label),
-                  ),
-              ],
+              onPressed: onToggle,
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(child: navigationShell),
-        ],
-      ),
+          destinations: [
+            for (final d in destinations)
+              NavigationRailDestination(
+                icon: Icon(d.icon),
+                selectedIcon: Icon(d.selectedIcon),
+                label: Text(d.label),
+              ),
+          ],
+        ),
+        const SizedBox(width: 4),
+        Expanded(child: child),
+      ],
     );
   }
 }

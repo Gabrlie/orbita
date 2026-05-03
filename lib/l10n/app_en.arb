@@ -57,6 +57,14 @@
   "addKey": "Add Key",
   "editKey": "Edit Key",
   "importKey": "Import Key",
+  "keyImportLocal": "Import Local Keys",
+  "keyImportLocalNone": "No local keys found to import",
+  "keyImportLocalResult": "Imported {count} local keys",
+  "@keyImportLocalResult": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "generateKey": "Generate Key",
   "keyName": "Key Name",
   "keyType": "Key Type",
@@ -163,6 +171,7 @@
   "terminalFontSize": "Font Size",
   "terminalForegroundColor": "Text Color",
   "terminalBackgroundColor": "Background Color",
+  "terminalColorPicker": "Choose Color",
   "terminalDashboard": "Metrics Dashboard",
   "terminalConnectOptions": "Terminal Connection",
   "terminalConnectTmux": "Reuse tmux Session",
@@ -204,6 +213,121 @@
   "serverSearchNoResultsSubtitle": "Try another keyword",
   "homeMoreActions": "More actions",
   "homeLayoutOptions": "Layout Options",
+
+  "fileServerMissing": "Server not found",
+  "fileServerMissingSubtitle": "Return to the files list and choose another server.",
+  "fileLoadingDirectory": "Loading directory...",
+  "fileLoadingFile": "Loading file...",
+  "fileLoadFailed": "File load failed",
+  "fileEmptyDirectory": "This directory is empty",
+  "fileNewFile": "New File",
+  "fileNewFolder": "New Folder",
+  "fileName": "Name",
+  "fileGoRoot": "Go to Root",
+  "fileEdit": "Edit",
+  "fileRename": "Rename",
+  "fileDeleteTitle": "Confirm Delete",
+  "fileDeleteFailed": "Delete failed. Check directory permissions and try again.",
+  "fileDeleteFileContent": "Delete \"{name}\"? This cannot be undone.",
+  "@fileDeleteFileContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileDeleteDirectoryContent": "Delete folder \"{name}\" and all of its contents? This cannot be undone.",
+  "@fileDeleteDirectoryContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileOpenUnsupportedTitle": "Cannot Open Yet",
+  "fileOpenUnsupportedContent": "This version focuses on text editing and archive previews. Image and binary previews will be added later.",
+  "fileTooLarge": "Files larger than 1 MB cannot be edited in the app yet.",
+  "fileBinaryUnsupported": "Binary content was detected and cannot be edited in the app yet.",
+  "fileInvalidTarget": "Cannot operate on the root directory or parent placeholder.",
+  "fileInvalidName": "The name cannot be empty or contain /, ., or ..",
+  "fileSaveSuccess": "Saved",
+  "fileSaveFailed": "Save failed",
+  "fileDiscardTitle": "Discard Changes",
+  "fileDiscardContent": "This file has unsaved changes. Leave without saving?",
+  "fileDiscardConfirm": "Discard",
+  "fileCopy": "Copy",
+  "fileMove": "Move",
+  "filePaste": "Paste",
+  "fileTools": "Tools",
+  "fileProperties": "Properties",
+  "fileCompress": "Compress",
+  "fileExtract": "Extract",
+  "fileDownload": "Download",
+  "fileDownloadCenter": "Download Center",
+  "fileNoDownloads": "No downloads yet",
+  "fileCopyPending": "Copy: {name}",
+  "@fileCopyPending": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileMovePending": "Move: {name}",
+  "@fileMovePending": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileOverwriteTitle": "Overwrite Existing Item",
+  "fileOverwriteContent": "\"{name}\" already exists in this directory. Overwrite it?",
+  "@fileOverwriteContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fileOverwrite": "Overwrite",
+  "fileKeepBoth": "Keep Both",
+  "fileArchiveFormat": "Archive Format",
+  "fileUsePassword": "Use Password",
+  "filePasswordWarning": "The password is passed to the remote system tool. Only continue on trusted servers.",
+  "fileMissingToolsTitle": "Missing Remote Tools",
+  "fileMissingToolsContent": "This server is missing: {tools}. Install automatically?",
+  "@fileMissingToolsContent": {
+    "placeholders": {
+      "tools": { "type": "String" }
+    }
+  },
+  "fileInstallTools": "Install Tools",
+  "fileInstallingTools": "Installing: {tools}",
+  "@fileInstallingTools": {
+    "placeholders": {
+      "tools": { "type": "String" }
+    }
+  },
+  "fileInstallWaiting": "Waiting for remote output...",
+  "fileInstallSucceeded": "Installation completed",
+  "fileInstallFailed": "Installation failed",
+  "fileCommandFailed": "Remote command failed",
+  "fileArchivePreview": "Archive Preview",
+  "fileArchivePreviewEmpty": "Archive is empty",
+  "fileArchivePreviewFailed": "Archive preview failed",
+  "fileDownloadAdded": "Added to Download Center",
+  "fileDownloadDirectoryUnsupported": "Folder download is not supported yet. Compress it first, then download.",
+  "fileDownloadQueued": "Queued",
+  "fileDownloading": "Downloading",
+  "fileDownloadPaused": "Paused",
+  "fileDownloadCompleted": "Completed",
+  "fileDownloadFailed": "Download failed",
+  "fileDownloadCanceled": "Canceled",
+  "filePause": "Pause",
+  "fileResume": "Resume",
+  "fileDeleteLocalTitle": "Delete Local File",
+  "fileDeleteLocalContent": "Delete local file \"{name}\"? This cannot be undone.",
+  "@fileDeleteLocalContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "filePath": "Path",
+  "fileType": "Type",
+  "fileSize": "Size",
+  "fileMode": "Mode",
+  "fileModified": "Modified",
 
   "settingsServers": "Server List",
   "settingsServersDesc": "Add, edit, and manage servers",

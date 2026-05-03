@@ -380,6 +380,24 @@ abstract class AppLocalizations {
   /// **'导入密钥'**
   String get importKey;
 
+  /// No description provided for @keyImportLocal.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入本地密钥'**
+  String get keyImportLocal;
+
+  /// No description provided for @keyImportLocalNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有发现可导入的本地密钥'**
+  String get keyImportLocalNone;
+
+  /// No description provided for @keyImportLocalResult.
+  ///
+  /// In zh, this message translates to:
+  /// **'已导入 {count} 个本地密钥'**
+  String keyImportLocalResult(int count);
+
   /// No description provided for @generateKey.
   ///
   /// In zh, this message translates to:
@@ -926,6 +944,12 @@ abstract class AppLocalizations {
   /// **'背景颜色'**
   String get terminalBackgroundColor;
 
+  /// No description provided for @terminalColorPicker.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择颜色'**
+  String get terminalColorPicker;
+
   /// No description provided for @terminalDashboard.
   ///
   /// In zh, this message translates to:
@@ -1129,6 +1153,450 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'调整布局'**
   String get homeLayoutOptions;
+
+  /// No description provided for @fileServerMissing.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器不存在'**
+  String get fileServerMissing;
+
+  /// No description provided for @fileServerMissingSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'返回文件列表后重新选择一台服务器。'**
+  String get fileServerMissingSubtitle;
+
+  /// No description provided for @fileLoadingDirectory.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在加载目录...'**
+  String get fileLoadingDirectory;
+
+  /// No description provided for @fileLoadingFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在加载文件...'**
+  String get fileLoadingFile;
+
+  /// No description provided for @fileLoadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'文件加载失败'**
+  String get fileLoadFailed;
+
+  /// No description provided for @fileEmptyDirectory.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前目录为空'**
+  String get fileEmptyDirectory;
+
+  /// No description provided for @fileNewFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'新建文件'**
+  String get fileNewFile;
+
+  /// No description provided for @fileNewFolder.
+  ///
+  /// In zh, this message translates to:
+  /// **'新建文件夹'**
+  String get fileNewFolder;
+
+  /// No description provided for @fileName.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称'**
+  String get fileName;
+
+  /// No description provided for @fileGoRoot.
+  ///
+  /// In zh, this message translates to:
+  /// **'回到根目录'**
+  String get fileGoRoot;
+
+  /// No description provided for @fileEdit.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑'**
+  String get fileEdit;
+
+  /// No description provided for @fileRename.
+  ///
+  /// In zh, this message translates to:
+  /// **'重命名'**
+  String get fileRename;
+
+  /// No description provided for @fileDeleteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认删除'**
+  String get fileDeleteTitle;
+
+  /// No description provided for @fileDeleteFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除失败，请检查目录权限后重试。'**
+  String get fileDeleteFailed;
+
+  /// No description provided for @fileDeleteFileContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除「{name}」吗？此操作不可撤销。'**
+  String fileDeleteFileContent(String name);
+
+  /// No description provided for @fileDeleteDirectoryContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除文件夹「{name}」及其中的所有内容吗？此操作不可撤销。'**
+  String fileDeleteDirectoryContent(String name);
+
+  /// No description provided for @fileOpenUnsupportedTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂不支持打开'**
+  String get fileOpenUnsupportedTitle;
+
+  /// No description provided for @fileOpenUnsupportedContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前版本优先支持文本文件编辑和压缩包预览，图片和二进制文件预览会在后续版本完善。'**
+  String get fileOpenUnsupportedContent;
+
+  /// No description provided for @fileTooLarge.
+  ///
+  /// In zh, this message translates to:
+  /// **'文件超过 1 MB，暂不支持在应用内编辑。'**
+  String get fileTooLarge;
+
+  /// No description provided for @fileBinaryUnsupported.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测到二进制内容，暂不支持在应用内编辑。'**
+  String get fileBinaryUnsupported;
+
+  /// No description provided for @fileInvalidTarget.
+  ///
+  /// In zh, this message translates to:
+  /// **'不能操作根目录或父目录占位项。'**
+  String get fileInvalidTarget;
+
+  /// No description provided for @fileInvalidName.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称不能为空，且不能包含 /、. 或 ..。'**
+  String get fileInvalidName;
+
+  /// No description provided for @fileSaveSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已保存'**
+  String get fileSaveSuccess;
+
+  /// No description provided for @fileSaveFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存失败'**
+  String get fileSaveFailed;
+
+  /// No description provided for @fileDiscardTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'放弃修改'**
+  String get fileDiscardTitle;
+
+  /// No description provided for @fileDiscardContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前文件还有未保存的修改，确定直接返回吗？'**
+  String get fileDiscardContent;
+
+  /// No description provided for @fileDiscardConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'放弃'**
+  String get fileDiscardConfirm;
+
+  /// No description provided for @fileCopy.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制'**
+  String get fileCopy;
+
+  /// No description provided for @fileMove.
+  ///
+  /// In zh, this message translates to:
+  /// **'移动'**
+  String get fileMove;
+
+  /// No description provided for @filePaste.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴'**
+  String get filePaste;
+
+  /// No description provided for @fileTools.
+  ///
+  /// In zh, this message translates to:
+  /// **'工具'**
+  String get fileTools;
+
+  /// No description provided for @fileProperties.
+  ///
+  /// In zh, this message translates to:
+  /// **'属性'**
+  String get fileProperties;
+
+  /// No description provided for @fileCompress.
+  ///
+  /// In zh, this message translates to:
+  /// **'压缩'**
+  String get fileCompress;
+
+  /// No description provided for @fileExtract.
+  ///
+  /// In zh, this message translates to:
+  /// **'解压'**
+  String get fileExtract;
+
+  /// No description provided for @fileDownload.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载'**
+  String get fileDownload;
+
+  /// No description provided for @fileDownloadCenter.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载中心'**
+  String get fileDownloadCenter;
+
+  /// No description provided for @fileNoDownloads.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无下载记录'**
+  String get fileNoDownloads;
+
+  /// No description provided for @fileCopyPending.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制：{name}'**
+  String fileCopyPending(String name);
+
+  /// No description provided for @fileMovePending.
+  ///
+  /// In zh, this message translates to:
+  /// **'移动：{name}'**
+  String fileMovePending(String name);
+
+  /// No description provided for @fileOverwriteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'覆盖已有项目'**
+  String get fileOverwriteTitle;
+
+  /// No description provided for @fileOverwriteContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前目录已存在「{name}」，是否覆盖？'**
+  String fileOverwriteContent(String name);
+
+  /// No description provided for @fileOverwrite.
+  ///
+  /// In zh, this message translates to:
+  /// **'覆盖'**
+  String get fileOverwrite;
+
+  /// No description provided for @fileKeepBoth.
+  ///
+  /// In zh, this message translates to:
+  /// **'保留两者'**
+  String get fileKeepBoth;
+
+  /// No description provided for @fileArchiveFormat.
+  ///
+  /// In zh, this message translates to:
+  /// **'压缩格式'**
+  String get fileArchiveFormat;
+
+  /// No description provided for @fileUsePassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用密码'**
+  String get fileUsePassword;
+
+  /// No description provided for @filePasswordWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码会交给远程系统工具处理，请确认服务器可信。'**
+  String get filePasswordWarning;
+
+  /// No description provided for @fileMissingToolsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'缺少远程工具'**
+  String get fileMissingToolsTitle;
+
+  /// No description provided for @fileMissingToolsContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器缺少以下工具：{tools}。是否自动安装？'**
+  String fileMissingToolsContent(String tools);
+
+  /// No description provided for @fileInstallTools.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装工具'**
+  String get fileInstallTools;
+
+  /// No description provided for @fileInstallingTools.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在安装：{tools}'**
+  String fileInstallingTools(String tools);
+
+  /// No description provided for @fileInstallWaiting.
+  ///
+  /// In zh, this message translates to:
+  /// **'等待远程服务器输出...'**
+  String get fileInstallWaiting;
+
+  /// No description provided for @fileInstallSucceeded.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装完成'**
+  String get fileInstallSucceeded;
+
+  /// No description provided for @fileInstallFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装失败'**
+  String get fileInstallFailed;
+
+  /// No description provided for @fileCommandFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'远程命令执行失败'**
+  String get fileCommandFailed;
+
+  /// No description provided for @fileArchivePreview.
+  ///
+  /// In zh, this message translates to:
+  /// **'压缩包预览'**
+  String get fileArchivePreview;
+
+  /// No description provided for @fileArchivePreviewEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'压缩包为空'**
+  String get fileArchivePreviewEmpty;
+
+  /// No description provided for @fileArchivePreviewFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'压缩包预览失败'**
+  String get fileArchivePreviewFailed;
+
+  /// No description provided for @fileDownloadAdded.
+  ///
+  /// In zh, this message translates to:
+  /// **'已添加到下载中心'**
+  String get fileDownloadAdded;
+
+  /// No description provided for @fileDownloadDirectoryUnsupported.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前版本暂不支持直接下载文件夹，请先压缩后下载。'**
+  String get fileDownloadDirectoryUnsupported;
+
+  /// No description provided for @fileDownloadQueued.
+  ///
+  /// In zh, this message translates to:
+  /// **'等待中'**
+  String get fileDownloadQueued;
+
+  /// No description provided for @fileDownloading.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载中'**
+  String get fileDownloading;
+
+  /// No description provided for @fileDownloadPaused.
+  ///
+  /// In zh, this message translates to:
+  /// **'已暂停'**
+  String get fileDownloadPaused;
+
+  /// No description provided for @fileDownloadCompleted.
+  ///
+  /// In zh, this message translates to:
+  /// **'已完成'**
+  String get fileDownloadCompleted;
+
+  /// No description provided for @fileDownloadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载失败'**
+  String get fileDownloadFailed;
+
+  /// No description provided for @fileDownloadCanceled.
+  ///
+  /// In zh, this message translates to:
+  /// **'已取消'**
+  String get fileDownloadCanceled;
+
+  /// No description provided for @filePause.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂停'**
+  String get filePause;
+
+  /// No description provided for @fileResume.
+  ///
+  /// In zh, this message translates to:
+  /// **'继续'**
+  String get fileResume;
+
+  /// No description provided for @fileDeleteLocalTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除本地文件'**
+  String get fileDeleteLocalTitle;
+
+  /// No description provided for @fileDeleteLocalContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除本地文件「{name}」吗？此操作不可撤销。'**
+  String fileDeleteLocalContent(String name);
+
+  /// No description provided for @filePath.
+  ///
+  /// In zh, this message translates to:
+  /// **'路径'**
+  String get filePath;
+
+  /// No description provided for @fileType.
+  ///
+  /// In zh, this message translates to:
+  /// **'类型'**
+  String get fileType;
+
+  /// No description provided for @fileSize.
+  ///
+  /// In zh, this message translates to:
+  /// **'大小'**
+  String get fileSize;
+
+  /// No description provided for @fileMode.
+  ///
+  /// In zh, this message translates to:
+  /// **'权限'**
+  String get fileMode;
+
+  /// No description provided for @fileModified.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改时间'**
+  String get fileModified;
 
   /// No description provided for @settingsServers.
   ///

@@ -45,6 +45,14 @@ class AppTheme {
     return ThemeData(
       colorScheme: colorScheme,
       useMaterial3: true,
+      fontFamilyFallback: const [
+        'Microsoft YaHei UI',
+        'Microsoft YaHei',
+        'PingFang SC',
+        'Noto Sans CJK SC',
+        'Segoe UI',
+        'Arial Unicode MS',
+      ],
       cardTheme: CardThemeData(
         elevation: 0,
         color: colorScheme.surface,

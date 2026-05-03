@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
+import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/pages/server/terminal/terminal_body.dart';
 import 'package:orbita/pages/server/terminal/terminal_dashboard.dart';
 import 'package:orbita/pages/server/terminal/terminal_extra_key_controller.dart';
@@ -14,12 +15,15 @@ import 'package:orbita/pages/server/terminal/terminal_platform.dart';
 import 'package:orbita/providers/key_provider.dart';
 import 'package:orbita/providers/server_monitor_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
+import 'package:orbita/providers/server_refresh_provider.dart';
 import 'package:orbita/providers/ssh_connection_provider.dart';
 import 'package:orbita/providers/ssh_log_provider.dart';
 import 'package:orbita/services/ssh_connection_manager.dart';
 import 'package:orbita/services/ssh_service.dart';
 import 'package:orbita/widgets/common.dart';
 import 'package:xterm/xterm.dart';
+
+part 'terminal_connection.dart';
 
 class TerminalPage extends ConsumerStatefulWidget {
   final String serverId;
@@ -101,19 +105,7 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
       }
 
       log.info('Opening terminal for ${server.host}:${server.port}');
-      _connectionLease = await ref
-          .read(sshConnectionManagerProvider)
-          .acquire(server, key: key);
-      final ssh = _connectionLease!.service;
-
-      if (widget.launchMode == TerminalLaunchMode.tmux) {
-        await _ensureTmuxAvailable(ssh, l10n);
-      }
-
-      _shell = await ssh.openShell(
-        columns: _terminal.viewWidth,
-        rows: _terminal.viewHeight,
-      );
+      _shell = await _openShellWithRetry(server, key, log, l10n);
 
       _terminal.buffer.clear();
       _terminal.buffer.setCursor(0, 0);
@@ -127,6 +119,9 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
       }
 
       log.info('Terminal shell opened');
+      ref
+          .read(serverRefreshControllerProvider.notifier)
+          .refreshServer(server.id);
 
       if (!mounted) return;
       setState(() => _connecting = false);
@@ -138,18 +133,6 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
       if (mounted) {
         setState(() => _connecting = false);
       }
-    }
-  }
-
-  Future<void> _ensureTmuxAvailable(
-    SshClientSession ssh,
-    AppLocalizations l10n,
-  ) async {
-    final output = await ssh.execute(
-      r'command -v tmux >/dev/null 2>&1 && printf available || printf missing',
-    );
-    if (output.trim() != 'available') {
-      throw StateError(l10n.terminalTmuxUnavailable);
     }
   }
 

@@ -29,28 +29,44 @@ class ThemeColorPicker extends StatelessWidget {
             brightness: theme.brightness,
           );
 
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: [
+    final options = [
+      _ThemeColorOption(
+        label: l10n.dynamicColor,
+        scheme: dynamicScheme,
+        selected: dynamicSelected,
+        icon: Ionicons.sparkles,
+        onTap: onDynamicSelected,
+      ),
+      for (final seed in AppThemeSeed.values)
         _ThemeColorOption(
-          label: l10n.dynamicColor,
-          scheme: dynamicScheme,
-          selected: dynamicSelected,
-          icon: Ionicons.sparkles,
-          onTap: onDynamicSelected,
-        ),
-        for (final seed in AppThemeSeed.values)
-          _ThemeColorOption(
-            label: _themeSeedLabel(l10n, seed),
-            scheme: ColorScheme.fromSeed(
-              seedColor: seed.color,
-              brightness: theme.brightness,
-            ),
-            selected: !dynamicSelected && selectedSeed == seed,
-            onTap: () => onSeedSelected(seed),
+          label: _themeSeedLabel(l10n, seed),
+          scheme: ColorScheme.fromSeed(
+            seedColor: seed.color,
+            brightness: theme.brightness,
           ),
-      ],
+          selected: !dynamicSelected && selectedSeed == seed,
+          onTap: () => onSeedSelected(seed),
+        ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final minWidth = options.length * 64 + (options.length - 1) * 12;
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: constraints.maxWidth > minWidth
+                  ? constraints.maxWidth
+                  : minWidth.toDouble(),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: options,
+            ),
+          ),
+        );
+      },
     );
   }
 

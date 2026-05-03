@@ -90,13 +90,7 @@ class ServerCardItem extends ConsumerWidget {
             style: disabledStyle,
           ),
         ),
-        PopupMenuItem(
-          enabled: false,
-          child: Text(
-            '${l10n.actionFileManager} (${l10n.inDevelopment})',
-            style: disabledStyle,
-          ),
-        ),
+        _menuItem('files', Icons.folder_outlined, l10n.actionFileManager),
         PopupMenuItem(
           enabled: false,
           child: Text(
@@ -144,6 +138,8 @@ class ServerCardItem extends ConsumerWidget {
               .refreshServer(server.id);
         case 'logs':
           context.go('/home/server/${server.id}/logs');
+        case 'files':
+          context.go('/files/${server.id}');
         case 'edit':
           context.go('/home/server/${server.id}/edit');
         case 'delete':
