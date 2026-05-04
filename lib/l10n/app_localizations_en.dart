@@ -260,6 +260,193 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dockerDev => 'Docker Manager (WIP)';
 
   @override
+  String get dockerOverview => 'Overview';
+
+  @override
+  String get dockerContainers => 'Containers';
+
+  @override
+  String get dockerCompose => 'Compose';
+
+  @override
+  String get dockerImages => 'Images';
+
+  @override
+  String get dockerVolumes => 'Volumes';
+
+  @override
+  String get dockerUnavailable => 'Docker unavailable';
+
+  @override
+  String get dockerMissing => 'Docker is not installed';
+
+  @override
+  String get dockerPermissionDenied => 'Current user has no Docker permission';
+
+  @override
+  String get dockerLoadFailed => 'Docker load failed';
+
+  @override
+  String get dockerVersion => 'Docker Version';
+
+  @override
+  String get dockerComposeVersion => 'Compose Version';
+
+  @override
+  String get dockerStorageDriver => 'Storage Driver';
+
+  @override
+  String get dockerRootDir => 'Docker Root Dir';
+
+  @override
+  String get dockerArchitecture => 'Architecture';
+
+  @override
+  String get dockerCpuMemory => 'CPU / Memory';
+
+  @override
+  String get dockerTotalContainers => 'Containers';
+
+  @override
+  String get dockerRunningContainers => 'Running';
+
+  @override
+  String get dockerStoppedContainers => 'Stopped';
+
+  @override
+  String get dockerComposeProjects => 'Compose Projects';
+
+  @override
+  String get dockerImageCount => 'Images';
+
+  @override
+  String get dockerVolumeCount => 'Volumes';
+
+  @override
+  String get dockerStart => 'Start';
+
+  @override
+  String get dockerStop => 'Stop';
+
+  @override
+  String get dockerRestart => 'Restart';
+
+  @override
+  String get dockerDetails => 'Details';
+
+  @override
+  String get dockerLogs => 'Logs';
+
+  @override
+  String get dockerExec => 'Exec Terminal';
+
+  @override
+  String get dockerExecShell => 'Choose Shell';
+
+  @override
+  String get dockerDeleteContainerTitle => 'Delete Container';
+
+  @override
+  String dockerDeleteContainerContent(String name) {
+    return 'Delete container \"$name\"?';
+  }
+
+  @override
+  String get dockerDown => 'Down';
+
+  @override
+  String get dockerCreateCompose => 'Create Compose';
+
+  @override
+  String get dockerProjectName => 'Project Name';
+
+  @override
+  String get dockerRemoteDirectory => 'Remote Directory';
+
+  @override
+  String get dockerComposeYaml => 'Compose YAML';
+
+  @override
+  String get dockerDeployNow => 'Deploy after saving';
+
+  @override
+  String get dockerEditYaml => 'Edit YAML';
+
+  @override
+  String get dockerDeleteComposeTitle => 'Delete Compose';
+
+  @override
+  String dockerDeleteComposeContent(String name) {
+    return 'Delete the compose file for \"$name\"?';
+  }
+
+  @override
+  String get dockerPull => 'Pull / Update';
+
+  @override
+  String get dockerUpdateImage => 'Update Image';
+
+  @override
+  String get dockerDeleteImageTitle => 'Delete Image';
+
+  @override
+  String dockerDeleteImageContent(String image) {
+    return 'Delete image \"$image\"?';
+  }
+
+  @override
+  String dockerRunningContainersWarning(int count) {
+    return '$count linked running containers were found. Updating only pulls the new image and will not rebuild or replace running containers.';
+  }
+
+  @override
+  String get dockerDeleteVolumeTitle => 'Delete Volume';
+
+  @override
+  String dockerDeleteVolumeContent(String name) {
+    return 'Delete volume \"$name\"?';
+  }
+
+  @override
+  String get dockerVolumeInUse => 'Volume is used by running containers';
+
+  @override
+  String get dockerNoContainers => 'No containers';
+
+  @override
+  String get dockerNoComposeProjects => 'No compose projects';
+
+  @override
+  String get dockerNoImages => 'No images';
+
+  @override
+  String get dockerNoVolumes => 'No volumes';
+
+  @override
+  String get dockerRunning => 'Running';
+
+  @override
+  String get dockerStopped => 'Stopped';
+
+  @override
+  String get dockerMixed => 'Partially running';
+
+  @override
+  String get dockerUnknown => 'Unknown';
+
+  @override
+  String get dockerCopyOutput => 'Copy Output';
+
+  @override
+  String get dockerStopStream => 'Stop Stream';
+
+  @override
+  String get dockerActionDone => 'Action completed';
+
+  @override
+  String get dockerActionFailed => 'Action failed';
+
+  @override
   String get scriptsDev => 'Script Runner (WIP)';
 
   @override
@@ -291,6 +478,121 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get snippetsTitle => 'Snippets';
+
+  @override
+  String get scriptInstallArchiveTools => 'Install Archive Tools';
+
+  @override
+  String get scriptInstallArchiveToolsDesc =>
+      'Install zip, unzip, and 7z for compression, extraction, and archive previews.';
+
+  @override
+  String get scriptInstallDocker => 'Install Docker';
+
+  @override
+  String get scriptInstallDockerDesc =>
+      'Install Docker and Compose, then try to enable the Docker service.';
+
+  @override
+  String get scriptInstallTmux => 'Install tmux';
+
+  @override
+  String get scriptInstallTmuxDesc =>
+      'Install tmux for terminal session reuse.';
+
+  @override
+  String get scriptChangeMirror => 'Change Package Mirror';
+
+  @override
+  String get scriptChangeMirrorDesc => 'Switch the system package mirror.';
+
+  @override
+  String get scriptSystemSection => 'System Scripts';
+
+  @override
+  String get scriptUserSection => 'User Scripts';
+
+  @override
+  String get scriptUserEmpty => 'No user scripts yet. Tap + to add one.';
+
+  @override
+  String get scriptAdd => 'New Script';
+
+  @override
+  String get scriptRun => 'Run';
+
+  @override
+  String get scriptNewTitle => 'New Script';
+
+  @override
+  String get scriptViewTitle => 'View Script';
+
+  @override
+  String get scriptEditTitle => 'Edit Script';
+
+  @override
+  String get scriptName => 'Script Name';
+
+  @override
+  String get scriptDescription => 'Description';
+
+  @override
+  String get scriptContent => 'Script Content';
+
+  @override
+  String get scriptSystemReadOnly => 'System scripts are read-only.';
+
+  @override
+  String get scriptNotFound => 'Script not found';
+
+  @override
+  String get scriptDeleteTitle => 'Delete Script';
+
+  @override
+  String scriptDeleteContent(String name) {
+    return 'Delete \"$name\"? This cannot be undone.';
+  }
+
+  @override
+  String get scriptSelectMirror => 'Select Mirror';
+
+  @override
+  String scriptChangeMirrorWithSource(String mirror) {
+    return 'Change Package Mirror ($mirror)';
+  }
+
+  @override
+  String get scriptMirrorTuna => 'Tsinghua TUNA';
+
+  @override
+  String get scriptMirrorUstc => 'USTC';
+
+  @override
+  String get scriptMirrorAliyun => 'Alibaba Cloud';
+
+  @override
+  String get scriptMirrorTencent => 'Tencent Cloud';
+
+  @override
+  String get scriptMirrorHuawei => 'Huawei Cloud';
+
+  @override
+  String get scriptSelectServer => 'Select Server';
+
+  @override
+  String scriptRunningOn(String script, String server) {
+    return 'Running \"$script\" @ $server';
+  }
+
+  @override
+  String get scriptRunSucceeded => 'Execution completed';
+
+  @override
+  String get scriptRunFailed => 'Execution failed';
+
+  @override
+  String get scriptInstallTmuxPrompt =>
+      'tmux is not installed on this server. Install it now? The reused terminal will open after installation.';
 
   @override
   String get settingsSecuritySection => 'Security & Sync';

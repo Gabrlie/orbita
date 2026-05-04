@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -19,6 +20,7 @@ abstract interface class SshClientSession {
   Future<String> executeStreaming(
     String command, {
     required void Function(String chunk) onOutput,
+    bool Function()? shouldStop,
   });
 
   Future<void> get done;
@@ -118,12 +120,14 @@ class SshService implements SshClientSession {
   Future<String> executeStreaming(
     String command, {
     required void Function(String chunk) onOutput,
+    bool Function()? shouldStop,
   }) async {
     if (isClosed) {
       throw StateError('SSH client not connected');
     }
     final session = await _client.execute(command);
     final output = StringBuffer();
+    Timer? stopTimer;
     final stdout = session.stdout.listen((bytes) {
       final chunk = utf8.decode(bytes, allowMalformed: true);
       output.write(chunk);
@@ -135,9 +139,17 @@ class SshService implements SshClientSession {
       onOutput(chunk);
     });
     try {
+      if (shouldStop != null) {
+        stopTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
+          if (shouldStop()) {
+            session.close();
+          }
+        });
+      }
       await session.done;
       return output.toString();
     } finally {
+      stopTimer?.cancel();
       await stdout.cancel();
       await stderr.cancel();
       session.close();

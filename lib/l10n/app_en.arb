@@ -108,6 +108,90 @@
   "terminalDev": "Terminal (WIP)",
   "filesDev": "File Manager (WIP)",
   "dockerDev": "Docker Manager (WIP)",
+  "dockerOverview": "Overview",
+  "dockerContainers": "Containers",
+  "dockerCompose": "Compose",
+  "dockerImages": "Images",
+  "dockerVolumes": "Volumes",
+  "dockerUnavailable": "Docker unavailable",
+  "dockerMissing": "Docker is not installed",
+  "dockerPermissionDenied": "Current user has no Docker permission",
+  "dockerLoadFailed": "Docker load failed",
+  "dockerVersion": "Docker Version",
+  "dockerComposeVersion": "Compose Version",
+  "dockerStorageDriver": "Storage Driver",
+  "dockerRootDir": "Docker Root Dir",
+  "dockerArchitecture": "Architecture",
+  "dockerCpuMemory": "CPU / Memory",
+  "dockerTotalContainers": "Containers",
+  "dockerRunningContainers": "Running",
+  "dockerStoppedContainers": "Stopped",
+  "dockerComposeProjects": "Compose Projects",
+  "dockerImageCount": "Images",
+  "dockerVolumeCount": "Volumes",
+  "dockerStart": "Start",
+  "dockerStop": "Stop",
+  "dockerRestart": "Restart",
+  "dockerDetails": "Details",
+  "dockerLogs": "Logs",
+  "dockerExec": "Exec Terminal",
+  "dockerExecShell": "Choose Shell",
+  "dockerDeleteContainerTitle": "Delete Container",
+  "dockerDeleteContainerContent": "Delete container \"{name}\"?",
+  "@dockerDeleteContainerContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dockerDown": "Down",
+  "dockerCreateCompose": "Create Compose",
+  "dockerProjectName": "Project Name",
+  "dockerRemoteDirectory": "Remote Directory",
+  "dockerComposeYaml": "Compose YAML",
+  "dockerDeployNow": "Deploy after saving",
+  "dockerEditYaml": "Edit YAML",
+  "dockerDeleteComposeTitle": "Delete Compose",
+  "dockerDeleteComposeContent": "Delete the compose file for \"{name}\"?",
+  "@dockerDeleteComposeContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dockerPull": "Pull / Update",
+  "dockerUpdateImage": "Update Image",
+  "dockerDeleteImageTitle": "Delete Image",
+  "dockerDeleteImageContent": "Delete image \"{image}\"?",
+  "@dockerDeleteImageContent": {
+    "placeholders": {
+      "image": { "type": "String" }
+    }
+  },
+  "dockerRunningContainersWarning": "{count} linked running containers were found. Updating only pulls the new image and will not rebuild or replace running containers.",
+  "@dockerRunningContainersWarning": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "dockerDeleteVolumeTitle": "Delete Volume",
+  "dockerDeleteVolumeContent": "Delete volume \"{name}\"?",
+  "@dockerDeleteVolumeContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dockerVolumeInUse": "Volume is used by running containers",
+  "dockerNoContainers": "No containers",
+  "dockerNoComposeProjects": "No compose projects",
+  "dockerNoImages": "No images",
+  "dockerNoVolumes": "No volumes",
+  "dockerRunning": "Running",
+  "dockerStopped": "Stopped",
+  "dockerMixed": "Partially running",
+  "dockerUnknown": "Unknown",
+  "dockerCopyOutput": "Copy Output",
+  "dockerStopStream": "Stop Stream",
+  "dockerActionDone": "Action completed",
+  "dockerActionFailed": "Action failed",
   "scriptsDev": "Script Runner (WIP)",
 
   "settingsServerSection": "Server Management",
@@ -120,6 +204,57 @@
   "settingsSnippetsDesc": "Quick-access command bookmarks",
   "scriptsTitle": "Scripts",
   "snippetsTitle": "Snippets",
+  "scriptInstallArchiveTools": "Install Archive Tools",
+  "scriptInstallArchiveToolsDesc": "Install zip, unzip, and 7z for compression, extraction, and archive previews.",
+  "scriptInstallDocker": "Install Docker",
+  "scriptInstallDockerDesc": "Install Docker and Compose, then try to enable the Docker service.",
+  "scriptInstallTmux": "Install tmux",
+  "scriptInstallTmuxDesc": "Install tmux for terminal session reuse.",
+  "scriptChangeMirror": "Change Package Mirror",
+  "scriptChangeMirrorDesc": "Switch the system package mirror.",
+  "scriptSystemSection": "System Scripts",
+  "scriptUserSection": "User Scripts",
+  "scriptUserEmpty": "No user scripts yet. Tap + to add one.",
+  "scriptAdd": "New Script",
+  "scriptRun": "Run",
+  "scriptNewTitle": "New Script",
+  "scriptViewTitle": "View Script",
+  "scriptEditTitle": "Edit Script",
+  "scriptName": "Script Name",
+  "scriptDescription": "Description",
+  "scriptContent": "Script Content",
+  "scriptSystemReadOnly": "System scripts are read-only.",
+  "scriptNotFound": "Script not found",
+  "scriptDeleteTitle": "Delete Script",
+  "scriptDeleteContent": "Delete \"{name}\"? This cannot be undone.",
+  "@scriptDeleteContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "scriptSelectMirror": "Select Mirror",
+  "scriptChangeMirrorWithSource": "Change Package Mirror ({mirror})",
+  "@scriptChangeMirrorWithSource": {
+    "placeholders": {
+      "mirror": { "type": "String" }
+    }
+  },
+  "scriptMirrorTuna": "Tsinghua TUNA",
+  "scriptMirrorUstc": "USTC",
+  "scriptMirrorAliyun": "Alibaba Cloud",
+  "scriptMirrorTencent": "Tencent Cloud",
+  "scriptMirrorHuawei": "Huawei Cloud",
+  "scriptSelectServer": "Select Server",
+  "scriptRunningOn": "Running \"{script}\" @ {server}",
+  "@scriptRunningOn": {
+    "placeholders": {
+      "script": { "type": "String" },
+      "server": { "type": "String" }
+    }
+  },
+  "scriptRunSucceeded": "Execution completed",
+  "scriptRunFailed": "Execution failed",
+  "scriptInstallTmuxPrompt": "tmux is not installed on this server. Install it now? The reused terminal will open after installation.",
   "settingsSecuritySection": "Security & Sync",
   "settingsSecurity": "Security",
   "settingsSecurityDesc": "Password & biometrics",

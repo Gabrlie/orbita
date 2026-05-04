@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:orbita/models/app_theme_seed.dart';
+import 'package:orbita/providers/remote_script_provider.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -99,5 +100,35 @@ void main() {
     expect(prefs.getDouble('terminal_font_size'), 16);
     expect(prefs.getInt('terminal_foreground_color'), 0xFFFFFFFF);
     expect(prefs.getInt('terminal_background_color'), 0xFF111111);
+  });
+
+  test('user scripts persist through shared preferences', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    final script = await container
+        .read(userScriptsProvider.notifier)
+        .add(
+          name: 'Update app',
+          description: 'Run updater',
+          command: 'echo ok',
+        );
+
+    expect(container.read(userScriptsProvider), hasLength(1));
+    expect(prefs.getString('remote_user_scripts'), contains('Update app'));
+
+    await container
+        .read(userScriptsProvider.notifier)
+        .update(script.copyWith(name: 'Updated app'));
+
+    expect(container.read(userScriptsProvider).single.name, 'Updated app');
+
+    await container.read(userScriptsProvider.notifier).delete(script.id);
+
+    expect(container.read(userScriptsProvider), isEmpty);
   });
 }

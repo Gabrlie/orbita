@@ -13,6 +13,7 @@ import 'package:orbita/pages/server/terminal/terminal_extra_key_controller.dart'
 import 'package:orbita/pages/server/terminal/terminal_launch_mode.dart';
 import 'package:orbita/pages/server/terminal/terminal_platform.dart';
 import 'package:orbita/providers/key_provider.dart';
+import 'package:orbita/providers/remote_script_provider.dart';
 import 'package:orbita/providers/server_monitor_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/server_refresh_provider.dart';
@@ -21,6 +22,7 @@ import 'package:orbita/providers/ssh_log_provider.dart';
 import 'package:orbita/services/ssh_connection_manager.dart';
 import 'package:orbita/services/ssh_service.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/remote_script_output_dialog.dart';
 import 'package:xterm/xterm.dart';
 
 part 'terminal_connection.dart';
@@ -29,12 +31,16 @@ class TerminalPage extends ConsumerStatefulWidget {
   final String serverId;
   final bool showAppBar;
   final TerminalLaunchMode launchMode;
+  final String? initialCommand;
+  final String? title;
 
   const TerminalPage({
     super.key,
     required this.serverId,
     this.showAppBar = true,
     this.launchMode = TerminalLaunchMode.direct,
+    this.initialCommand,
+    this.title,
   });
 
   @override
@@ -75,7 +81,8 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
   void didUpdateWidget(covariant TerminalPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.serverId != widget.serverId ||
-        oldWidget.launchMode != widget.launchMode) {
+        oldWidget.launchMode != widget.launchMode ||
+        oldWidget.initialCommand != widget.initialCommand) {
       unawaited(_connect());
     }
   }
@@ -90,16 +97,14 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
     _releaseConnection();
 
     setState(() {
-      _title = server.name;
+      _title = widget.title ?? server.name;
       _connecting = true;
     });
     _terminal.write('${l10n.sshConnecting}\r\n');
 
+    SshKey? key;
     try {
-      final key = await resolveServerKey(
-        server,
-        ref.read(keyListProvider.future),
-      );
+      key = await resolveServerKey(server, ref.read(keyListProvider.future));
       if (server.authType == AuthType.key && key == null) {
         throw StateError(l10n.authNoKey);
       }
@@ -118,6 +123,12 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
         log.info('Attached tmux session $sessionName');
       }
 
+      final initialCommand = widget.initialCommand?.trim();
+      if (initialCommand != null && initialCommand.isNotEmpty) {
+        _shell!.write(utf8.encode('$initialCommand\n'));
+        log.info('Sent initial terminal command');
+      }
+
       log.info('Terminal shell opened');
       ref
           .read(serverRefreshControllerProvider.notifier)
@@ -130,6 +141,10 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
       _disposeShell();
       _releaseConnection();
       _terminal.write('${l10n.sshConnectionFailed}: $error\r\n');
+      if (widget.launchMode == TerminalLaunchMode.tmux &&
+          '$error'.contains(l10n.terminalTmuxUnavailable)) {
+        await _promptInstallTmux(server, key);
+      }
       if (mounted) {
         setState(() => _connecting = false);
       }
@@ -268,5 +283,50 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _promptInstallTmux(Server server, SshKey? key) async {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l10n.terminalTmuxUnavailable,
+      content: l10n.scriptInstallTmuxPrompt,
+      confirmLabel: l10n.fileInstallTools,
+    );
+    if (!confirmed || !mounted) return;
+    final service = ref.read(remoteScriptServiceProvider);
+    final script = service
+        .builtInScripts(
+          archiveName: l10n.scriptInstallArchiveTools,
+          archiveDescription: l10n.scriptInstallArchiveToolsDesc,
+          dockerName: l10n.scriptInstallDocker,
+          dockerDescription: l10n.scriptInstallDockerDesc,
+          tmuxName: l10n.scriptInstallTmux,
+          tmuxDescription: l10n.scriptInstallTmuxDesc,
+          mirrorName: l10n.scriptChangeMirror,
+          mirrorDescription: l10n.scriptChangeMirrorDesc,
+          mirrorSelectTitle: l10n.scriptSelectMirror,
+          mirrorTunaLabel: l10n.scriptMirrorTuna,
+          mirrorUstcLabel: l10n.scriptMirrorUstc,
+          mirrorAliyunLabel: l10n.scriptMirrorAliyun,
+          mirrorTencentLabel: l10n.scriptMirrorTencent,
+          mirrorHuaweiLabel: l10n.scriptMirrorHuawei,
+        )
+        .firstWhere((script) => script.id == 'install-tmux');
+    final success = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => RemoteScriptOutputDialog(
+        title: l10n.scriptRunningOn(script.name, server.name),
+        successMessage: l10n.scriptRunSucceeded,
+        failureMessage: l10n.scriptRunFailed,
+        onRun: (onOutput) =>
+            service.run(server, script: script, key: key, onOutput: onOutput),
+      ),
+    );
+    if (success == true && mounted) {
+      await _connect();
+    }
   }
 }

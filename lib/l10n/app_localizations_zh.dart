@@ -260,6 +260,193 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dockerDev => 'Docker管理（开发中）';
 
   @override
+  String get dockerOverview => '概览';
+
+  @override
+  String get dockerContainers => '容器';
+
+  @override
+  String get dockerCompose => '编排';
+
+  @override
+  String get dockerImages => '镜像';
+
+  @override
+  String get dockerVolumes => '卷';
+
+  @override
+  String get dockerUnavailable => 'Docker 不可用';
+
+  @override
+  String get dockerMissing => '服务器未安装 Docker';
+
+  @override
+  String get dockerPermissionDenied => '当前用户无 Docker 权限';
+
+  @override
+  String get dockerLoadFailed => 'Docker 加载失败';
+
+  @override
+  String get dockerVersion => 'Docker 版本';
+
+  @override
+  String get dockerComposeVersion => 'Compose 版本';
+
+  @override
+  String get dockerStorageDriver => '存储驱动';
+
+  @override
+  String get dockerRootDir => 'Docker 根目录';
+
+  @override
+  String get dockerArchitecture => '系统架构';
+
+  @override
+  String get dockerCpuMemory => 'CPU / 内存';
+
+  @override
+  String get dockerTotalContainers => '容器总数';
+
+  @override
+  String get dockerRunningContainers => '运行中';
+
+  @override
+  String get dockerStoppedContainers => '已停止';
+
+  @override
+  String get dockerComposeProjects => '编排项目';
+
+  @override
+  String get dockerImageCount => '镜像数量';
+
+  @override
+  String get dockerVolumeCount => '卷数量';
+
+  @override
+  String get dockerStart => '启动';
+
+  @override
+  String get dockerStop => '停止';
+
+  @override
+  String get dockerRestart => '重启';
+
+  @override
+  String get dockerDetails => '详情';
+
+  @override
+  String get dockerLogs => '运行日志';
+
+  @override
+  String get dockerExec => '进入终端';
+
+  @override
+  String get dockerExecShell => '选择 Shell';
+
+  @override
+  String get dockerDeleteContainerTitle => '删除容器';
+
+  @override
+  String dockerDeleteContainerContent(String name) {
+    return '确定删除容器「$name」吗？';
+  }
+
+  @override
+  String get dockerDown => '清理';
+
+  @override
+  String get dockerCreateCompose => '创建编排';
+
+  @override
+  String get dockerProjectName => '项目名称';
+
+  @override
+  String get dockerRemoteDirectory => '远程目录';
+
+  @override
+  String get dockerComposeYaml => 'Compose YAML';
+
+  @override
+  String get dockerDeployNow => '保存后立即部署';
+
+  @override
+  String get dockerEditYaml => '编辑 YAML';
+
+  @override
+  String get dockerDeleteComposeTitle => '删除编排';
+
+  @override
+  String dockerDeleteComposeContent(String name) {
+    return '确定删除编排「$name」的 compose 文件吗？';
+  }
+
+  @override
+  String get dockerPull => '拉取/更新';
+
+  @override
+  String get dockerUpdateImage => '更新镜像';
+
+  @override
+  String get dockerDeleteImageTitle => '删除镜像';
+
+  @override
+  String dockerDeleteImageContent(String image) {
+    return '确定删除镜像「$image」吗？';
+  }
+
+  @override
+  String dockerRunningContainersWarning(int count) {
+    return '有 $count 个运行中的关联容器。更新只会拉取新镜像，不会自动重建或替换运行中的容器。';
+  }
+
+  @override
+  String get dockerDeleteVolumeTitle => '删除卷';
+
+  @override
+  String dockerDeleteVolumeContent(String name) {
+    return '确定删除卷「$name」吗？';
+  }
+
+  @override
+  String get dockerVolumeInUse => '卷正在被运行中的容器使用';
+
+  @override
+  String get dockerNoContainers => '暂无容器';
+
+  @override
+  String get dockerNoComposeProjects => '暂无编排项目';
+
+  @override
+  String get dockerNoImages => '暂无镜像';
+
+  @override
+  String get dockerNoVolumes => '暂无卷';
+
+  @override
+  String get dockerRunning => '运行中';
+
+  @override
+  String get dockerStopped => '已停止';
+
+  @override
+  String get dockerMixed => '部分运行';
+
+  @override
+  String get dockerUnknown => '未知';
+
+  @override
+  String get dockerCopyOutput => '复制输出';
+
+  @override
+  String get dockerStopStream => '停止流';
+
+  @override
+  String get dockerActionDone => '操作完成';
+
+  @override
+  String get dockerActionFailed => '操作失败';
+
+  @override
   String get scriptsDev => '脚本执行（开发中）';
 
   @override
@@ -291,6 +478,118 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get snippetsTitle => '片段';
+
+  @override
+  String get scriptInstallArchiveTools => '安装压缩工具';
+
+  @override
+  String get scriptInstallArchiveToolsDesc =>
+      '安装 zip、unzip 与 7z，用于压缩、解压和压缩包预览。';
+
+  @override
+  String get scriptInstallDocker => '安装 Docker';
+
+  @override
+  String get scriptInstallDockerDesc => '安装 Docker 与 Compose，并尝试启用 Docker 服务。';
+
+  @override
+  String get scriptInstallTmux => '安装 tmux';
+
+  @override
+  String get scriptInstallTmuxDesc => '安装 tmux，用于终端会话复用。';
+
+  @override
+  String get scriptChangeMirror => '一键换源';
+
+  @override
+  String get scriptChangeMirrorDesc => '为系统更换软件源。';
+
+  @override
+  String get scriptSystemSection => '系统脚本';
+
+  @override
+  String get scriptUserSection => '用户脚本';
+
+  @override
+  String get scriptUserEmpty => '暂无用户脚本，点击 + 添加。';
+
+  @override
+  String get scriptAdd => '新增脚本';
+
+  @override
+  String get scriptRun => '运行';
+
+  @override
+  String get scriptNewTitle => '新增脚本';
+
+  @override
+  String get scriptViewTitle => '查看脚本';
+
+  @override
+  String get scriptEditTitle => '编辑脚本';
+
+  @override
+  String get scriptName => '脚本名称';
+
+  @override
+  String get scriptDescription => '脚本说明';
+
+  @override
+  String get scriptContent => '脚本内容';
+
+  @override
+  String get scriptSystemReadOnly => '系统默认脚本仅允许查看，不能编辑。';
+
+  @override
+  String get scriptNotFound => '脚本不存在';
+
+  @override
+  String get scriptDeleteTitle => '删除脚本';
+
+  @override
+  String scriptDeleteContent(String name) {
+    return '确定要删除「$name」吗？此操作不可撤销。';
+  }
+
+  @override
+  String get scriptSelectMirror => '选择镜像源';
+
+  @override
+  String scriptChangeMirrorWithSource(String mirror) {
+    return '一键换源（$mirror）';
+  }
+
+  @override
+  String get scriptMirrorTuna => '清华大学 TUNA';
+
+  @override
+  String get scriptMirrorUstc => '中国科学技术大学 USTC';
+
+  @override
+  String get scriptMirrorAliyun => '阿里云';
+
+  @override
+  String get scriptMirrorTencent => '腾讯云';
+
+  @override
+  String get scriptMirrorHuawei => '华为云';
+
+  @override
+  String get scriptSelectServer => '选择服务器';
+
+  @override
+  String scriptRunningOn(String script, String server) {
+    return '正在执行「$script」@ $server';
+  }
+
+  @override
+  String get scriptRunSucceeded => '执行完成';
+
+  @override
+  String get scriptRunFailed => '执行失败';
+
+  @override
+  String get scriptInstallTmuxPrompt => '服务器未安装 tmux，是否现在安装？安装完成后会继续打开复用终端。';
 
   @override
   String get settingsSecuritySection => '安全与同步';

@@ -108,6 +108,90 @@
   "terminalDev": "终端（开发中）",
   "filesDev": "文件管理（开发中）",
   "dockerDev": "Docker管理（开发中）",
+  "dockerOverview": "概览",
+  "dockerContainers": "容器",
+  "dockerCompose": "编排",
+  "dockerImages": "镜像",
+  "dockerVolumes": "卷",
+  "dockerUnavailable": "Docker 不可用",
+  "dockerMissing": "服务器未安装 Docker",
+  "dockerPermissionDenied": "当前用户无 Docker 权限",
+  "dockerLoadFailed": "Docker 加载失败",
+  "dockerVersion": "Docker 版本",
+  "dockerComposeVersion": "Compose 版本",
+  "dockerStorageDriver": "存储驱动",
+  "dockerRootDir": "Docker 根目录",
+  "dockerArchitecture": "系统架构",
+  "dockerCpuMemory": "CPU / 内存",
+  "dockerTotalContainers": "容器总数",
+  "dockerRunningContainers": "运行中",
+  "dockerStoppedContainers": "已停止",
+  "dockerComposeProjects": "编排项目",
+  "dockerImageCount": "镜像数量",
+  "dockerVolumeCount": "卷数量",
+  "dockerStart": "启动",
+  "dockerStop": "停止",
+  "dockerRestart": "重启",
+  "dockerDetails": "详情",
+  "dockerLogs": "运行日志",
+  "dockerExec": "进入终端",
+  "dockerExecShell": "选择 Shell",
+  "dockerDeleteContainerTitle": "删除容器",
+  "dockerDeleteContainerContent": "确定删除容器「{name}」吗？",
+  "@dockerDeleteContainerContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dockerDown": "清理",
+  "dockerCreateCompose": "创建编排",
+  "dockerProjectName": "项目名称",
+  "dockerRemoteDirectory": "远程目录",
+  "dockerComposeYaml": "Compose YAML",
+  "dockerDeployNow": "保存后立即部署",
+  "dockerEditYaml": "编辑 YAML",
+  "dockerDeleteComposeTitle": "删除编排",
+  "dockerDeleteComposeContent": "确定删除编排「{name}」的 compose 文件吗？",
+  "@dockerDeleteComposeContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dockerPull": "拉取/更新",
+  "dockerUpdateImage": "更新镜像",
+  "dockerDeleteImageTitle": "删除镜像",
+  "dockerDeleteImageContent": "确定删除镜像「{image}」吗？",
+  "@dockerDeleteImageContent": {
+    "placeholders": {
+      "image": { "type": "String" }
+    }
+  },
+  "dockerRunningContainersWarning": "有 {count} 个运行中的关联容器。更新只会拉取新镜像，不会自动重建或替换运行中的容器。",
+  "@dockerRunningContainersWarning": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "dockerDeleteVolumeTitle": "删除卷",
+  "dockerDeleteVolumeContent": "确定删除卷「{name}」吗？",
+  "@dockerDeleteVolumeContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dockerVolumeInUse": "卷正在被运行中的容器使用",
+  "dockerNoContainers": "暂无容器",
+  "dockerNoComposeProjects": "暂无编排项目",
+  "dockerNoImages": "暂无镜像",
+  "dockerNoVolumes": "暂无卷",
+  "dockerRunning": "运行中",
+  "dockerStopped": "已停止",
+  "dockerMixed": "部分运行",
+  "dockerUnknown": "未知",
+  "dockerCopyOutput": "复制输出",
+  "dockerStopStream": "停止流",
+  "dockerActionDone": "操作完成",
+  "dockerActionFailed": "操作失败",
   "scriptsDev": "脚本执行（开发中）",
 
   "settingsServerSection": "服务器管理",
@@ -120,6 +204,57 @@
   "settingsSnippetsDesc": "常用命令快捷收藏",
   "scriptsTitle": "脚本",
   "snippetsTitle": "片段",
+  "scriptInstallArchiveTools": "安装压缩工具",
+  "scriptInstallArchiveToolsDesc": "安装 zip、unzip 与 7z，用于压缩、解压和压缩包预览。",
+  "scriptInstallDocker": "安装 Docker",
+  "scriptInstallDockerDesc": "安装 Docker 与 Compose，并尝试启用 Docker 服务。",
+  "scriptInstallTmux": "安装 tmux",
+  "scriptInstallTmuxDesc": "安装 tmux，用于终端会话复用。",
+  "scriptChangeMirror": "一键换源",
+  "scriptChangeMirrorDesc": "为系统更换软件源。",
+  "scriptSystemSection": "系统脚本",
+  "scriptUserSection": "用户脚本",
+  "scriptUserEmpty": "暂无用户脚本，点击 + 添加。",
+  "scriptAdd": "新增脚本",
+  "scriptRun": "运行",
+  "scriptNewTitle": "新增脚本",
+  "scriptViewTitle": "查看脚本",
+  "scriptEditTitle": "编辑脚本",
+  "scriptName": "脚本名称",
+  "scriptDescription": "脚本说明",
+  "scriptContent": "脚本内容",
+  "scriptSystemReadOnly": "系统默认脚本仅允许查看，不能编辑。",
+  "scriptNotFound": "脚本不存在",
+  "scriptDeleteTitle": "删除脚本",
+  "scriptDeleteContent": "确定要删除「{name}」吗？此操作不可撤销。",
+  "@scriptDeleteContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "scriptSelectMirror": "选择镜像源",
+  "scriptChangeMirrorWithSource": "一键换源（{mirror}）",
+  "@scriptChangeMirrorWithSource": {
+    "placeholders": {
+      "mirror": { "type": "String" }
+    }
+  },
+  "scriptMirrorTuna": "清华大学 TUNA",
+  "scriptMirrorUstc": "中国科学技术大学 USTC",
+  "scriptMirrorAliyun": "阿里云",
+  "scriptMirrorTencent": "腾讯云",
+  "scriptMirrorHuawei": "华为云",
+  "scriptSelectServer": "选择服务器",
+  "scriptRunningOn": "正在执行「{script}」@ {server}",
+  "@scriptRunningOn": {
+    "placeholders": {
+      "script": { "type": "String" },
+      "server": { "type": "String" }
+    }
+  },
+  "scriptRunSucceeded": "执行完成",
+  "scriptRunFailed": "执行失败",
+  "scriptInstallTmuxPrompt": "服务器未安装 tmux，是否现在安装？安装完成后会继续打开复用终端。",
   "settingsSecuritySection": "安全与同步",
   "settingsSecurity": "安全设置",
   "settingsSecurityDesc": "密码与生物识别",

@@ -584,6 +584,360 @@ abstract class AppLocalizations {
   /// **'Docker管理（开发中）'**
   String get dockerDev;
 
+  /// No description provided for @dockerOverview.
+  ///
+  /// In zh, this message translates to:
+  /// **'概览'**
+  String get dockerOverview;
+
+  /// No description provided for @dockerContainers.
+  ///
+  /// In zh, this message translates to:
+  /// **'容器'**
+  String get dockerContainers;
+
+  /// No description provided for @dockerCompose.
+  ///
+  /// In zh, this message translates to:
+  /// **'编排'**
+  String get dockerCompose;
+
+  /// No description provided for @dockerImages.
+  ///
+  /// In zh, this message translates to:
+  /// **'镜像'**
+  String get dockerImages;
+
+  /// No description provided for @dockerVolumes.
+  ///
+  /// In zh, this message translates to:
+  /// **'卷'**
+  String get dockerVolumes;
+
+  /// No description provided for @dockerUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'Docker 不可用'**
+  String get dockerUnavailable;
+
+  /// No description provided for @dockerMissing.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器未安装 Docker'**
+  String get dockerMissing;
+
+  /// No description provided for @dockerPermissionDenied.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前用户无 Docker 权限'**
+  String get dockerPermissionDenied;
+
+  /// No description provided for @dockerLoadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'Docker 加载失败'**
+  String get dockerLoadFailed;
+
+  /// No description provided for @dockerVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'Docker 版本'**
+  String get dockerVersion;
+
+  /// No description provided for @dockerComposeVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'Compose 版本'**
+  String get dockerComposeVersion;
+
+  /// No description provided for @dockerStorageDriver.
+  ///
+  /// In zh, this message translates to:
+  /// **'存储驱动'**
+  String get dockerStorageDriver;
+
+  /// No description provided for @dockerRootDir.
+  ///
+  /// In zh, this message translates to:
+  /// **'Docker 根目录'**
+  String get dockerRootDir;
+
+  /// No description provided for @dockerArchitecture.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统架构'**
+  String get dockerArchitecture;
+
+  /// No description provided for @dockerCpuMemory.
+  ///
+  /// In zh, this message translates to:
+  /// **'CPU / 内存'**
+  String get dockerCpuMemory;
+
+  /// No description provided for @dockerTotalContainers.
+  ///
+  /// In zh, this message translates to:
+  /// **'容器总数'**
+  String get dockerTotalContainers;
+
+  /// No description provided for @dockerRunningContainers.
+  ///
+  /// In zh, this message translates to:
+  /// **'运行中'**
+  String get dockerRunningContainers;
+
+  /// No description provided for @dockerStoppedContainers.
+  ///
+  /// In zh, this message translates to:
+  /// **'已停止'**
+  String get dockerStoppedContainers;
+
+  /// No description provided for @dockerComposeProjects.
+  ///
+  /// In zh, this message translates to:
+  /// **'编排项目'**
+  String get dockerComposeProjects;
+
+  /// No description provided for @dockerImageCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'镜像数量'**
+  String get dockerImageCount;
+
+  /// No description provided for @dockerVolumeCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'卷数量'**
+  String get dockerVolumeCount;
+
+  /// No description provided for @dockerStart.
+  ///
+  /// In zh, this message translates to:
+  /// **'启动'**
+  String get dockerStart;
+
+  /// No description provided for @dockerStop.
+  ///
+  /// In zh, this message translates to:
+  /// **'停止'**
+  String get dockerStop;
+
+  /// No description provided for @dockerRestart.
+  ///
+  /// In zh, this message translates to:
+  /// **'重启'**
+  String get dockerRestart;
+
+  /// No description provided for @dockerDetails.
+  ///
+  /// In zh, this message translates to:
+  /// **'详情'**
+  String get dockerDetails;
+
+  /// No description provided for @dockerLogs.
+  ///
+  /// In zh, this message translates to:
+  /// **'运行日志'**
+  String get dockerLogs;
+
+  /// No description provided for @dockerExec.
+  ///
+  /// In zh, this message translates to:
+  /// **'进入终端'**
+  String get dockerExec;
+
+  /// No description provided for @dockerExecShell.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 Shell'**
+  String get dockerExecShell;
+
+  /// No description provided for @dockerDeleteContainerTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除容器'**
+  String get dockerDeleteContainerTitle;
+
+  /// No description provided for @dockerDeleteContainerContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除容器「{name}」吗？'**
+  String dockerDeleteContainerContent(String name);
+
+  /// No description provided for @dockerDown.
+  ///
+  /// In zh, this message translates to:
+  /// **'清理'**
+  String get dockerDown;
+
+  /// No description provided for @dockerCreateCompose.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建编排'**
+  String get dockerCreateCompose;
+
+  /// No description provided for @dockerProjectName.
+  ///
+  /// In zh, this message translates to:
+  /// **'项目名称'**
+  String get dockerProjectName;
+
+  /// No description provided for @dockerRemoteDirectory.
+  ///
+  /// In zh, this message translates to:
+  /// **'远程目录'**
+  String get dockerRemoteDirectory;
+
+  /// No description provided for @dockerComposeYaml.
+  ///
+  /// In zh, this message translates to:
+  /// **'Compose YAML'**
+  String get dockerComposeYaml;
+
+  /// No description provided for @dockerDeployNow.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存后立即部署'**
+  String get dockerDeployNow;
+
+  /// No description provided for @dockerEditYaml.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑 YAML'**
+  String get dockerEditYaml;
+
+  /// No description provided for @dockerDeleteComposeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除编排'**
+  String get dockerDeleteComposeTitle;
+
+  /// No description provided for @dockerDeleteComposeContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除编排「{name}」的 compose 文件吗？'**
+  String dockerDeleteComposeContent(String name);
+
+  /// No description provided for @dockerPull.
+  ///
+  /// In zh, this message translates to:
+  /// **'拉取/更新'**
+  String get dockerPull;
+
+  /// No description provided for @dockerUpdateImage.
+  ///
+  /// In zh, this message translates to:
+  /// **'更新镜像'**
+  String get dockerUpdateImage;
+
+  /// No description provided for @dockerDeleteImageTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除镜像'**
+  String get dockerDeleteImageTitle;
+
+  /// No description provided for @dockerDeleteImageContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除镜像「{image}」吗？'**
+  String dockerDeleteImageContent(String image);
+
+  /// No description provided for @dockerRunningContainersWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'有 {count} 个运行中的关联容器。更新只会拉取新镜像，不会自动重建或替换运行中的容器。'**
+  String dockerRunningContainersWarning(int count);
+
+  /// No description provided for @dockerDeleteVolumeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除卷'**
+  String get dockerDeleteVolumeTitle;
+
+  /// No description provided for @dockerDeleteVolumeContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除卷「{name}」吗？'**
+  String dockerDeleteVolumeContent(String name);
+
+  /// No description provided for @dockerVolumeInUse.
+  ///
+  /// In zh, this message translates to:
+  /// **'卷正在被运行中的容器使用'**
+  String get dockerVolumeInUse;
+
+  /// No description provided for @dockerNoContainers.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无容器'**
+  String get dockerNoContainers;
+
+  /// No description provided for @dockerNoComposeProjects.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无编排项目'**
+  String get dockerNoComposeProjects;
+
+  /// No description provided for @dockerNoImages.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无镜像'**
+  String get dockerNoImages;
+
+  /// No description provided for @dockerNoVolumes.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无卷'**
+  String get dockerNoVolumes;
+
+  /// No description provided for @dockerRunning.
+  ///
+  /// In zh, this message translates to:
+  /// **'运行中'**
+  String get dockerRunning;
+
+  /// No description provided for @dockerStopped.
+  ///
+  /// In zh, this message translates to:
+  /// **'已停止'**
+  String get dockerStopped;
+
+  /// No description provided for @dockerMixed.
+  ///
+  /// In zh, this message translates to:
+  /// **'部分运行'**
+  String get dockerMixed;
+
+  /// No description provided for @dockerUnknown.
+  ///
+  /// In zh, this message translates to:
+  /// **'未知'**
+  String get dockerUnknown;
+
+  /// No description provided for @dockerCopyOutput.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制输出'**
+  String get dockerCopyOutput;
+
+  /// No description provided for @dockerStopStream.
+  ///
+  /// In zh, this message translates to:
+  /// **'停止流'**
+  String get dockerStopStream;
+
+  /// No description provided for @dockerActionDone.
+  ///
+  /// In zh, this message translates to:
+  /// **'操作完成'**
+  String get dockerActionDone;
+
+  /// No description provided for @dockerActionFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'操作失败'**
+  String get dockerActionFailed;
+
   /// No description provided for @scriptsDev.
   ///
   /// In zh, this message translates to:
@@ -649,6 +1003,216 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'片段'**
   String get snippetsTitle;
+
+  /// No description provided for @scriptInstallArchiveTools.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装压缩工具'**
+  String get scriptInstallArchiveTools;
+
+  /// No description provided for @scriptInstallArchiveToolsDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装 zip、unzip 与 7z，用于压缩、解压和压缩包预览。'**
+  String get scriptInstallArchiveToolsDesc;
+
+  /// No description provided for @scriptInstallDocker.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装 Docker'**
+  String get scriptInstallDocker;
+
+  /// No description provided for @scriptInstallDockerDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装 Docker 与 Compose，并尝试启用 Docker 服务。'**
+  String get scriptInstallDockerDesc;
+
+  /// No description provided for @scriptInstallTmux.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装 tmux'**
+  String get scriptInstallTmux;
+
+  /// No description provided for @scriptInstallTmuxDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装 tmux，用于终端会话复用。'**
+  String get scriptInstallTmuxDesc;
+
+  /// No description provided for @scriptChangeMirror.
+  ///
+  /// In zh, this message translates to:
+  /// **'一键换源'**
+  String get scriptChangeMirror;
+
+  /// No description provided for @scriptChangeMirrorDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'为系统更换软件源。'**
+  String get scriptChangeMirrorDesc;
+
+  /// No description provided for @scriptSystemSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统脚本'**
+  String get scriptSystemSection;
+
+  /// No description provided for @scriptUserSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户脚本'**
+  String get scriptUserSection;
+
+  /// No description provided for @scriptUserEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无用户脚本，点击 + 添加。'**
+  String get scriptUserEmpty;
+
+  /// No description provided for @scriptAdd.
+  ///
+  /// In zh, this message translates to:
+  /// **'新增脚本'**
+  String get scriptAdd;
+
+  /// No description provided for @scriptRun.
+  ///
+  /// In zh, this message translates to:
+  /// **'运行'**
+  String get scriptRun;
+
+  /// No description provided for @scriptNewTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'新增脚本'**
+  String get scriptNewTitle;
+
+  /// No description provided for @scriptViewTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看脚本'**
+  String get scriptViewTitle;
+
+  /// No description provided for @scriptEditTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑脚本'**
+  String get scriptEditTitle;
+
+  /// No description provided for @scriptName.
+  ///
+  /// In zh, this message translates to:
+  /// **'脚本名称'**
+  String get scriptName;
+
+  /// No description provided for @scriptDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'脚本说明'**
+  String get scriptDescription;
+
+  /// No description provided for @scriptContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'脚本内容'**
+  String get scriptContent;
+
+  /// No description provided for @scriptSystemReadOnly.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统默认脚本仅允许查看，不能编辑。'**
+  String get scriptSystemReadOnly;
+
+  /// No description provided for @scriptNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'脚本不存在'**
+  String get scriptNotFound;
+
+  /// No description provided for @scriptDeleteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除脚本'**
+  String get scriptDeleteTitle;
+
+  /// No description provided for @scriptDeleteContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要删除「{name}」吗？此操作不可撤销。'**
+  String scriptDeleteContent(String name);
+
+  /// No description provided for @scriptSelectMirror.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择镜像源'**
+  String get scriptSelectMirror;
+
+  /// No description provided for @scriptChangeMirrorWithSource.
+  ///
+  /// In zh, this message translates to:
+  /// **'一键换源（{mirror}）'**
+  String scriptChangeMirrorWithSource(String mirror);
+
+  /// No description provided for @scriptMirrorTuna.
+  ///
+  /// In zh, this message translates to:
+  /// **'清华大学 TUNA'**
+  String get scriptMirrorTuna;
+
+  /// No description provided for @scriptMirrorUstc.
+  ///
+  /// In zh, this message translates to:
+  /// **'中国科学技术大学 USTC'**
+  String get scriptMirrorUstc;
+
+  /// No description provided for @scriptMirrorAliyun.
+  ///
+  /// In zh, this message translates to:
+  /// **'阿里云'**
+  String get scriptMirrorAliyun;
+
+  /// No description provided for @scriptMirrorTencent.
+  ///
+  /// In zh, this message translates to:
+  /// **'腾讯云'**
+  String get scriptMirrorTencent;
+
+  /// No description provided for @scriptMirrorHuawei.
+  ///
+  /// In zh, this message translates to:
+  /// **'华为云'**
+  String get scriptMirrorHuawei;
+
+  /// No description provided for @scriptSelectServer.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择服务器'**
+  String get scriptSelectServer;
+
+  /// No description provided for @scriptRunningOn.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在执行「{script}」@ {server}'**
+  String scriptRunningOn(String script, String server);
+
+  /// No description provided for @scriptRunSucceeded.
+  ///
+  /// In zh, this message translates to:
+  /// **'执行完成'**
+  String get scriptRunSucceeded;
+
+  /// No description provided for @scriptRunFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'执行失败'**
+  String get scriptRunFailed;
+
+  /// No description provided for @scriptInstallTmuxPrompt.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器未安装 tmux，是否现在安装？安装完成后会继续打开复用终端。'**
+  String get scriptInstallTmuxPrompt;
 
   /// No description provided for @settingsSecuritySection.
   ///

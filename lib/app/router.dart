@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
+
 import 'package:go_router/go_router.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:orbita/l10n/app_localizations.dart';
 
 import '../widgets/responsive_scaffold.dart';
 import '../pages/lock/lock_page.dart';
@@ -12,6 +11,8 @@ import '../pages/server/server_form_page.dart';
 import '../pages/server/logs/server_log_page.dart';
 import '../pages/server/files/files_page.dart';
 import '../pages/server/files/files_server_picker_page.dart';
+import '../pages/server/docker/docker_manager_page.dart';
+import '../pages/server/docker/docker_page.dart';
 import '../pages/settings/settings_page.dart';
 import '../pages/settings/server_list_page.dart';
 import '../pages/settings/appearance/appearance_page.dart';
@@ -20,11 +21,11 @@ import '../pages/settings/keys/key_list_page.dart';
 import '../pages/settings/keys/key_import_page.dart';
 import '../pages/settings/keys/key_generate_page.dart';
 import '../pages/scripts/scripts_library_page.dart';
+import '../pages/scripts/script_editor_page.dart';
 import '../pages/server/terminal/terminal_launch_mode.dart';
 import '../pages/server/terminal/terminal_page.dart';
 import '../pages/terminal/terminal_server_picker_page.dart';
 import '../pages/snippets/snippets_page.dart';
-import '../widgets/common.dart';
 
 final router = GoRouter(
   initialLocation: '/home',
@@ -99,6 +100,10 @@ final router = GoRouter(
                     launchMode: terminalLaunchModeFromQuery(
                       state.uri.queryParameters['mode'],
                     ),
+                    initialCommand: _decodeBase64Url(
+                      state.uri.queryParameters['initial'],
+                    ),
+                    title: state.uri.queryParameters['title'],
                   ),
                 ),
               ],
@@ -109,8 +114,14 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/docker',
-              builder: (context, state) =>
-                  const _PlaceholderPage(icon: Ionicons.cube),
+              builder: (context, state) => const DockerPage(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) =>
+                      DockerManagerPage(serverId: state.pathParameters['id']!),
+                ),
+              ],
             ),
           ],
         ),
@@ -165,6 +176,18 @@ final router = GoRouter(
                 GoRoute(
                   path: 'scripts',
                   builder: (context, state) => const ScriptsLibraryPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'add',
+                      builder: (context, state) => const ScriptEditorPage(),
+                    ),
+                    GoRoute(
+                      path: ':id',
+                      builder: (context, state) => ScriptEditorPage(
+                        scriptId: state.pathParameters['id'],
+                      ),
+                    ),
+                  ],
                 ),
                 GoRoute(
                   path: 'snippets',
@@ -179,20 +202,11 @@ final router = GoRouter(
   ],
 );
 
-class _PlaceholderPage extends StatelessWidget {
-  final IconData icon;
-  const _PlaceholderPage({required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(),
-      body: EmptyState(
-        icon: icon,
-        title: l10n.noServersTitle,
-        subtitle: l10n.noServersSubtitle,
-      ),
-    );
+String? _decodeBase64Url(String? value) {
+  if (value == null || value.isEmpty) return null;
+  try {
+    return utf8.decode(base64Url.decode(base64Url.normalize(value)));
+  } catch (_) {
+    return null;
   }
 }

@@ -11,7 +11,7 @@ import 'package:orbita/providers/server_provider.dart';
 import 'status/status_page.dart';
 import 'terminal/terminal_page.dart';
 import 'files/files_page.dart';
-import 'docker/docker_page.dart';
+import 'docker/docker_manager_page.dart';
 import 'scripts/scripts_page.dart';
 
 class ServerDetailPage extends ConsumerStatefulWidget {
@@ -84,7 +84,7 @@ class _ServerDetailPageState extends ConsumerState<ServerDetailPage>
             launchMode: _terminalLaunchMode,
           ),
           FilesPage(serverId: widget.id, showAppBar: false),
-          const DockerPage(),
+          DockerManagerPage(serverId: widget.id, showAppBar: false),
           const ScriptsPage(),
         ],
       ),

@@ -176,6 +176,7 @@ class _FakeSshService implements SshClientSession {
   Future<String> executeStreaming(
     String command, {
     required void Function(String chunk) onOutput,
+    bool Function()? shouldStop,
   }) async {
     throw UnimplementedError();
   }
