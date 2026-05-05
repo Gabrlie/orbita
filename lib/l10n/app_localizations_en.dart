@@ -39,7 +39,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get useBiometrics => 'Use Biometrics';
 
   @override
-  String get navHome => 'Home';
+  String get navHome => 'Metrics';
 
   @override
   String get navFiles => 'Files';
@@ -812,6 +812,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get metricIo => 'I/O';
+
+  @override
+  String get metricOverview => 'Overview';
+
+  @override
+  String get metricUptime => 'Uptime';
+
+  @override
+  String get metricLoad1 => '1 min';
+
+  @override
+  String get metricLoad5 => '5 min';
+
+  @override
+  String get metricLoad15 => '15 min';
+
+  @override
+  String get metricUsed => 'Used';
+
+  @override
+  String get metricCached => 'Cached';
+
+  @override
+  String get metricFree => 'Free';
+
+  @override
+  String get metricTotal => 'Total';
+
+  @override
+  String get metricApp => 'APP';
+
+  @override
+  String get metricBufferCache => 'BUF';
+
+  @override
+  String get serverScriptsSection => 'Scripts';
+
+  @override
+  String get serverToolsSection => 'Tools';
+
+  @override
+  String get serverToolProcesses => 'Processes';
+
+  @override
+  String get serverToolIpAddress => 'IP Address';
+
+  @override
+  String get serverToolTraffic => 'Traffic';
+
+  @override
+  String get serverToolDocker => 'Docker';
 
   @override
   String get serverLogsTitle => 'Server Logs';

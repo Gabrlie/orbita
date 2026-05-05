@@ -39,7 +39,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get useBiometrics => '使用生物识别';
 
   @override
-  String get navHome => '主页';
+  String get navHome => '指标';
 
   @override
   String get navFiles => '文件';
@@ -808,6 +808,57 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get metricIo => 'I/O';
+
+  @override
+  String get metricOverview => '概览';
+
+  @override
+  String get metricUptime => '开机时长';
+
+  @override
+  String get metricLoad1 => '1分钟';
+
+  @override
+  String get metricLoad5 => '5分钟';
+
+  @override
+  String get metricLoad15 => '15分钟';
+
+  @override
+  String get metricUsed => '已用';
+
+  @override
+  String get metricCached => '缓存';
+
+  @override
+  String get metricFree => '空闲';
+
+  @override
+  String get metricTotal => '总计';
+
+  @override
+  String get metricApp => 'APP';
+
+  @override
+  String get metricBufferCache => 'BUF';
+
+  @override
+  String get serverScriptsSection => '脚本';
+
+  @override
+  String get serverToolsSection => '工具';
+
+  @override
+  String get serverToolProcesses => '进程列表';
+
+  @override
+  String get serverToolIpAddress => 'IP 地址';
+
+  @override
+  String get serverToolTraffic => '流量统计';
+
+  @override
+  String get serverToolDocker => 'Docker';
 
   @override
   String get serverLogsTitle => '服务器日志';

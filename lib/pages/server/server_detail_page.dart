@@ -1,18 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
-import 'package:orbita/pages/server/terminal/terminal_launch_mode.dart';
-import 'package:orbita/pages/server/terminal/terminal_platform.dart';
-import 'package:orbita/pages/server/terminal/terminal_dashboard.dart';
+import 'package:orbita/models/server_status.dart';
+import 'package:orbita/pages/server/server_metric_sections.dart';
+import 'package:orbita/providers/server_monitor_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
-
-import 'status/status_page.dart';
-import 'terminal/terminal_page.dart';
-import 'files/files_page.dart';
-import 'docker/docker_manager_page.dart';
-import 'scripts/scripts_page.dart';
+import 'package:orbita/widgets/common.dart';
 
 class ServerDetailPage extends ConsumerStatefulWidget {
   final String id;
@@ -23,134 +20,121 @@ class ServerDetailPage extends ConsumerStatefulWidget {
   ConsumerState<ServerDetailPage> createState() => _ServerDetailPageState();
 }
 
-class _ServerDetailPageState extends ConsumerState<ServerDetailPage>
-    with TickerProviderStateMixin {
-  late TabController _tabController;
-  var _tabIndex = 0;
-  var _terminalLaunchMode = TerminalLaunchMode.direct;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 5, vsync: this);
-    _tabController.addListener(() {
-      if (_tabIndex != _tabController.index) {
-        setState(() => _tabIndex = _tabController.index);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+class _ServerDetailPageState extends ConsumerState<ServerDetailPage> {
+  final _history = <ServerStatus>[];
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final server = ref.watch(serverByIdProvider(widget.id));
+    final statusAsync = ref.watch(serverStatusProvider(widget.id));
+    ref.listen<AsyncValue<ServerStatus?>>(serverStatusProvider(widget.id), (
+      _,
+      next,
+    ) {
+      final status = next.value;
+      if (status != null) _recordStatus(status);
+    });
 
+    if (server == null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: EmptyState(
+          icon: Ionicons.warning_outline,
+          title: l10n.fileServerMissing,
+          subtitle: l10n.fileServerMissingSubtitle,
+        ),
+      );
+    }
+
+    final status = statusAsync.value;
+    final history = _visibleHistory(status);
+    final message = _statusMessage(l10n, statusAsync);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          tooltip: l10n.commonCancel,
+          icon: const Icon(Ionicons.chevron_back_outline),
           onPressed: () => context.go('/home'),
         ),
-        title: Text(server?.name ?? l10n.serverDetail),
-        actions: _buildActions(context),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabs: [
-            Tab(
-              icon: const Icon(Icons.insert_chart_outlined),
-              text: l10n.statusTab,
-            ),
-            Tab(icon: const Icon(Icons.terminal), text: l10n.terminalTab),
-            Tab(icon: const Icon(Icons.folder_outlined), text: l10n.filesTab),
-            Tab(icon: const Icon(Icons.widgets_outlined), text: l10n.dockerTab),
-            Tab(icon: const Icon(Icons.code), text: l10n.scriptsTab),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          const StatusPage(),
-          TerminalPage(
-            serverId: widget.id,
-            showAppBar: false,
-            launchMode: _terminalLaunchMode,
+        title: Text(server.name),
+        actions: [
+          IconButton(
+            tooltip: l10n.actionFileManager,
+            icon: const Icon(Ionicons.folder_outline),
+            onPressed: () => context.go('/files/${widget.id}'),
           ),
-          FilesPage(serverId: widget.id, showAppBar: false),
-          DockerManagerPage(serverId: widget.id, showAppBar: false),
-          const ScriptsPage(),
+          IconButton(
+            tooltip: l10n.actionConnect,
+            icon: const Icon(Ionicons.terminal_outline),
+            onPressed: () => context.go('/terminal/${widget.id}'),
+          ),
+          IconButton(
+            tooltip: l10n.actionEdit,
+            icon: const Icon(Ionicons.settings_outline),
+            onPressed: () => context.go('/home/server/${widget.id}/edit'),
+          ),
         ],
       ),
+      body: RefreshIndicator(
+        onRefresh: () async => ref.invalidate(serverStatusProvider(widget.id)),
+        child: ServerMetricSections(
+          server: server,
+          status: status,
+          history: history,
+          statusMessage: message,
+          onOpenCommand: (command, title) =>
+              _openTerminalCommand(context, command: command, title: title),
+        ),
+      ),
     );
   }
 
-  List<Widget> _buildActions(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    if (_tabIndex == 1) {
-      return [
-        if (isTouchPlatform())
-          IconButton(
-            tooltip: l10n.terminalDashboard,
-            icon: const Icon(Ionicons.speedometer_outline),
-            onPressed: () => _openTerminalDashboard(context),
-          ),
-        PopupMenuButton<TerminalLaunchMode>(
-          tooltip: l10n.terminalConnectOptions,
-          icon: const Icon(Ionicons.ellipsis_horizontal),
-          initialValue: _terminalLaunchMode,
-          onSelected: (mode) {
-            if (_terminalLaunchMode == mode) return;
-            setState(() => _terminalLaunchMode = mode);
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: TerminalLaunchMode.direct,
-              child: Row(
-                children: [
-                  const Icon(Ionicons.terminal_outline, size: 20),
-                  const SizedBox(width: 12),
-                  Text(l10n.actionConnect),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: TerminalLaunchMode.tmux,
-              child: Row(
-                children: [
-                  const Icon(Ionicons.layers_outline, size: 20),
-                  const SizedBox(width: 12),
-                  Text(l10n.terminalConnectTmux),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ];
+  String? _statusMessage(AppLocalizations l10n, AsyncValue<dynamic> async) {
+    if (async.isLoading) return l10n.sshConnecting;
+    if (async.hasError) return '${l10n.sshConnectionFailed}: ${async.error}';
+    if (async.value == null) return l10n.sshDisconnected;
+    return null;
+  }
+
+  void _recordStatus(ServerStatus status) {
+    if (_history.isNotEmpty &&
+        _history.last.snapshot.timestamp.isAtSameMomentAs(
+          status.snapshot.timestamp,
+        )) {
+      return;
     }
-    return [
-      IconButton(
-        icon: const Icon(Icons.edit_outlined),
-        onPressed: () => context.go('/home/server/${widget.id}/edit'),
-      ),
-    ];
+    setState(() {
+      _history.add(status);
+      if (_history.length > 24) {
+        _history.removeRange(0, _history.length - 24);
+      }
+    });
   }
 
-  void _openTerminalDashboard(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: Text(l10n.terminalDashboard)),
-          body: TerminalDashboard(serverId: widget.id),
-        ),
-      ),
+  List<ServerStatus> _visibleHistory(ServerStatus? status) {
+    final history = List<ServerStatus>.of(_history);
+    if (status != null &&
+        (history.isEmpty ||
+            !history.last.snapshot.timestamp.isAtSameMomentAs(
+              status.snapshot.timestamp,
+            ))) {
+      history.add(status);
+    }
+    if (history.length <= 24) return history;
+    return history.sublist(history.length - 24);
+  }
+
+  void _openTerminalCommand(
+    BuildContext context, {
+    required String command,
+    required String title,
+  }) {
+    final encoded = base64Url.encode(utf8.encode(command));
+    final uri = Uri(
+      path: '/terminal/${widget.id}',
+      queryParameters: {'initial': encoded, 'title': title},
     );
+    context.go(uri.toString());
   }
 }

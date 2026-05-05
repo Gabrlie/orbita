@@ -161,7 +161,7 @@ abstract class AppLocalizations {
   /// No description provided for @navHome.
   ///
   /// In zh, this message translates to:
-  /// **'主页'**
+  /// **'指标'**
   String get navHome;
 
   /// No description provided for @navFiles.
@@ -1645,6 +1645,108 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'I/O'**
   String get metricIo;
+
+  /// No description provided for @metricOverview.
+  ///
+  /// In zh, this message translates to:
+  /// **'概览'**
+  String get metricOverview;
+
+  /// No description provided for @metricUptime.
+  ///
+  /// In zh, this message translates to:
+  /// **'开机时长'**
+  String get metricUptime;
+
+  /// No description provided for @metricLoad1.
+  ///
+  /// In zh, this message translates to:
+  /// **'1分钟'**
+  String get metricLoad1;
+
+  /// No description provided for @metricLoad5.
+  ///
+  /// In zh, this message translates to:
+  /// **'5分钟'**
+  String get metricLoad5;
+
+  /// No description provided for @metricLoad15.
+  ///
+  /// In zh, this message translates to:
+  /// **'15分钟'**
+  String get metricLoad15;
+
+  /// No description provided for @metricUsed.
+  ///
+  /// In zh, this message translates to:
+  /// **'已用'**
+  String get metricUsed;
+
+  /// No description provided for @metricCached.
+  ///
+  /// In zh, this message translates to:
+  /// **'缓存'**
+  String get metricCached;
+
+  /// No description provided for @metricFree.
+  ///
+  /// In zh, this message translates to:
+  /// **'空闲'**
+  String get metricFree;
+
+  /// No description provided for @metricTotal.
+  ///
+  /// In zh, this message translates to:
+  /// **'总计'**
+  String get metricTotal;
+
+  /// No description provided for @metricApp.
+  ///
+  /// In zh, this message translates to:
+  /// **'APP'**
+  String get metricApp;
+
+  /// No description provided for @metricBufferCache.
+  ///
+  /// In zh, this message translates to:
+  /// **'BUF'**
+  String get metricBufferCache;
+
+  /// No description provided for @serverScriptsSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'脚本'**
+  String get serverScriptsSection;
+
+  /// No description provided for @serverToolsSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'工具'**
+  String get serverToolsSection;
+
+  /// No description provided for @serverToolProcesses.
+  ///
+  /// In zh, this message translates to:
+  /// **'进程列表'**
+  String get serverToolProcesses;
+
+  /// No description provided for @serverToolIpAddress.
+  ///
+  /// In zh, this message translates to:
+  /// **'IP 地址'**
+  String get serverToolIpAddress;
+
+  /// No description provided for @serverToolTraffic.
+  ///
+  /// In zh, this message translates to:
+  /// **'流量统计'**
+  String get serverToolTraffic;
+
+  /// No description provided for @serverToolDocker.
+  ///
+  /// In zh, this message translates to:
+  /// **'Docker'**
+  String get serverToolDocker;
 
   /// No description provided for @serverLogsTitle.
   ///

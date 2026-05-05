@@ -26,7 +26,7 @@ class SettingsPage extends ConsumerWidget {
                 icon: Ionicons.server_outline,
                 title: l10n.settingsServers,
                 subtitle: l10n.serverCount(serverCount),
-                onTap: () => context.go('/settings/servers'),
+                onTap: () => _open(context, '/settings/servers'),
               ),
               _SettingsItem(
                 icon: Ionicons.git_branch_outline,
@@ -38,7 +38,7 @@ class SettingsPage extends ConsumerWidget {
                 icon: Ionicons.key_outline,
                 title: l10n.keyManagement,
                 subtitle: l10n.keyManagementDesc,
-                onTap: () => context.go('/settings/keys'),
+                onTap: () => _open(context, '/settings/keys'),
               ),
             ],
           ),
@@ -49,13 +49,13 @@ class SettingsPage extends ConsumerWidget {
                 icon: Ionicons.code_slash_outline,
                 title: l10n.settingsScripts,
                 subtitle: l10n.settingsScriptsDesc,
-                onTap: () => context.go('/settings/scripts'),
+                onTap: () => _open(context, '/settings/scripts'),
               ),
               _SettingsItem(
                 icon: Ionicons.extension_puzzle_outline,
                 title: l10n.settingsSnippets,
                 subtitle: l10n.settingsSnippetsDesc,
-                onTap: () => context.go('/settings/snippets'),
+                onTap: () => _open(context, '/settings/snippets'),
               ),
             ],
           ),
@@ -66,7 +66,7 @@ class SettingsPage extends ConsumerWidget {
                 icon: Ionicons.shield_checkmark_outline,
                 title: l10n.settingsSecurity,
                 subtitle: l10n.settingsSecurityDesc,
-                onTap: () => context.go('/settings/security'),
+                onTap: () => _open(context, '/settings/security'),
               ),
               _SettingsItem(
                 icon: Ionicons.sync_outline,
@@ -83,7 +83,7 @@ class SettingsPage extends ConsumerWidget {
                 icon: Ionicons.color_palette_outline,
                 title: l10n.settingsAppearance,
                 subtitle: l10n.settingsAppearanceDesc,
-                onTap: () => context.go('/settings/appearance'),
+                onTap: () => _open(context, '/settings/appearance'),
               ),
               _SettingsItem(
                 icon: Ionicons.git_network_outline,
@@ -108,6 +108,12 @@ class SettingsPage extends ConsumerWidget {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(l10n.inDevelopment)));
+  }
+
+  void _open(BuildContext context, String path) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) context.push(path);
+    });
   }
 }
 
