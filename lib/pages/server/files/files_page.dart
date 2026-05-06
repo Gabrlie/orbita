@@ -84,7 +84,12 @@ class _FilesPageState extends ConsumerState<FilesPage> {
             ),
             body: content,
           )
-        : content;
+        : Column(
+            children: [
+              _inlineToolbar(),
+              Expanded(child: content),
+            ],
+          );
 
     return PopScope(
       canPop: _currentPath == '/',

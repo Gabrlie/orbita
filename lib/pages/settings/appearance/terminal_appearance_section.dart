@@ -35,25 +35,28 @@ class TerminalAppearanceSection extends ConsumerWidget {
       children: [
         SectionHeader(
           title: l10n.terminalAppearance,
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+          padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+        Material(
+          color: tonalItemColor(context),
+          borderRadius: BorderRadius.circular(14),
+          clipBehavior: Clip.antiAlias,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 360),
+                  constraints: const BoxConstraints(maxWidth: 260),
                   child: _FontFamilyField(appearance: appearance),
                 ),
               ),
               if (appearance.fontFamily == TerminalFontFamily.custom) ...[
                 const SizedBox(height: 12),
-                Align(
-                  alignment: Alignment.centerLeft,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 360),
+                    constraints: const BoxConstraints(maxWidth: 260),
                     child: TextFormField(
                       initialValue: appearance.customFontFamily,
                       decoration: InputDecoration(
@@ -68,23 +71,36 @@ class TerminalAppearanceSection extends ConsumerWidget {
                   ),
                 ),
               ],
-              const SizedBox(height: 16),
-              _FontSizeSlider(appearance: appearance),
-              const SizedBox(height: 16),
-              _TerminalColorRow(
-                title: l10n.terminalForegroundColor,
-                selected: appearance.foregroundColor,
-                colors: _foregroundColors,
-                onSelected: (color) =>
-                    _set(ref, appearance.copyWith(foregroundColor: color)),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 16, 14, 4),
+                child: _FontSizeSlider(appearance: appearance),
               ),
-              const SizedBox(height: 14),
-              _TerminalColorRow(
-                title: l10n.terminalBackgroundColor,
-                selected: appearance.backgroundColor,
-                colors: _backgroundColors,
-                onSelected: (color) =>
-                    _set(ref, appearance.copyWith(backgroundColor: color)),
+              const Divider(height: 20),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                child: Column(
+                  children: [
+                    _TerminalColorRow(
+                      title: l10n.terminalForegroundColor,
+                      selected: appearance.foregroundColor,
+                      colors: _foregroundColors,
+                      onSelected: (color) => _set(
+                        ref,
+                        appearance.copyWith(foregroundColor: color),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    _TerminalColorRow(
+                      title: l10n.terminalBackgroundColor,
+                      selected: appearance.backgroundColor,
+                      colors: _backgroundColors,
+                      onSelected: (color) => _set(
+                        ref,
+                        appearance.copyWith(backgroundColor: color),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

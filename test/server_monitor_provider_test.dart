@@ -62,6 +62,9 @@ void main() {
     expect(status.memCached, 100 * 1024);
     expect(status.diskFsType, 'ext4');
     expect(status.diskAvailable, 3000);
+    expect(status.loadAvg, '0.10 0.20 0.30');
+    expect(status.osDisplayName, 'Ubuntu 24.04 LTS x86_64');
+    expect(status.cpuBreakdown.user, greaterThan(0));
     expect(status.networkInterfaces.single.name, 'eth0');
     expect(status.networkInterfaces.single.downRate, greaterThan(0));
   });
@@ -93,5 +96,7 @@ Inter-|   Receive                                                |  Transmit
 1
 ==OS==
 ubuntu
+Ubuntu 24.04 LTS
+x86_64
 ==END==
 ''';

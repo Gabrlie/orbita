@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orbita/pages/server/terminal/terminal_dashboard.dart';
 import 'package:orbita/pages/server/terminal/terminal_extra_key_controller.dart';
 import 'package:orbita/pages/server/terminal/terminal_extra_keys_bar.dart';
+import 'package:orbita/pages/server/terminal/terminal_snippet_button.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:xterm/xterm.dart';
 
@@ -15,6 +16,7 @@ class TerminalBody extends ConsumerWidget {
   final bool ctrlEnabled;
   final bool altEnabled;
   final ValueChanged<TerminalExtraKey> onExtraKey;
+  final ValueChanged<String> onSnippetSelected;
 
   const TerminalBody({
     super.key,
@@ -26,6 +28,7 @@ class TerminalBody extends ConsumerWidget {
     required this.ctrlEnabled,
     required this.altEnabled,
     required this.onExtraKey,
+    required this.onSnippetSelected,
   });
 
   @override
@@ -38,7 +41,7 @@ class TerminalBody extends ConsumerWidget {
             children: [
               Expanded(child: terminalView),
               SizedBox(
-                width: 300,
+                width: 360,
                 child: TerminalDashboard(serverId: serverId),
               ),
             ],
@@ -52,6 +55,10 @@ class TerminalBody extends ConsumerWidget {
             children: [
               content,
               if (connecting) const LinearProgressIndicator(minHeight: 2),
+              TerminalSnippetButton(
+                right: showDesktopDashboard ? 376 : 16,
+                onSelected: onSnippetSelected,
+              ),
             ],
           ),
         ),

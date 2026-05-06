@@ -13,7 +13,7 @@ echo "==DF=="; df -B1 -T / 2>/dev/null | tail -1
 echo "==ND=="; cat /proc/net/dev 2>/dev/null
 echo "==DI=="; cat /proc/diskstats 2>/dev/null
 echo "==NC=="; nproc 2>/dev/null || echo 1
-echo "==OS=="; (. /etc/os-release 2>/dev/null && echo "$ID") || echo unknown
+echo "==OS=="; (. /etc/os-release 2>/dev/null && printf '%s\n%s\n' "${ID:-unknown}" "${PRETTY_NAME:-${ID:-unknown}}") || printf 'unknown\nunknown\n'; uname -m 2>/dev/null || echo unknown
 echo "==END=="
 ''';
 
@@ -107,7 +107,14 @@ ServerStatus parseMonitorOutput(String output, RawNetIoSnapshot? prev) {
     ioWrite += (int.tryParse(parts[9]) ?? 0) * 512;
   }
 
-  final osId = (sections['OS'] ?? 'unknown').trim();
+  final osLines = (sections['OS'] ?? 'unknown')
+      .split('\n')
+      .map((line) => line.trim())
+      .where((line) => line.isNotEmpty)
+      .toList();
+  final osId = osLines.isNotEmpty ? osLines[0] : 'unknown';
+  final osPrettyName = osLines.length > 1 ? osLines[1] : osId;
+  final osArch = osLines.length > 2 ? osLines[2] : '';
   final cpuCores = int.tryParse((sections['NC'] ?? '1').trim()) ?? 1;
 
   final now = DateTime.now();
@@ -180,8 +187,11 @@ ServerStatus parseMonitorOutput(String output, RawNetIoSnapshot? prev) {
     ioWriteTotal: ioWrite,
     ioReadTotal: ioRead,
     osId: osId,
+    osPrettyName: osPrettyName,
+    osArch: osArch,
     snapshot: snapshot,
     cpuCoresStatus: cpu.cores,
+    cpuBreakdown: cpu.breakdown,
     networkInterfaces: networkInterfaces,
   );
 }
@@ -212,6 +222,10 @@ _CpuParseResult _parseCpu(String s1, String s2) {
     before['cpu'] ?? const [],
     after['cpu'] ?? const [],
   );
+  final breakdown = _cpuBreakdown(
+    before['cpu'] ?? const [],
+    after['cpu'] ?? const [],
+  );
   final cores = [
     for (final entry in after.entries)
       if (entry.key != 'cpu' && before.containsKey(entry.key))
@@ -220,7 +234,7 @@ _CpuParseResult _parseCpu(String s1, String s2) {
           percent: _cpuPercent(before[entry.key]!, entry.value),
         ),
   ];
-  return _CpuParseResult(total: total, cores: cores);
+  return _CpuParseResult(total: total, breakdown: breakdown, cores: cores);
 }
 
 Map<String, List<int?>> _cpuLines(String raw) {
@@ -244,9 +258,34 @@ double _cpuPercent(List<int?> p1, List<int?> p2) {
   return 1.0 - (idle2 - idle1) / totalDelta;
 }
 
+CpuBreakdownStatus _cpuBreakdown(List<int?> p1, List<int?> p2) {
+  if (p1.length < 8 || p2.length < 8) return const CpuBreakdownStatus();
+  final deltas = <int>[
+    for (var i = 0; i < 8; i++) ((p2[i] ?? 0) - (p1[i] ?? 0)).clamp(0, 1 << 31),
+  ];
+  final total = deltas.fold<int>(0, (sum, value) => sum + value);
+  if (total <= 0) return const CpuBreakdownStatus();
+  double ratio(int index) => deltas[index] / total;
+  return CpuBreakdownStatus(
+    user: ratio(0),
+    nice: ratio(1),
+    system: ratio(2),
+    idle: ratio(3),
+    ioWait: ratio(4),
+    irq: ratio(5),
+    softIrq: ratio(6),
+    steal: ratio(7),
+  );
+}
+
 class _CpuParseResult {
   final double total;
+  final CpuBreakdownStatus breakdown;
   final List<CpuCoreStatus> cores;
 
-  const _CpuParseResult({required this.total, required this.cores});
+  const _CpuParseResult({
+    required this.total,
+    required this.breakdown,
+    required this.cores,
+  });
 }

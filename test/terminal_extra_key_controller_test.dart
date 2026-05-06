@@ -35,4 +35,16 @@ void main() {
     expect(controller.ctrlEnabled, isFalse);
     expect(controller.altEnabled, isFalse);
   });
+
+  test('ctrl and alt can be consumed by keyboard text input', () {
+    final controller = TerminalExtraKeyController((_) {});
+
+    controller.press(TerminalExtraKey.ctrl);
+    controller.press(TerminalExtraKey.alt);
+    final output = controller.consumeText('c');
+
+    expect(output, const TerminalExtraKeyOutput.text('c', ctrl: true, alt: true));
+    expect(controller.ctrlEnabled, isFalse);
+    expect(controller.altEnabled, isFalse);
+  });
 }

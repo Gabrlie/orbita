@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +8,8 @@ import 'package:uuid/uuid.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/providers/key_provider.dart';
+import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/widgets/common.dart';
-
 class KeyListPage extends ConsumerWidget {
   const KeyListPage({super.key});
 
@@ -19,91 +18,102 @@ class KeyListPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final keysAsync = ref.watch(keyListProvider);
-
+    final servers = ref.watch(serverListProvider).value ?? const [];
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.keyListTitle)),
-      body: keysAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
-        data: (keys) => keys.isEmpty
-            ? EmptyState(
-                icon: Ionicons.key_outline,
-                title: l10n.noKeys,
-                subtitle: l10n.noKeysSubtitle,
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 16,
-                ),
-                itemCount: keys.length,
-                itemBuilder: (context, index) {
-                  final k = keys[index];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    clipBehavior: Clip.antiAlias,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 4,
-                      ),
-                      leading: Icon(
-                        k.keyType == SshKeyType.rsa
-                            ? Ionicons.shield_checkmark_outline
-                            : Ionicons.key_outline,
-                        color: theme.colorScheme.primary,
-                        size: 20,
-                      ),
-                      minLeadingWidth: 24,
-                      title: Text(
-                        k.name,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+      appBar: compactPageAppBar(
+        context,
+        title: l10n.keyListTitle,
+        fallbackLocation: '/settings',
+      ),
+      body: TonalListBackground(
+        child: keysAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('$e')),
+          data: (keys) => keys.isEmpty
+              ? EmptyState(
+                  icon: Ionicons.key_outline,
+                  title: l10n.noKeys,
+                  subtitle: l10n.noKeysSubtitle,
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  itemCount: keys.length,
+                  itemBuilder: (context, index) {
+                    final k = keys[index];
+                    final usageCount = servers
+                        .where((server) => server.keyId == k.id)
+                        .length;
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      color: tonalItemColor(context),
+                      surfaceTintColor: Colors.transparent,
+                      clipBehavior: Clip.antiAlias,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 4,
                         ),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(
-                          '${k.keyType.name.toUpperCase()} · ${_formatDate(k.createdAt)}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                        leading: Icon(
+                          k.keyType == SshKeyType.rsa
+                              ? Ionicons.shield_checkmark_outline
+                              : Ionicons.key_outline,
+                          color: theme.colorScheme.primary,
+                          size: 20,
+                        ),
+                        minLeadingWidth: 24,
+                        title: Text(
+                          k.name,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (k.publicKey != null)
-                            IconButton(
-                              icon: Icon(
-                                Ionicons.copy_outline,
-                                color: theme.colorScheme.primary,
-                                size: 18,
-                              ),
-                              tooltip: l10n.keyPublic,
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(text: k.publicKey!),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l10n.keyCopied)),
-                                );
-                              },
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text(
+                            '${k.keyType.name.toUpperCase()} · ${_formatDate(k.createdAt)} · ${l10n.keyUsedByServerCount(usageCount)}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
-                          Icon(
-                            Ionicons.chevron_forward,
-                            color: theme.colorScheme.outline,
-                            size: 18,
                           ),
-                        ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (k.publicKey != null)
+                              IconButton(
+                                icon: Icon(
+                                  Ionicons.copy_outline,
+                                  color: theme.colorScheme.primary,
+                                  size: 18,
+                                ),
+                                tooltip: l10n.keyPublic,
+                                onPressed: () {
+                                  Clipboard.setData(
+                                    ClipboardData(text: k.publicKey!),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(l10n.keyCopied)),
+                                  );
+                                },
+                              ),
+                            Icon(
+                              Ionicons.chevron_forward,
+                              color: theme.colorScheme.outline,
+                              size: 18,
+                            ),
+                          ],
+                        ),
+                        onTap: () => context.go('/settings/keys/${k.id}/edit'),
+                        onLongPress: () => _confirmDelete(context, ref, k),
                       ),
-                      onTap: () => context.go('/settings/keys/${k.id}/edit'),
-                      onLongPress: () => _confirmDelete(context, ref, k),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddOptions(context, ref),
@@ -111,7 +121,6 @@ class KeyListPage extends ConsumerWidget {
       ),
     );
   }
-
   void _showAddOptions(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -198,7 +207,6 @@ class KeyListPage extends ConsumerWidget {
       ),
     );
   }
-
   Future<void> _importLocalKeys(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context)!;
     final home =

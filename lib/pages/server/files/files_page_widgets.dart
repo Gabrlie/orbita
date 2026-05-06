@@ -16,15 +16,44 @@ extension _FilesPageWidgets on _FilesPageState {
 
     return Column(
       children: [
-        FilePathBar(
-          path: _currentPath,
-          onTapPath: _isMutating ? null : _loadDirectory,
-        ),
+        if (widget.showAppBar)
+          FilePathBar(
+            path: _currentPath,
+            onTapPath: _isMutating ? null : _loadDirectory,
+          ),
         if (_error != null) _errorBanner(context),
         Expanded(child: _buildList(context, l10n, server)),
         if (_pendingEntry != null && _pendingAction != null)
           _pendingToolbar(l10n, server),
       ],
+    );
+  }
+
+  Widget _inlineToolbar() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Material(
+      color: colorScheme.surface,
+      child: Container(
+        height: 48,
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: FilePathBar(
+                path: _currentPath,
+                backgroundColor: Colors.transparent,
+                onTapPath: _isMutating ? null : _loadDirectory,
+              ),
+            ),
+            _downloadButton(),
+            _refreshButton(),
+            _moreButton(),
+            const SizedBox(width: 8),
+          ],
+        ),
+      ),
     );
   }
 

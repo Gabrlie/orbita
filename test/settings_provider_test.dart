@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:orbita/models/app_theme_seed.dart';
+import 'package:orbita/models/server.dart';
+import 'package:orbita/providers/command_snippet_provider.dart';
 import 'package:orbita/providers/remote_script_provider.dart';
+import 'package:orbita/providers/server_group_provider.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -102,6 +105,54 @@ void main() {
     expect(prefs.getInt('terminal_background_color'), 0xFF111111);
   });
 
+  test('metric settings default, clamp, and persist changes', () async {
+    SharedPreferences.setMockInitialValues({
+      'metric_refresh_interval_seconds': 1,
+      'metric_ssh_connect_timeout_seconds': 99,
+      'metric_keep_alive_interval_seconds': 2,
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    expect(
+      container.read(metricSettingsProvider),
+      const MetricSettings(
+        refreshIntervalSeconds: 3,
+        sshConnectTimeoutSeconds: 60,
+        keepAliveIntervalSeconds: 5,
+        autoReconnect: true,
+      ),
+    );
+
+    await container
+        .read(metricSettingsProvider.notifier)
+        .set(
+          const MetricSettings(
+            refreshIntervalSeconds: 15,
+            sshConnectTimeoutSeconds: 12,
+            keepAliveIntervalSeconds: 45,
+            autoReconnect: false,
+          ),
+        );
+
+    expect(
+      container.read(metricSettingsProvider),
+      const MetricSettings(
+        refreshIntervalSeconds: 15,
+        sshConnectTimeoutSeconds: 12,
+        keepAliveIntervalSeconds: 45,
+        autoReconnect: false,
+      ),
+    );
+    expect(prefs.getInt('metric_refresh_interval_seconds'), 15);
+    expect(prefs.getInt('metric_ssh_connect_timeout_seconds'), 12);
+    expect(prefs.getInt('metric_keep_alive_interval_seconds'), 45);
+    expect(prefs.getBool('metric_auto_reconnect'), isFalse);
+  });
+
   test('user scripts persist through shared preferences', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -130,5 +181,58 @@ void main() {
     await container.read(userScriptsProvider.notifier).delete(script.id);
 
     expect(container.read(userScriptsProvider), isEmpty);
+  });
+
+  test('command snippets persist and can be searched', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    await container
+        .read(commandSnippetProvider.notifier)
+        .add(name: 'Disk', command: 'df -h');
+
+    final snippets = container.read(commandSnippetProvider);
+    expect(snippets, hasLength(1));
+    expect(filterCommandSnippets(snippets, 'disk df'), hasLength(1));
+  });
+
+  test('server grouping preserves custom group and server order', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(serverGroupProvider.notifier);
+    await notifier.addGroup('Prod');
+    await notifier.addGroup('Dev');
+    final groups = container.read(serverGroupProvider).groups;
+    await notifier.reorderGroup(groups.last.id, groups.first.id);
+    await notifier.moveServer(serverId: 'server-1', groupId: groups.first.id);
+    await notifier.moveServer(
+      serverId: 'server-2',
+      groupId: groups.first.id,
+      beforeServerId: 'server-1',
+    );
+
+    final buckets = groupServersForDisplay(
+      servers: const [
+        Server(id: 'server-1', name: 'A', host: 'a', username: 'root'),
+        Server(id: 'server-2', name: 'B', host: 'b', username: 'root'),
+      ],
+      groupState: container.read(serverGroupProvider),
+      unnamedGroupName: 'Unnamed',
+    );
+
+    expect(buckets.map((bucket) => bucket.name), ['Dev', 'Prod']);
+    expect(buckets[1].servers.map((server) => server.id), [
+      'server-2',
+      'server-1',
+    ]);
   });
 }

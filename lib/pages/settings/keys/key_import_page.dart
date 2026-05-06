@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/providers/key_provider.dart';
+import 'package:orbita/widgets/common.dart';
 
 /// Import (paste) an existing private key, or edit an existing key.
 class KeyImportPage extends ConsumerStatefulWidget {
@@ -79,105 +80,108 @@ class _KeyImportPageState extends ConsumerState<KeyImportPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEdit ? l10n.editKey : l10n.importKey),
+      appBar: compactPageAppBar(
+        context,
+        title: _isEdit ? l10n.editKey : l10n.importKey,
+        fallbackLocation: '/settings/keys',
         actions: [TextButton(onPressed: _save, child: Text(l10n.commonSave))],
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            TextFormField(
-              controller: _name,
-              decoration: InputDecoration(labelText: l10n.keyName),
-              validator: (v) => v == null || v.trim().isEmpty
-                  ? l10n.validationRequired
-                  : null,
-            ),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                l10n.keyType,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-            ),
-            SegmentedButton<SshKeyType>(
-              segments: const [
-                ButtonSegment(
-                  value: SshKeyType.ed25519,
-                  label: Text('Ed25519'),
-                ),
-                ButtonSegment(value: SshKeyType.rsa, label: Text('RSA')),
-              ],
-              selected: {_keyType},
-              onSelectionChanged: (s) => setState(() => _keyType = s.first),
-            ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: _privateKey,
-              maxLines: 8,
-              style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
-              decoration: InputDecoration(
-                labelText: l10n.keyPrivate,
-                hintText: '-----BEGIN OPENSSH PRIVATE KEY-----',
-                alignLabelWithHint: true,
-              ),
-              validator: (v) => v == null || v.trim().isEmpty
-                  ? l10n.validationRequired
-                  : null,
-              onChanged: (_) {
-                // Clear public key when private key changes, will re-derive on save
-                if (_publicKey.text.isNotEmpty) {
-                  setState(() => _publicKey.clear());
-                }
-              },
-            ),
-            const SizedBox(height: 24),
-            // Public key field
-            TextFormField(
-              controller: _publicKey,
-              maxLines: 4,
-              style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
-              decoration: InputDecoration(
-                labelText: l10n.keyPublic,
-                hintText: 'ssh-ed25519 AAAA...',
-                alignLabelWithHint: true,
-                suffixIcon: _publicKey.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Ionicons.copy_outline, size: 18),
-                        tooltip: l10n.keyCopyPublicKey,
-                        onPressed: () {
-                          Clipboard.setData(
-                            ClipboardData(text: _publicKey.text),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.keyCopied)),
-                          );
-                        },
-                      )
-                    : _deriving
-                    ? const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
+      body: TonalListBackground(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              TextFormField(
+                controller: _name,
+                decoration: InputDecoration(labelText: l10n.keyName),
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? l10n.validationRequired
                     : null,
               ),
-            ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: _passphrase,
-              obscureText: true,
-              decoration: InputDecoration(labelText: l10n.keyPassphrase),
-            ),
-          ],
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  l10n.keyType,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+              SegmentedButton<SshKeyType>(
+                segments: const [
+                  ButtonSegment(
+                    value: SshKeyType.ed25519,
+                    label: Text('Ed25519'),
+                  ),
+                  ButtonSegment(value: SshKeyType.rsa, label: Text('RSA')),
+                ],
+                selected: {_keyType},
+                onSelectionChanged: (s) => setState(() => _keyType = s.first),
+              ),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: _privateKey,
+                maxLines: 8,
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                decoration: InputDecoration(
+                  labelText: l10n.keyPrivate,
+                  hintText: '-----BEGIN OPENSSH PRIVATE KEY-----',
+                  alignLabelWithHint: true,
+                ),
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? l10n.validationRequired
+                    : null,
+                onChanged: (_) {
+                  // Clear public key when private key changes, will re-derive on save
+                  if (_publicKey.text.isNotEmpty) {
+                    setState(() => _publicKey.clear());
+                  }
+                },
+              ),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: _publicKey,
+                maxLines: 4,
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                decoration: InputDecoration(
+                  labelText: l10n.keyPublic,
+                  hintText: 'ssh-ed25519 AAAA...',
+                  alignLabelWithHint: true,
+                  suffixIcon: _publicKey.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Ionicons.copy_outline, size: 18),
+                          tooltip: l10n.keyCopyPublicKey,
+                          onPressed: () {
+                            Clipboard.setData(
+                              ClipboardData(text: _publicKey.text),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l10n.keyCopied)),
+                            );
+                          },
+                        )
+                      : _deriving
+                      ? const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: _passphrase,
+                obscureText: true,
+                decoration: InputDecoration(labelText: l10n.keyPassphrase),
+              ),
+            ],
+          ),
         ),
       ),
     );

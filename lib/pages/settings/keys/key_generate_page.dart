@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/providers/key_provider.dart';
+import 'package:orbita/widgets/common.dart';
 
 /// Generate a new SSH key pair.
 class KeyGeneratePage extends ConsumerStatefulWidget {
@@ -34,103 +35,116 @@ class _KeyGeneratePageState extends ConsumerState<KeyGeneratePage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.generateKey),
+      appBar: compactPageAppBar(
+        context,
+        title: l10n.generateKey,
+        fallbackLocation: '/settings/keys',
         actions: [
           if (_generated != null)
             TextButton(onPressed: _saveKey, child: Text(l10n.commonSave)),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: l10n.keyName),
-          ),
-          const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              l10n.keyType,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.primary,
-              ),
+      body: TonalListBackground(
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(labelText: l10n.keyName),
             ),
-          ),
-          SegmentedButton<SshKeyType>(
-            segments: const [
-              ButtonSegment(value: SshKeyType.ed25519, label: Text('Ed25519')),
-              ButtonSegment(value: SshKeyType.rsa, label: Text('RSA 4096')),
-            ],
-            selected: {_keyType},
-            onSelectionChanged: _generated == null
-                ? (s) => setState(() => _keyType = s.first)
-                : null,
-          ),
-          const SizedBox(height: 24),
-          if (_generated == null)
-            FilledButton.icon(
-              onPressed: _generating ? null : _generate,
-              icon: _generating
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Ionicons.sparkles_outline),
-              label: Text(_generating ? l10n.keyGenerating : l10n.generateKey),
-            )
-          else ...[
-            Card(
-              color: theme.colorScheme.primaryContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Icon(
-                      Ionicons.checkmark_circle_outline,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(l10n.keyGenerated, style: theme.textTheme.titleSmall),
-                  ],
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                l10n.keyType,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            // Public key
-            Text(l10n.keyPublic, style: theme.textTheme.titleSmall),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: theme.colorScheme.outlineVariant),
-              ),
-              child: SelectableText(
-                _generated!.publicKey ?? '',
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
-              ),
+            SegmentedButton<SshKeyType>(
+              segments: const [
+                ButtonSegment(
+                  value: SshKeyType.ed25519,
+                  label: Text('Ed25519'),
+                ),
+                ButtonSegment(value: SshKeyType.rsa, label: Text('RSA 4096')),
+              ],
+              selected: {_keyType},
+              onSelectionChanged: _generated == null
+                  ? (s) => setState(() => _keyType = s.first)
+                  : null,
             ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: () {
-                  Clipboard.setData(
-                    ClipboardData(text: _generated!.publicKey ?? ''),
-                  );
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(l10n.keyCopied)));
-                },
-                icon: const Icon(Ionicons.copy_outline, size: 16),
-                label: Text(l10n.keyPublic),
+            const SizedBox(height: 24),
+            if (_generated == null)
+              FilledButton.icon(
+                onPressed: _generating ? null : _generate,
+                icon: _generating
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Ionicons.sparkles_outline),
+                label: Text(
+                  _generating ? l10n.keyGenerating : l10n.generateKey,
+                ),
+              )
+            else ...[
+              Card(
+                color: tonalItemColor(context),
+                surfaceTintColor: Colors.transparent,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Ionicons.checkmark_circle_outline,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.keyGenerated,
+                        style: theme.textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              Text(l10n.keyPublic, style: theme.textTheme.titleSmall),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: tonalItemColor(context),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: theme.colorScheme.outlineVariant),
+                ),
+                child: SelectableText(
+                  _generated!.publicKey ?? '',
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: () {
+                    Clipboard.setData(
+                      ClipboardData(text: _generated!.publicKey ?? ''),
+                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(l10n.keyCopied)));
+                  },
+                  icon: const Icon(Ionicons.copy_outline, size: 16),
+                  label: Text(l10n.keyPublic),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

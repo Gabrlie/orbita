@@ -24,10 +24,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonDelete => 'Delete';
 
   @override
+  String get commonEdit => 'Edit';
+
+  @override
   String get commonSave => 'Save';
 
   @override
   String get commonRefresh => 'Refresh';
+
+  @override
+  String get commonTest => 'Test';
+
+  @override
+  String get commonActionDone => 'Action completed';
+
+  @override
+  String get commonActionFailed => 'Action failed';
+
+  @override
+  String get newTab => 'New Tab';
+
+  @override
+  String get openNewTab => 'Open New Tab';
+
+  @override
+  String get closeTab => 'Close Tab';
 
   @override
   String get unlock => 'Unlock';
@@ -213,6 +234,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get keyCopyPublicKey => 'Copy Public Key';
+
+  @override
+  String keyUsedByServerCount(int count) {
+    return '$count servers using this key';
+  }
 
   @override
   String get noKeys => 'No Keys';
@@ -480,6 +506,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get snippetsTitle => 'Snippets';
 
   @override
+  String get serverGroupUnnamed => 'Unnamed Group';
+
+  @override
+  String get serverGroupAdd => 'New Group';
+
+  @override
+  String get serverGroupEdit => 'Edit Group';
+
+  @override
+  String get serverGroupName => 'Group Name';
+
+  @override
+  String serverGroupCount(int count) {
+    return '$count servers';
+  }
+
+  @override
+  String get serverGroupDropHint => 'Drag servers here';
+
+  @override
+  String get serverGroupDeleteTitle => 'Delete Group';
+
+  @override
+  String serverGroupDeleteContent(String name) {
+    return 'Delete group \"$name\"? Servers will move to the unnamed group.';
+  }
+
+  @override
+  String get commandSnippetAdd => 'New Snippet';
+
+  @override
+  String get commandSnippetEdit => 'Edit Snippet';
+
+  @override
+  String get commandSnippetName => 'Snippet Name';
+
+  @override
+  String get commandSnippetCommand => 'Command';
+
+  @override
+  String get commandSnippetSearchHint => 'Search snippets or commands';
+
+  @override
+  String get commandSnippetEmpty => 'No command snippets';
+
+  @override
+  String get commandSnippetDeleteTitle => 'Delete Snippet';
+
+  @override
+  String commandSnippetDeleteContent(String name) {
+    return 'Delete snippet \"$name\"?';
+  }
+
+  @override
   String get scriptInstallArchiveTools => 'Install Archive Tools';
 
   @override
@@ -631,6 +711,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAboutDesc => 'Version info and update check';
 
   @override
+  String aboutVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get aboutOverview => 'Overview';
+
+  @override
+  String get aboutPrivacyTitle => 'Privacy-first';
+
+  @override
+  String get aboutPrivacyDesc =>
+      'Server configuration stays local and sensitive data is protected by secure storage.';
+
+  @override
+  String get aboutCrossPlatformTitle => 'Cross-platform';
+
+  @override
+  String get aboutCrossPlatformDesc =>
+      'Built with Flutter, Android-first with desktop support.';
+
+  @override
+  String get aboutNoAgentTitle => 'No server agent';
+
+  @override
+  String get aboutNoAgentDesc =>
+      'Uses SSH/SFTP and native Linux commands for server management.';
+
+  @override
+  String get aboutTechStack => 'Tech Stack';
+
+  @override
   String get comingSoon => 'Coming Soon';
 
   @override
@@ -752,7 +864,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminalConnectOptions => 'Terminal Connection';
 
   @override
+  String get terminalConnectDirect => 'Connect Terminal';
+
+  @override
   String get terminalConnectTmux => 'Reuse tmux Session';
+
+  @override
+  String get terminalReuseTmuxShort => 'Reuse tmux';
 
   @override
   String get terminalTmuxUnavailable => 'tmux is not installed on this server';
@@ -847,6 +965,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get metricBufferCache => 'BUF';
 
   @override
+  String get metricCpuUser => 'User';
+
+  @override
+  String get metricCpuNice => 'Nice';
+
+  @override
+  String get metricCpuSystem => 'System';
+
+  @override
+  String get metricCpuIoWait => 'I/O wait';
+
+  @override
+  String get metricCpuIrq => 'IRQ';
+
+  @override
+  String get metricCpuSoftIrq => 'Soft IRQ';
+
+  @override
+  String get metricCpuSteal => 'Steal';
+
+  @override
+  String get metricCpuIdle => 'Idle';
+
+  @override
+  String get metricUsageTrend => 'Usage';
+
+  @override
+  String get metricRealtimeRateTrend => 'Realtime rate trend';
+
+  @override
+  String get metricUploadDownload => 'Upload / Download';
+
+  @override
+  String get metricUpload => 'Upload';
+
+  @override
+  String get metricDownload => 'Download';
+
+  @override
+  String get metricSettingsTitle => 'Connection Config';
+
+  @override
+  String get metricSettingsDesc =>
+      'Refresh interval, SSH timeout, keep-alive, and reconnect';
+
+  @override
+  String get metricPollingSection => 'Polling';
+
+  @override
+  String get metricConnectionSection => 'Connection';
+
+  @override
+  String get metricRefreshInterval => 'Refresh Interval';
+
+  @override
+  String get metricSshConnectTimeout => 'SSH Connect Timeout';
+
+  @override
+  String get metricKeepAliveInterval => 'Keep-Alive Interval';
+
+  @override
+  String get metricAutoReconnect => 'Auto Reconnect';
+
+  @override
+  String get metricAutoReconnectDesc =>
+      'Reconnect automatically after a metric connection drops';
+
+  @override
+  String metricSecondsValue(int seconds) {
+    return '${seconds}s';
+  }
+
+  @override
   String get serverScriptsSection => 'Scripts';
 
   @override
@@ -863,6 +1054,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get serverToolDocker => 'Docker';
+
+  @override
+  String get serverLogsShort => 'Logs';
+
+  @override
+  String get serverReboot => 'Reboot';
+
+  @override
+  String get serverShutdown => 'Shutdown';
+
+  @override
+  String get serverRebootConfirmTitle => 'Reboot Server';
+
+  @override
+  String serverRebootConfirmContent(String name) {
+    return 'Reboot \"$name\"?';
+  }
+
+  @override
+  String get serverShutdownConfirmTitle => 'Shutdown Server';
+
+  @override
+  String serverShutdownConfirmContent(String name) {
+    return 'Shutdown \"$name\"?';
+  }
+
+  @override
+  String get serverConnectionTestTitle => 'Connection Test';
+
+  @override
+  String get serverConnectionLogs => 'Connection Logs';
+
+  @override
+  String get serverConnectionTesting => 'Testing connection...';
+
+  @override
+  String serverConnectionLatency(int ms) {
+    return 'Latency $ms ms';
+  }
+
+  @override
+  String get serverConnectionLogResolving =>
+      'Reading server and key configuration';
+
+  @override
+  String serverConnectionLogConnecting(String host, int port) {
+    return 'Connecting to $host:$port';
+  }
+
+  @override
+  String get serverConnectionLogSucceeded =>
+      'Connected successfully; SSH responded';
 
   @override
   String get serverLogsTitle => 'Server Logs';

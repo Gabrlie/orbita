@@ -5,8 +5,15 @@
   "commonCancel": "取消",
   "commonConfirm": "确认",
   "commonDelete": "删除",
+  "commonEdit": "编辑",
   "commonSave": "保存",
   "commonRefresh": "刷新",
+  "commonTest": "测试",
+  "commonActionDone": "操作完成",
+  "commonActionFailed": "操作失败",
+  "newTab": "新标签页",
+  "openNewTab": "新建标签页",
+  "closeTab": "关闭标签页",
 
   "unlock": "解锁",
   "password": "密码",
@@ -92,6 +99,12 @@
   "keyCopied": "已复制到剪贴板",
   "keyNoPublicKey": "导入的密钥无公钥",
   "keyCopyPublicKey": "复制公钥",
+  "keyUsedByServerCount": "{count} 台服务器使用",
+  "@keyUsedByServerCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "noKeys": "暂无密钥",
   "noKeysSubtitle": "点击 + 添加或生成",
   "selectKey": "选择密钥",
@@ -204,6 +217,37 @@
   "settingsSnippetsDesc": "常用命令快捷收藏",
   "scriptsTitle": "脚本",
   "snippetsTitle": "片段",
+  "serverGroupUnnamed": "未命名分组",
+  "serverGroupAdd": "新增分组",
+  "serverGroupEdit": "编辑分组",
+  "serverGroupName": "分组名称",
+  "serverGroupCount": "{count} 台服务器",
+  "@serverGroupCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "serverGroupDropHint": "将服务器拖到这里",
+  "serverGroupDeleteTitle": "删除分组",
+  "serverGroupDeleteContent": "确定要删除分组「{name}」吗？服务器会移动到未命名分组。",
+  "@serverGroupDeleteContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "commandSnippetAdd": "新增片段",
+  "commandSnippetEdit": "编辑片段",
+  "commandSnippetName": "片段名称",
+  "commandSnippetCommand": "命令内容",
+  "commandSnippetSearchHint": "搜索片段或命令",
+  "commandSnippetEmpty": "暂无命令片段",
+  "commandSnippetDeleteTitle": "删除片段",
+  "commandSnippetDeleteContent": "确定要删除片段「{name}」吗？",
+  "@commandSnippetDeleteContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "scriptInstallArchiveTools": "安装压缩工具",
   "scriptInstallArchiveToolsDesc": "安装 zip、unzip 与 7z，用于压缩、解压和压缩包预览。",
   "scriptInstallDocker": "安装 Docker",
@@ -267,6 +311,20 @@
   "settingsNetworkDesc": "Cloudflared / Tailscale",
   "settingsAbout": "关于 Orbita",
   "settingsAboutDesc": "版本信息与更新检查",
+  "aboutVersion": "版本 {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "aboutOverview": "概览",
+  "aboutPrivacyTitle": "隐私优先",
+  "aboutPrivacyDesc": "服务器配置保存在本地，敏感数据由系统安全存储保护。",
+  "aboutCrossPlatformTitle": "跨平台",
+  "aboutCrossPlatformDesc": "以 Flutter 构建，面向 Android 优先并兼顾桌面平台。",
+  "aboutNoAgentTitle": "无需服务端代理",
+  "aboutNoAgentDesc": "通过 SSH/SFTP 和 Linux 原生命令完成服务器管理。",
+  "aboutTechStack": "技术栈",
   "comingSoon": "即将推出",
   "inDevelopment": "开发中",
 
@@ -309,7 +367,9 @@
   "terminalColorPicker": "选择颜色",
   "terminalDashboard": "指标仪表盘",
   "terminalConnectOptions": "终端连接",
+  "terminalConnectDirect": "连接终端",
   "terminalConnectTmux": "复用 tmux 会话",
+  "terminalReuseTmuxShort": "复用 tmux",
   "terminalTmuxUnavailable": "服务器未安装 tmux",
   "terminalTmuxAttaching": "正在连接 tmux 会话：{session}",
   "@terminalTmuxAttaching": {
@@ -347,12 +407,75 @@
   "metricTotal": "总计",
   "metricApp": "APP",
   "metricBufferCache": "BUF",
+  "metricCpuUser": "用户",
+  "metricCpuNice": "Nice",
+  "metricCpuSystem": "系统",
+  "metricCpuIoWait": "I/O 等待",
+  "metricCpuIrq": "IRQ",
+  "metricCpuSoftIrq": "软中断",
+  "metricCpuSteal": "窃取",
+  "metricCpuIdle": "空闲",
+  "metricUsageTrend": "使用率",
+  "metricRealtimeRateTrend": "实时速率趋势",
+  "metricUploadDownload": "上传 / 下载",
+  "metricUpload": "上传",
+  "metricDownload": "下载",
+  "metricSettingsTitle": "连接配置",
+  "metricSettingsDesc": "刷新间隔、SSH 超时、Keep-Alive 与重连",
+  "metricPollingSection": "轮询",
+  "metricConnectionSection": "连接",
+  "metricRefreshInterval": "刷新间隔",
+  "metricSshConnectTimeout": "SSH 连接超时",
+  "metricKeepAliveInterval": "Keep-Alive 间隔",
+  "metricAutoReconnect": "自动重连",
+  "metricAutoReconnectDesc": "指标连接断开后自动重新连接",
+  "metricSecondsValue": "{seconds} 秒",
+  "@metricSecondsValue": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
   "serverScriptsSection": "脚本",
   "serverToolsSection": "工具",
   "serverToolProcesses": "进程列表",
   "serverToolIpAddress": "IP 地址",
   "serverToolTraffic": "流量统计",
   "serverToolDocker": "Docker",
+  "serverLogsShort": "日志",
+  "serverReboot": "重启",
+  "serverShutdown": "关机",
+  "serverRebootConfirmTitle": "重启服务器",
+  "serverRebootConfirmContent": "确定要重启「{name}」吗？",
+  "@serverRebootConfirmContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "serverShutdownConfirmTitle": "关闭服务器",
+  "serverShutdownConfirmContent": "确定要关闭「{name}」吗？",
+  "@serverShutdownConfirmContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "serverConnectionTestTitle": "连接测试",
+  "serverConnectionLogs": "连接日志",
+  "serverConnectionTesting": "正在测试连接...",
+  "serverConnectionLatency": "延迟 {ms} ms",
+  "@serverConnectionLatency": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
+  "serverConnectionLogResolving": "正在读取服务器与密钥配置",
+  "serverConnectionLogConnecting": "正在连接 {host}:{port}",
+  "@serverConnectionLogConnecting": {
+    "placeholders": {
+      "host": { "type": "String" },
+      "port": { "type": "int" }
+    }
+  },
+  "serverConnectionLogSucceeded": "连接成功，SSH 响应正常",
   "serverLogsTitle": "服务器日志",
   "serverLogsEmpty": "暂无日志",
   "serverLogsEmptySubtitle": "连接、状态请求和错误会显示在这里",

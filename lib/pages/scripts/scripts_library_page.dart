@@ -19,41 +19,45 @@ class ScriptsLibraryPage extends ConsumerWidget {
     final userScripts = ref.watch(userScriptsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.scriptsTitle),
+      appBar: compactPageAppBar(
+        context,
+        title: l10n.scriptsTitle,
+        fallbackLocation: '/settings',
         actions: [
           IconButton(
             tooltip: l10n.scriptAdd,
-            icon: const Icon(Ionicons.add),
+            icon: const Icon(Ionicons.add, size: 20),
             onPressed: () => context.go('/settings/scripts/add'),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 24),
-        children: [
-          SectionHeader(
-            title: l10n.scriptSystemSection,
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-          ),
-          for (final script in systemScripts) _ScriptTile(script: script),
-          SectionHeader(
-            title: l10n.scriptUserSection,
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-          ),
-          if (userScripts.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Text(
-                l10n.scriptUserEmpty,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+      body: TonalListBackground(
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 24),
+          children: [
+            SectionHeader(
+              title: l10n.scriptSystemSection,
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+            ),
+            for (final script in systemScripts) _ScriptTile(script: script),
+            SectionHeader(
+              title: l10n.scriptUserSection,
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+            ),
+            if (userScripts.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: Text(
+                  l10n.scriptUserEmpty,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
-            )
-          else
-            for (final script in userScripts) _ScriptTile(script: script),
-        ],
+              )
+            else
+              for (final script in userScripts) _ScriptTile(script: script),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go('/settings/scripts/add'),
@@ -93,31 +97,44 @@ class _ScriptTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-      leading: Icon(_iconForScript(script.id)),
-      title: Text(script.name),
-      subtitle: Text(script.description),
-      trailing: Wrap(
-        spacing: 4,
-        children: [
-          IconButton(
-            tooltip: AppLocalizations.of(context)!.scriptRun,
-            icon: const Icon(Ionicons.play_outline),
-            onPressed: () => runRemoteScriptFromContext(context, ref, script),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Material(
+        color: tonalItemColor(context),
+        borderRadius: BorderRadius.circular(14),
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 4,
           ),
-          IconButton(
-            tooltip: script.isSystem
-                ? AppLocalizations.of(context)!.scriptViewTitle
-                : AppLocalizations.of(context)!.scriptEditTitle,
-            icon: Icon(
-              script.isSystem ? Ionicons.eye_outline : Ionicons.create_outline,
-            ),
-            onPressed: () => context.go('/settings/scripts/${script.id}'),
+          leading: Icon(_iconForScript(script.id)),
+          title: Text(script.name),
+          subtitle: Text(script.description),
+          trailing: Wrap(
+            spacing: 4,
+            children: [
+              IconButton(
+                tooltip: AppLocalizations.of(context)!.scriptRun,
+                icon: const Icon(Ionicons.play_outline),
+                onPressed: () => runRemoteScriptFromContext(context, ref, script),
+              ),
+              IconButton(
+                tooltip: script.isSystem
+                    ? AppLocalizations.of(context)!.scriptViewTitle
+                    : AppLocalizations.of(context)!.scriptEditTitle,
+                icon: Icon(
+                  script.isSystem
+                      ? Ionicons.eye_outline
+                      : Ionicons.create_outline,
+                ),
+                onPressed: () => context.go('/settings/scripts/${script.id}'),
+              ),
+            ],
           ),
-        ],
+          onTap: () => context.go('/settings/scripts/${script.id}'),
+        ),
       ),
-      onTap: () => context.go('/settings/scripts/${script.id}'),
     );
   }
 }

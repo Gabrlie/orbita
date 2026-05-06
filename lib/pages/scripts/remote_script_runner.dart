@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/remote_script.dart';
 import 'package:orbita/models/server.dart';
+import 'package:orbita/models/server_group.dart';
 import 'package:orbita/providers/remote_script_provider.dart';
+import 'package:orbita/providers/server_group_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/services/orbita_script_syntax.dart';
 import 'package:orbita/widgets/common.dart';
@@ -17,6 +19,7 @@ Future<void> runRemoteScriptFromContext(
 ) async {
   final l10n = AppLocalizations.of(context)!;
   final servers = ref.read(serverListProvider).value ?? const <Server>[];
+  final groupState = ref.read(serverGroupProvider);
   if (servers.isEmpty) {
     await showInfoDialog(
       context,
@@ -26,7 +29,7 @@ Future<void> runRemoteScriptFromContext(
     return;
   }
 
-  final server = await _selectServer(context, servers);
+  final server = await _selectServer(context, servers, groupState);
   if (server == null || !context.mounted) return;
 
   final runnableScript = await _prepareScript(context, script);
@@ -48,35 +51,55 @@ Future<void> runRemoteScriptFromContext(
   );
 }
 
-Future<Server?> _selectServer(BuildContext context, List<Server> servers) {
+Future<Server?> _selectServer(
+  BuildContext context,
+  List<Server> servers,
+  ServerGroupState groupState,
+) {
   final l10n = AppLocalizations.of(context)!;
+  final buckets = groupServersForDisplay(
+    servers: servers,
+    groupState: groupState,
+    unnamedGroupName: l10n.serverGroupUnnamed,
+  ).where((bucket) => bucket.servers.isNotEmpty).toList();
+  final showHeaders = shouldShowServerGroupHeaders(buckets);
   return showDialog<Server>(
     context: context,
     builder: (context) => SimpleDialog(
       title: Text(l10n.scriptSelectServer),
       children: [
-        for (final server in servers)
-          SimpleDialogOption(
-            onPressed: () => Navigator.of(context).pop(server),
-            child: Row(
-              children: [
-                OsIcon(type: server.osType, size: 20),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(server.name),
-                      Text(
-                        '${server.host}:${server.port}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+        for (final bucket in buckets) ...[
+          if (showHeaders)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 10, 24, 4),
+              child: Text(
+                bucket.name,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
             ),
-          ),
+          for (final server in bucket.servers)
+            SimpleDialogOption(
+              onPressed: () => Navigator.of(context).pop(server),
+              child: Row(
+                children: [
+                  OsIcon(type: server.osType, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(server.name),
+                        Text(
+                          '${server.host}:${server.port}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ],
     ),
   );

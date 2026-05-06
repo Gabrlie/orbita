@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -38,7 +36,11 @@ class _ServerDetailPageState extends ConsumerState<ServerDetailPage> {
 
     if (server == null) {
       return Scaffold(
-        appBar: AppBar(),
+        appBar: compactPageAppBar(
+          context,
+          title: l10n.fileServerMissing,
+          fallbackLocation: '/home',
+        ),
         body: EmptyState(
           icon: Ionicons.warning_outline,
           title: l10n.fileServerMissing,
@@ -51,40 +53,38 @@ class _ServerDetailPageState extends ConsumerState<ServerDetailPage> {
     final history = _visibleHistory(status);
     final message = _statusMessage(l10n, statusAsync);
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          tooltip: l10n.commonCancel,
-          icon: const Icon(Ionicons.chevron_back_outline),
-          onPressed: () => context.go('/home'),
-        ),
-        title: Text(server.name),
+      appBar: compactPageAppBar(
+        context,
+        title: server.name,
+        onBack: () => context.go('/home'),
         actions: [
           IconButton(
             tooltip: l10n.actionFileManager,
-            icon: const Icon(Ionicons.folder_outline),
+            icon: const Icon(Ionicons.folder_outline, size: 20),
             onPressed: () => context.go('/files/${widget.id}'),
           ),
           IconButton(
             tooltip: l10n.actionConnect,
-            icon: const Icon(Ionicons.terminal_outline),
+            icon: const Icon(Ionicons.terminal_outline, size: 20),
             onPressed: () => context.go('/terminal/${widget.id}'),
           ),
           IconButton(
-            tooltip: l10n.actionEdit,
-            icon: const Icon(Ionicons.settings_outline),
-            onPressed: () => context.go('/home/server/${widget.id}/edit'),
+            tooltip: l10n.editServer,
+            icon: const Icon(Ionicons.create_outline, size: 20),
+            onPressed: () => context.push('/home/server/${widget.id}/edit'),
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(serverStatusProvider(widget.id)),
-        child: ServerMetricSections(
-          server: server,
-          status: status,
-          history: history,
-          statusMessage: message,
-          onOpenCommand: (command, title) =>
-              _openTerminalCommand(context, command: command, title: title),
+      body: TonalListBackground(
+        child: RefreshIndicator(
+          onRefresh: () async =>
+              ref.invalidate(serverStatusProvider(widget.id)),
+          child: ServerMetricSections(
+            server: server,
+            status: status,
+            history: history,
+            statusMessage: message,
+          ),
         ),
       ),
     );
@@ -123,18 +123,5 @@ class _ServerDetailPageState extends ConsumerState<ServerDetailPage> {
     }
     if (history.length <= 24) return history;
     return history.sublist(history.length - 24);
-  }
-
-  void _openTerminalCommand(
-    BuildContext context, {
-    required String command,
-    required String title,
-  }) {
-    final encoded = base64Url.encode(utf8.encode(command));
-    final uri = Uri(
-      path: '/terminal/${widget.id}',
-      queryParameters: {'initial': encoded, 'title': title},
-    );
-    context.go(uri.toString());
   }
 }

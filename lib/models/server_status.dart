@@ -35,6 +35,28 @@ class CpuCoreStatus {
   const CpuCoreStatus({required this.label, required this.percent});
 }
 
+class CpuBreakdownStatus {
+  final double user;
+  final double nice;
+  final double system;
+  final double idle;
+  final double ioWait;
+  final double irq;
+  final double softIrq;
+  final double steal;
+
+  const CpuBreakdownStatus({
+    this.user = 0,
+    this.nice = 0,
+    this.system = 0,
+    this.idle = 0,
+    this.ioWait = 0,
+    this.irq = 0,
+    this.softIrq = 0,
+    this.steal = 0,
+  });
+}
+
 class NetworkInterfaceStatus {
   final String name;
   final double upRate;
@@ -75,8 +97,11 @@ class ServerStatus {
   final int ioWriteTotal;
   final int ioReadTotal;
   final String osId;
+  final String osPrettyName;
+  final String osArch;
   final RawNetIoSnapshot snapshot;
   final List<CpuCoreStatus> cpuCoresStatus;
+  final CpuBreakdownStatus cpuBreakdown;
   final List<NetworkInterfaceStatus> networkInterfaces;
 
   const ServerStatus({
@@ -102,8 +127,11 @@ class ServerStatus {
     required this.ioWriteTotal,
     required this.ioReadTotal,
     required this.osId,
+    this.osPrettyName = '',
+    this.osArch = '',
     required this.snapshot,
     this.cpuCoresStatus = const [],
+    this.cpuBreakdown = const CpuBreakdownStatus(),
     this.networkInterfaces = const [],
   });
 
@@ -115,4 +143,11 @@ class ServerStatus {
   String get memSub => formatBytes(memTotal);
   String get diskSub => formatBytes(diskTotal);
   String get cpuSub => '$cpuCores Core${cpuCores > 1 ? 's' : ''}';
+  String get osDisplayName {
+    final name = osPrettyName.isNotEmpty ? osPrettyName : osId;
+    if (osArch.isEmpty || name.toLowerCase().contains(osArch.toLowerCase())) {
+      return name;
+    }
+    return '$name $osArch';
+  }
 }

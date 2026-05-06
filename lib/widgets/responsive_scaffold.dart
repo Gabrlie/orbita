@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/providers/navigation_reset_provider.dart';
 
-class ResponsiveScaffold extends StatefulWidget {
+class ResponsiveScaffold extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
   final bool hideNavigation;
 
@@ -14,17 +16,25 @@ class ResponsiveScaffold extends StatefulWidget {
   });
 
   @override
-  State<ResponsiveScaffold> createState() => _ResponsiveScaffoldState();
+  ConsumerState<ResponsiveScaffold> createState() =>
+      _ResponsiveScaffoldState();
 }
 
-class _ResponsiveScaffoldState extends State<ResponsiveScaffold> {
+class _ResponsiveScaffoldState extends ConsumerState<ResponsiveScaffold> {
   var _railExpanded = true;
 
   void _onNavigate(int index) {
-    widget.navigationShell.goBranch(
-      index,
-      initialLocation: index == widget.navigationShell.currentIndex,
-    );
+    final current = widget.navigationShell.currentIndex;
+    if (index != current) {
+      _resetBranch(current);
+      _resetBranch(index);
+    }
+    widget.navigationShell.goBranch(index, initialLocation: true);
+  }
+
+  void _resetBranch(int index) {
+    final notifier = ref.read(navigationBranchResetProvider(index).notifier);
+    notifier.bump();
   }
 
   @override

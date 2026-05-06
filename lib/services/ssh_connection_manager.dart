@@ -39,12 +39,38 @@ class SshConnectionManager {
   SshConnectionManager({
     SshServiceConnector? connector,
     Duration idleTimeout = const Duration(minutes: 2),
-  }) : _connector = connector ?? SshService.connect,
+    Duration connectTimeout = const Duration(seconds: 10),
+    Duration keepAliveInterval = const Duration(seconds: 30),
+  }) : _connector =
+           connector ?? _defaultConnector(connectTimeout, keepAliveInterval),
        _idleTimeout = idleTimeout;
 
   final SshServiceConnector _connector;
   final Duration _idleTimeout;
   final Map<String, _ManagedSshConnection> _connections = {};
+
+  static SshServiceConnector _defaultConnector(
+    Duration connectTimeout,
+    Duration keepAliveInterval,
+  ) {
+    return ({
+      required String host,
+      required int port,
+      required String username,
+      String? password,
+      SshKey? key,
+    }) {
+      return SshService.connect(
+        host: host,
+        port: port,
+        username: username,
+        password: password,
+        key: key,
+        timeout: connectTimeout,
+        keepAliveInterval: keepAliveInterval,
+      );
+    };
+  }
 
   Future<SshClientSession> getOrConnect(Server server, {SshKey? key}) {
     return _resolveService(server, key: key, retain: false);

@@ -72,6 +72,7 @@ class TerminalExtraKeyController {
 
   bool ctrlEnabled = false;
   bool altEnabled = false;
+  bool get hasModifiers => ctrlEnabled || altEnabled;
 
   TerminalExtraKeyController(this._send);
 
@@ -118,6 +119,16 @@ class TerminalExtraKeyController {
   void _sendKey(TerminalSemanticKey key) {
     _send(TerminalExtraKeyOutput.key(key, ctrl: ctrlEnabled, alt: altEnabled));
     _resetModifiers();
+  }
+
+  TerminalExtraKeyOutput consumeText(String text) {
+    final output = TerminalExtraKeyOutput.text(
+      text,
+      ctrl: ctrlEnabled,
+      alt: altEnabled,
+    );
+    _resetModifiers();
+    return output;
   }
 
   void _resetModifiers() {

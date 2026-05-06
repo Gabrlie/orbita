@@ -1,5 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+
+PreferredSizeWidget compactPageAppBar(
+  BuildContext context, {
+  required String title,
+  List<Widget> actions = const [],
+  String? fallbackLocation,
+  VoidCallback? onBack,
+}) {
+  final theme = Theme.of(context);
+  return AppBar(
+    toolbarHeight: 48,
+    leading: IconButton(
+      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+      icon: const Icon(Ionicons.chevron_back_outline, size: 20),
+      onPressed:
+          onBack ??
+          () {
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) {
+              navigator.pop();
+            } else if (fallbackLocation != null) {
+              context.go(fallbackLocation);
+            }
+          },
+    ),
+    title: Text(
+      title,
+      style: theme.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+    actions: actions,
+  );
+}
 
 /// Reusable section header for grouped lists (e.g., settings page).
 class SectionHeader extends StatelessWidget {
@@ -71,6 +107,31 @@ class EmptyState extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Tonal background for scrollable lists so surface cards stand apart.
+class TonalListBackground extends StatelessWidget {
+  final Widget child;
+
+  const TonalListBackground({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surface,
+      child: child,
+    );
+  }
+}
+
+Color tonalItemColor(BuildContext context) {
+  final theme = Theme.of(context);
+  final colorScheme = theme.colorScheme;
+  final tintAlpha = theme.brightness == Brightness.dark ? 22 : 12;
+  return Color.alphaBlend(
+    colorScheme.primary.withAlpha(tintAlpha),
+    colorScheme.surfaceContainerLow,
+  );
 }
 
 /// Confirmation dialog helper. Returns true if user confirmed.

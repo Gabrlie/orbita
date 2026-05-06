@@ -19,6 +19,7 @@ import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/server_refresh_provider.dart';
 import 'package:orbita/providers/ssh_connection_provider.dart';
 import 'package:orbita/providers/ssh_log_provider.dart';
+import 'package:orbita/providers/terminal_metric_history_provider.dart';
 import 'package:orbita/services/ssh_connection_manager.dart';
 import 'package:orbita/services/ssh_service.dart';
 import 'package:orbita/widgets/common.dart';
@@ -26,6 +27,8 @@ import 'package:orbita/widgets/remote_script_output_dialog.dart';
 import 'package:xterm/xterm.dart';
 
 part 'terminal_connection.dart';
+part 'terminal_actions.dart';
+part 'terminal_input.dart';
 
 class TerminalPage extends ConsumerStatefulWidget {
   final String serverId;
@@ -57,6 +60,7 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
   SshShellSession? _shell;
   String? _title;
   bool _connecting = true;
+  bool _connectStarted = false;
 
   @override
   void initState() {
@@ -67,13 +71,21 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
       onResize: _resizeShell,
     );
     _extraKeyController = TerminalExtraKeyController(_handleExtraKeyOutput);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _connect());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_connectStarted) return;
+    _connectStarted = true;
+    unawaited(_connect());
   }
 
   @override
   void dispose() {
     _disposeShell();
     _releaseConnection();
+    ref.invalidate(terminalMetricHistoryProvider(widget.serverId));
     super.dispose();
   }
 
@@ -188,42 +200,8 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
     _connectionLease = null;
   }
 
-  void _writeToShell(String data) {
-    _shell?.write(utf8.encode(data));
-  }
-
-  void _resizeShell(int columns, int rows, int pixelWidth, int pixelHeight) {
-    _shell?.resizeTerminal(columns, rows, pixelWidth, pixelHeight);
-  }
-
-  void _handleExtraKeyOutput(TerminalExtraKeyOutput output) {
-    if (output.text != null) {
-      final text = output.text!;
-      if (text.length == 1 && (output.ctrl || output.alt)) {
-        _terminal.charInput(
-          text.codeUnitAt(0),
-          ctrl: output.ctrl,
-          alt: output.alt,
-        );
-      } else {
-        _terminal.textInput(text);
-      }
-    } else if (output.key != null) {
-      _terminal.keyInput(
-        mapSemanticKey(output.key!),
-        ctrl: output.ctrl,
-        alt: output.alt,
-      );
-    }
-
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  void _handleExtraKey(TerminalExtraKey key) {
-    _extraKeyController.press(key);
-    setState(() {});
+  void _refreshInputState() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -232,6 +210,8 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
     final server = ref.watch(serverByIdProvider(widget.serverId));
     final title = _title ?? server?.name ?? l10n.navTerminal;
     final touchPlatform = isTouchPlatform();
+    ref.watch(serverStatusProvider(widget.serverId));
+    ref.watch(terminalMetricHistoryProvider(widget.serverId));
 
     if (server == null) {
       return EmptyState(
@@ -250,6 +230,7 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
       ctrlEnabled: _extraKeyController.ctrlEnabled,
       altEnabled: _extraKeyController.altEnabled,
       onExtraKey: _handleExtraKey,
+      onSnippetSelected: _insertSnippet,
     );
 
     if (!widget.showAppBar) {
@@ -257,9 +238,9 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        leading: const BackButton(),
+      appBar: compactPageAppBar(
+        context,
+        title: title,
         actions: [
           if (touchPlatform)
             IconButton(
@@ -273,60 +254,4 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
     );
   }
 
-  void _openDashboard(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: Text(l10n.terminalDashboard)),
-          body: TerminalDashboard(serverId: widget.serverId),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _promptInstallTmux(Server server, SshKey? key) async {
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showConfirmDialog(
-      context,
-      title: l10n.terminalTmuxUnavailable,
-      content: l10n.scriptInstallTmuxPrompt,
-      confirmLabel: l10n.fileInstallTools,
-    );
-    if (!confirmed || !mounted) return;
-    final service = ref.read(remoteScriptServiceProvider);
-    final script = service
-        .builtInScripts(
-          archiveName: l10n.scriptInstallArchiveTools,
-          archiveDescription: l10n.scriptInstallArchiveToolsDesc,
-          dockerName: l10n.scriptInstallDocker,
-          dockerDescription: l10n.scriptInstallDockerDesc,
-          tmuxName: l10n.scriptInstallTmux,
-          tmuxDescription: l10n.scriptInstallTmuxDesc,
-          mirrorName: l10n.scriptChangeMirror,
-          mirrorDescription: l10n.scriptChangeMirrorDesc,
-          mirrorSelectTitle: l10n.scriptSelectMirror,
-          mirrorTunaLabel: l10n.scriptMirrorTuna,
-          mirrorUstcLabel: l10n.scriptMirrorUstc,
-          mirrorAliyunLabel: l10n.scriptMirrorAliyun,
-          mirrorTencentLabel: l10n.scriptMirrorTencent,
-          mirrorHuaweiLabel: l10n.scriptMirrorHuawei,
-        )
-        .firstWhere((script) => script.id == 'install-tmux');
-    final success = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => RemoteScriptOutputDialog(
-        title: l10n.scriptRunningOn(script.name, server.name),
-        successMessage: l10n.scriptRunSucceeded,
-        failureMessage: l10n.scriptRunFailed,
-        onRun: (onOutput) =>
-            service.run(server, script: script, key: key, onOutput: onOutput),
-      ),
-    );
-    if (success == true && mounted) {
-      await _connect();
-    }
-  }
 }

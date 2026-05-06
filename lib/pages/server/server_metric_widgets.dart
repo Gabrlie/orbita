@@ -7,19 +7,30 @@ class _ActionGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return _Panel(
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      child: Column(
         children: [
-          for (final action in actions)
-            Tooltip(
-              message: action.label,
-              child: IconButton.filledTonal(
-                onPressed: action.onTap,
-                icon: Icon(action.icon),
+          for (var i = 0; i < actions.length; i++) ...[
+            SizedBox(
+              height: 42,
+              child: ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                contentPadding: EdgeInsets.zero,
+                leading: _IconBadge(icon: actions[i].icon),
+                minLeadingWidth: 0,
+                horizontalTitleGap: 10,
+                title: Text(
+                  actions[i].label,
+                  style: theme.textTheme.labelLarge,
+                ),
+                onTap: actions[i].onTap,
               ),
             ),
+            if (i != actions.length - 1) const Divider(height: 1),
+          ],
         ],
       ),
     );
@@ -38,24 +49,71 @@ class _ActionSpec {
   });
 }
 
-class _SectionTitle extends StatelessWidget {
+class _CollapsibleMetricSection extends StatelessWidget {
   final String title;
+  final Widget icon;
+  final bool collapsed;
+  final VoidCallback onTap;
+  final Widget child;
 
-  const _SectionTitle({required this.title});
+  const _CollapsibleMetricSection({
+    required this.title,
+    required this.icon,
+    required this.collapsed,
+    required this.onTap,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 22, 4, 8),
-      child: Row(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
         children: [
-          const Icon(Ionicons.chevron_down_outline, size: 16),
-          const SizedBox(width: 6),
-          Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(2, 8, 2, 10),
+              child: Row(
+                children: [
+                  IconTheme(
+                    data: IconThemeData(
+                      color: theme.colorScheme.primary,
+                      size: 18,
+                    ),
+                    child: icon,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    collapsed
+                        ? Ionicons.chevron_down_outline
+                        : Ionicons.chevron_up_outline,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment.topCenter,
+            child: collapsed
+                ? const SizedBox(width: double.infinity)
+                : Padding(padding: const EdgeInsets.only(top: 2), child: child),
           ),
         ],
       ),
@@ -65,16 +123,27 @@ class _SectionTitle extends StatelessWidget {
 
 class _Panel extends StatelessWidget {
   final Widget child;
+  final bool surface;
+  final EdgeInsetsGeometry padding;
 
-  const _Panel({required this.child});
+  const _Panel({
+    required this.child,
+    this.surface = false,
+    this.padding = const EdgeInsets.all(14),
+  });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      elevation: 0,
+      color: surface ? colorScheme.surface : tonalItemColor(context),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: colorScheme.outlineVariant.withAlpha(150)),
+      ),
       surfaceTintColor: Colors.transparent,
-      child: Padding(padding: const EdgeInsets.all(14), child: child),
+      child: Padding(padding: padding, child: child),
     );
   }
 }
@@ -91,12 +160,19 @@ class _TinyMetric extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: theme.textTheme.labelSmall),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
         const SizedBox(height: 4),
         Text(
           value,
           overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.titleSmall,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ],
     );
@@ -106,17 +182,77 @@ class _TinyMetric extends StatelessWidget {
 class _ValueChip extends StatelessWidget {
   final String label;
   final String value;
+  final Color? color;
+  final double? width;
 
-  const _ValueChip(this.label, this.value);
+  const _ValueChip(this.label, this.value, {this.color, this.width = 118.0});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Chip(
-      label: Text('$label $value'),
-      visualDensity: VisualDensity.compact,
-      backgroundColor: theme.colorScheme.surfaceContainerHighest,
-      side: BorderSide.none,
+    final child = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            margin: const EdgeInsets.only(top: 5, right: 6),
+            decoration: BoxDecoration(
+              color: color ?? theme.colorScheme.primary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+    );
+    if (width == null) return child;
+    return SizedBox(width: width, child: child);
+  }
+}
+
+class _ValueGrid extends StatelessWidget {
+  final List<Widget> children;
+
+  const _ValueGrid({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var row = 0; row < children.length; row += 2) ...[
+          Row(
+            children: [
+              Expanded(child: children[row]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: row + 1 < children.length
+                    ? children[row + 1]
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
+          if (row + 2 < children.length) const SizedBox(height: 10),
+        ],
+      ],
     );
   }
 }
@@ -129,14 +265,23 @@ class _ProgressRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Row(
         children: [
-          SizedBox(width: 52, child: Text(label)),
+          SizedBox(
+            width: 58,
+            child: Text(label, style: theme.textTheme.labelSmall),
+          ),
           Expanded(child: LinearProgressIndicator(value: percent.clamp(0, 1))),
           const SizedBox(width: 8),
-          Text('${(percent * 100).round()}%'),
+          Text(
+            '${(percent * 100).toStringAsFixed(1)}%',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
@@ -189,10 +334,36 @@ class _Badge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(label, style: Theme.of(context).textTheme.labelSmall),
+      child: Text(
+        label.toUpperCase(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+class _IconBadge extends StatelessWidget {
+  final IconData icon;
+
+  const _IconBadge({required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer.withAlpha(150),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(icon, size: 16, color: colorScheme.primary),
     );
   }
 }
@@ -204,13 +375,13 @@ class _InterfaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SizedBox(
       width: 150,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
+          color: theme.colorScheme.surface.withAlpha(120),
+          border: Border.all(color: theme.colorScheme.outlineVariant),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Padding(
@@ -236,6 +407,13 @@ class _InterfaceCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(formatRate(iface.downRate)),
                 ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${formatBytes(iface.txTotal)} / ${formatBytes(iface.rxTotal)}',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),

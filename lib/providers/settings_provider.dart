@@ -21,6 +21,10 @@ const _keyTerminalCustomFontFamily = 'terminal_custom_font_family';
 const _keyTerminalFontSize = 'terminal_font_size';
 const _keyTerminalForegroundColor = 'terminal_foreground_color';
 const _keyTerminalBackgroundColor = 'terminal_background_color';
+const _keyMetricRefreshInterval = 'metric_refresh_interval_seconds';
+const _keyMetricSshConnectTimeout = 'metric_ssh_connect_timeout_seconds';
+const _keyMetricKeepAliveInterval = 'metric_keep_alive_interval_seconds';
+const _keyMetricAutoReconnect = 'metric_auto_reconnect';
 
 enum TerminalFontFamily { jetbrainsMono, system, monospace, custom }
 
@@ -83,6 +87,64 @@ class TerminalAppearance {
     foregroundColor,
     backgroundColor,
   );
+}
+
+class MetricSettings {
+  final int refreshIntervalSeconds;
+  final int sshConnectTimeoutSeconds;
+  final int keepAliveIntervalSeconds;
+  final bool autoReconnect;
+
+  const MetricSettings({
+    this.refreshIntervalSeconds = 10,
+    this.sshConnectTimeoutSeconds = 10,
+    this.keepAliveIntervalSeconds = 30,
+    this.autoReconnect = true,
+  });
+
+  Duration get refreshInterval => Duration(seconds: refreshIntervalSeconds);
+  Duration get sshConnectTimeout =>
+      Duration(seconds: sshConnectTimeoutSeconds);
+  Duration get keepAliveInterval =>
+      Duration(seconds: keepAliveIntervalSeconds);
+
+  MetricSettings copyWith({
+    int? refreshIntervalSeconds,
+    int? sshConnectTimeoutSeconds,
+    int? keepAliveIntervalSeconds,
+    bool? autoReconnect,
+  }) {
+    return MetricSettings(
+      refreshIntervalSeconds:
+          refreshIntervalSeconds ?? this.refreshIntervalSeconds,
+      sshConnectTimeoutSeconds:
+          sshConnectTimeoutSeconds ?? this.sshConnectTimeoutSeconds,
+      keepAliveIntervalSeconds:
+          keepAliveIntervalSeconds ?? this.keepAliveIntervalSeconds,
+      autoReconnect: autoReconnect ?? this.autoReconnect,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MetricSettings &&
+        other.refreshIntervalSeconds == refreshIntervalSeconds &&
+        other.sshConnectTimeoutSeconds == sshConnectTimeoutSeconds &&
+        other.keepAliveIntervalSeconds == keepAliveIntervalSeconds &&
+        other.autoReconnect == autoReconnect;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    refreshIntervalSeconds,
+    sshConnectTimeoutSeconds,
+    keepAliveIntervalSeconds,
+    autoReconnect,
+  );
+}
+
+int _clampSeconds(int value, int min, int max) {
+  return value.clamp(min, max).toInt();
 }
 
 // -- Theme Mode --
@@ -202,6 +264,80 @@ class TerminalAppearanceNotifier extends Notifier<TerminalAppearance> {
       _keyTerminalBackgroundColor,
       appearance.backgroundColor.toARGB32(),
     );
+  }
+}
+
+// -- Metric Settings --
+
+final metricSettingsProvider =
+    NotifierProvider<MetricSettingsNotifier, MetricSettings>(
+      MetricSettingsNotifier.new,
+    );
+
+class MetricSettingsNotifier extends Notifier<MetricSettings> {
+  static const _default = MetricSettings();
+
+  @override
+  MetricSettings build() {
+    final prefs = ref.read(sharedPrefsProvider);
+    return MetricSettings(
+      refreshIntervalSeconds: _clampSeconds(
+        prefs.getInt(_keyMetricRefreshInterval) ??
+            _default.refreshIntervalSeconds,
+        3,
+        120,
+      ),
+      sshConnectTimeoutSeconds: _clampSeconds(
+        prefs.getInt(_keyMetricSshConnectTimeout) ??
+            _default.sshConnectTimeoutSeconds,
+        3,
+        60,
+      ),
+      keepAliveIntervalSeconds: _clampSeconds(
+        prefs.getInt(_keyMetricKeepAliveInterval) ??
+            _default.keepAliveIntervalSeconds,
+        5,
+        120,
+      ),
+      autoReconnect:
+          prefs.getBool(_keyMetricAutoReconnect) ?? _default.autoReconnect,
+    );
+  }
+
+  Future<void> set(MetricSettings settings) async {
+    final normalized = MetricSettings(
+      refreshIntervalSeconds: _clampSeconds(
+        settings.refreshIntervalSeconds,
+        3,
+        120,
+      ),
+      sshConnectTimeoutSeconds: _clampSeconds(
+        settings.sshConnectTimeoutSeconds,
+        3,
+        60,
+      ),
+      keepAliveIntervalSeconds: _clampSeconds(
+        settings.keepAliveIntervalSeconds,
+        5,
+        120,
+      ),
+      autoReconnect: settings.autoReconnect,
+    );
+    state = normalized;
+    final prefs = ref.read(sharedPrefsProvider);
+    await prefs.setInt(
+      _keyMetricRefreshInterval,
+      normalized.refreshIntervalSeconds,
+    );
+    await prefs.setInt(
+      _keyMetricSshConnectTimeout,
+      normalized.sshConnectTimeoutSeconds,
+    );
+    await prefs.setInt(
+      _keyMetricKeepAliveInterval,
+      normalized.keepAliveIntervalSeconds,
+    );
+    await prefs.setBool(_keyMetricAutoReconnect, normalized.autoReconnect);
   }
 }
 

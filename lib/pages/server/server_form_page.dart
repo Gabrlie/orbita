@@ -6,11 +6,18 @@ import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
 import 'package:orbita/pages/server/server_key_picker.dart';
 import 'package:orbita/providers/server_provider.dart';
+import 'package:orbita/widgets/common.dart';
 import 'package:orbita/widgets/os_icon.dart';
 
 class ServerFormPage extends ConsumerStatefulWidget {
   final String? serverId;
-  const ServerFormPage({super.key, this.serverId});
+  final String returnPath;
+
+  const ServerFormPage({
+    super.key,
+    this.serverId,
+    this.returnPath = '/home',
+  });
 
   @override
   ConsumerState<ServerFormPage> createState() => _ServerFormPageState();
@@ -66,128 +73,132 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEdit ? l10n.editServer : l10n.addServer),
+      appBar: compactPageAppBar(
+        context,
+        title: _isEdit ? l10n.editServer : l10n.addServer,
+        fallbackLocation: widget.returnPath,
         actions: [TextButton(onPressed: _save, child: Text(l10n.commonSave))],
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            TextFormField(
-              controller: _name,
-              decoration: InputDecoration(
-                labelText: l10n.serverName,
-                border: const OutlineInputBorder(),
-              ),
-              validator: (v) => v == null || v.trim().isEmpty
-                  ? l10n.validationRequired
-                  : null,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    controller: _host,
-                    decoration: InputDecoration(
-                      labelText: l10n.serverHost,
-                      border: const OutlineInputBorder(),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return l10n.validationRequired;
-                      }
-                      if (v.contains(' ')) return l10n.validationInvalidHost;
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 1,
-                  child: TextFormField(
-                    controller: _port,
-                    decoration: InputDecoration(
-                      labelText: l10n.serverPort,
-                      border: const OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (v) {
-                      final p = int.tryParse(v ?? '');
-                      if (p == null || p < 1 || p > 65535) {
-                        return l10n.validationInvalidPort;
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _username,
-              decoration: InputDecoration(
-                labelText: l10n.serverUsername,
-                border: const OutlineInputBorder(),
-              ),
-              validator: (v) => v == null || v.trim().isEmpty
-                  ? l10n.validationRequired
-                  : null,
-            ),
-            const SizedBox(height: 16),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                l10n.serverAuthType,
-                style: theme.textTheme.titleSmall,
-              ),
-            ),
-            SegmentedButton<AuthType>(
-              segments: [
-                ButtonSegment(
-                  value: AuthType.password,
-                  label: Text(l10n.authPassword),
-                ),
-                ButtonSegment(
-                  value: AuthType.key,
-                  label: Text(l10n.authPrivateKey),
-                ),
-              ],
-              selected: {_authType},
-              onSelectionChanged: (s) => setState(() => _authType = s.first),
-            ),
-            const SizedBox(height: 16),
-
-            if (_authType == AuthType.password)
+      body: TonalListBackground(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
               TextFormField(
-                controller: _password,
-                obscureText: true,
+                controller: _name,
                 decoration: InputDecoration(
-                  labelText: l10n.authPassword,
+                  labelText: l10n.serverName,
                   border: const OutlineInputBorder(),
                 ),
-              )
-            else
-              ServerKeyPicker(
-                selectedKeyId: _selectedKeyId,
-                onSelected: (id) => setState(() => _selectedKeyId = id),
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? l10n.validationRequired
+                    : null,
               ),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: TextFormField(
+                      controller: _host,
+                      decoration: InputDecoration(
+                        labelText: l10n.serverHost,
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty) {
+                          return l10n.validationRequired;
+                        }
+                        if (v.contains(' ')) return l10n.validationInvalidHost;
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 1,
+                    child: TextFormField(
+                      controller: _port,
+                      decoration: InputDecoration(
+                        labelText: l10n.serverPort,
+                        border: const OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (v) {
+                        final p = int.tryParse(v ?? '');
+                        if (p == null || p < 1 || p > 65535) {
+                          return l10n.validationInvalidPort;
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _username,
+                decoration: InputDecoration(
+                  labelText: l10n.serverUsername,
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? l10n.validationRequired
+                    : null,
+              ),
+              const SizedBox(height: 16),
 
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _tags,
-              decoration: InputDecoration(
-                labelText: l10n.serverTags,
-                hintText: l10n.serverTagsHint,
-                border: const OutlineInputBorder(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  l10n.serverAuthType,
+                  style: theme.textTheme.titleSmall,
+                ),
               ),
-            ),
-          ],
+              SegmentedButton<AuthType>(
+                segments: [
+                  ButtonSegment(
+                    value: AuthType.password,
+                    label: Text(l10n.authPassword),
+                  ),
+                  ButtonSegment(
+                    value: AuthType.key,
+                    label: Text(l10n.authPrivateKey),
+                  ),
+                ],
+                selected: {_authType},
+                onSelectionChanged: (s) => setState(() => _authType = s.first),
+              ),
+              const SizedBox(height: 16),
+
+              if (_authType == AuthType.password)
+                TextFormField(
+                  controller: _password,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: l10n.authPassword,
+                    border: const OutlineInputBorder(),
+                  ),
+                )
+              else
+                ServerKeyPicker(
+                  selectedKeyId: _selectedKeyId,
+                  onSelected: (id) => setState(() => _selectedKeyId = id),
+                ),
+
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _tags,
+                decoration: InputDecoration(
+                  labelText: l10n.serverTags,
+                  hintText: l10n.serverTagsHint,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -224,7 +235,7 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
     if (context.canPop()) {
       context.pop();
     } else {
-      context.go('/home');
+      context.go(widget.returnPath);
     }
   }
 }

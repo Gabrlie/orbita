@@ -5,8 +5,15 @@
   "commonCancel": "Cancel",
   "commonConfirm": "Confirm",
   "commonDelete": "Delete",
+  "commonEdit": "Edit",
   "commonSave": "Save",
   "commonRefresh": "Refresh",
+  "commonTest": "Test",
+  "commonActionDone": "Action completed",
+  "commonActionFailed": "Action failed",
+  "newTab": "New Tab",
+  "openNewTab": "Open New Tab",
+  "closeTab": "Close Tab",
 
   "unlock": "Unlock",
   "password": "Password",
@@ -92,6 +99,12 @@
   "keyCopied": "Copied to clipboard",
   "keyNoPublicKey": "No public key for imported key",
   "keyCopyPublicKey": "Copy Public Key",
+  "keyUsedByServerCount": "{count} servers using this key",
+  "@keyUsedByServerCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "noKeys": "No Keys",
   "noKeysSubtitle": "Tap + to add or generate",
   "selectKey": "Select Key",
@@ -204,6 +217,37 @@
   "settingsSnippetsDesc": "Quick-access command bookmarks",
   "scriptsTitle": "Scripts",
   "snippetsTitle": "Snippets",
+  "serverGroupUnnamed": "Unnamed Group",
+  "serverGroupAdd": "New Group",
+  "serverGroupEdit": "Edit Group",
+  "serverGroupName": "Group Name",
+  "serverGroupCount": "{count} servers",
+  "@serverGroupCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "serverGroupDropHint": "Drag servers here",
+  "serverGroupDeleteTitle": "Delete Group",
+  "serverGroupDeleteContent": "Delete group \"{name}\"? Servers will move to the unnamed group.",
+  "@serverGroupDeleteContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "commandSnippetAdd": "New Snippet",
+  "commandSnippetEdit": "Edit Snippet",
+  "commandSnippetName": "Snippet Name",
+  "commandSnippetCommand": "Command",
+  "commandSnippetSearchHint": "Search snippets or commands",
+  "commandSnippetEmpty": "No command snippets",
+  "commandSnippetDeleteTitle": "Delete Snippet",
+  "commandSnippetDeleteContent": "Delete snippet \"{name}\"?",
+  "@commandSnippetDeleteContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "scriptInstallArchiveTools": "Install Archive Tools",
   "scriptInstallArchiveToolsDesc": "Install zip, unzip, and 7z for compression, extraction, and archive previews.",
   "scriptInstallDocker": "Install Docker",
@@ -267,6 +311,20 @@
   "settingsNetworkDesc": "Cloudflared / Tailscale",
   "settingsAbout": "About Orbita",
   "settingsAboutDesc": "Version info and update check",
+  "aboutVersion": "Version {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "aboutOverview": "Overview",
+  "aboutPrivacyTitle": "Privacy-first",
+  "aboutPrivacyDesc": "Server configuration stays local and sensitive data is protected by secure storage.",
+  "aboutCrossPlatformTitle": "Cross-platform",
+  "aboutCrossPlatformDesc": "Built with Flutter, Android-first with desktop support.",
+  "aboutNoAgentTitle": "No server agent",
+  "aboutNoAgentDesc": "Uses SSH/SFTP and native Linux commands for server management.",
+  "aboutTechStack": "Tech Stack",
   "comingSoon": "Coming Soon",
   "inDevelopment": "In Development",
 
@@ -309,7 +367,9 @@
   "terminalColorPicker": "Choose Color",
   "terminalDashboard": "Metrics Dashboard",
   "terminalConnectOptions": "Terminal Connection",
+  "terminalConnectDirect": "Connect Terminal",
   "terminalConnectTmux": "Reuse tmux Session",
+  "terminalReuseTmuxShort": "Reuse tmux",
   "terminalTmuxUnavailable": "tmux is not installed on this server",
   "terminalTmuxAttaching": "Attaching tmux session: {session}",
   "@terminalTmuxAttaching": {
@@ -347,12 +407,75 @@
   "metricTotal": "Total",
   "metricApp": "APP",
   "metricBufferCache": "BUF",
+  "metricCpuUser": "User",
+  "metricCpuNice": "Nice",
+  "metricCpuSystem": "System",
+  "metricCpuIoWait": "I/O wait",
+  "metricCpuIrq": "IRQ",
+  "metricCpuSoftIrq": "Soft IRQ",
+  "metricCpuSteal": "Steal",
+  "metricCpuIdle": "Idle",
+  "metricUsageTrend": "Usage",
+  "metricRealtimeRateTrend": "Realtime rate trend",
+  "metricUploadDownload": "Upload / Download",
+  "metricUpload": "Upload",
+  "metricDownload": "Download",
+  "metricSettingsTitle": "Connection Config",
+  "metricSettingsDesc": "Refresh interval, SSH timeout, keep-alive, and reconnect",
+  "metricPollingSection": "Polling",
+  "metricConnectionSection": "Connection",
+  "metricRefreshInterval": "Refresh Interval",
+  "metricSshConnectTimeout": "SSH Connect Timeout",
+  "metricKeepAliveInterval": "Keep-Alive Interval",
+  "metricAutoReconnect": "Auto Reconnect",
+  "metricAutoReconnectDesc": "Reconnect automatically after a metric connection drops",
+  "metricSecondsValue": "{seconds}s",
+  "@metricSecondsValue": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
   "serverScriptsSection": "Scripts",
   "serverToolsSection": "Tools",
   "serverToolProcesses": "Processes",
   "serverToolIpAddress": "IP Address",
   "serverToolTraffic": "Traffic",
   "serverToolDocker": "Docker",
+  "serverLogsShort": "Logs",
+  "serverReboot": "Reboot",
+  "serverShutdown": "Shutdown",
+  "serverRebootConfirmTitle": "Reboot Server",
+  "serverRebootConfirmContent": "Reboot \"{name}\"?",
+  "@serverRebootConfirmContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "serverShutdownConfirmTitle": "Shutdown Server",
+  "serverShutdownConfirmContent": "Shutdown \"{name}\"?",
+  "@serverShutdownConfirmContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "serverConnectionTestTitle": "Connection Test",
+  "serverConnectionLogs": "Connection Logs",
+  "serverConnectionTesting": "Testing connection...",
+  "serverConnectionLatency": "Latency {ms} ms",
+  "@serverConnectionLatency": {
+    "placeholders": {
+      "ms": { "type": "int" }
+    }
+  },
+  "serverConnectionLogResolving": "Reading server and key configuration",
+  "serverConnectionLogConnecting": "Connecting to {host}:{port}",
+  "@serverConnectionLogConnecting": {
+    "placeholders": {
+      "host": { "type": "String" },
+      "port": { "type": "int" }
+    }
+  },
+  "serverConnectionLogSucceeded": "Connected successfully; SSH responded",
   "serverLogsTitle": "Server Logs",
   "serverLogsEmpty": "No logs yet",
   "serverLogsEmptySubtitle": "Connections, status requests, and errors appear here",

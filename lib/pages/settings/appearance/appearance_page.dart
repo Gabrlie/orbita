@@ -21,53 +21,61 @@ class AppearancePage extends ConsumerWidget {
     final currentSeed = ref.watch(themeSeedProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.appearanceTitle)),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        children: [
-          SectionHeader(
-            title: l10n.themeMode,
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: _ThemeModePicker(
-              selected: currentTheme,
-              onChanged: (mode) =>
-                  ref.read(themeModeProvider.notifier).set(mode),
+      appBar: compactPageAppBar(
+        context,
+        title: l10n.appearanceTitle,
+        fallbackLocation: '/settings',
+      ),
+      body: TonalListBackground(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          children: [
+            SectionHeader(
+              title: l10n.appearanceTitle,
+              padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
             ),
-          ),
-          SectionHeader(
-            title: l10n.themeColor,
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: ThemeColorPicker(
-              dynamicSelected: useDynamicColor,
-              selectedSeed: currentSeed,
-              onDynamicSelected: () {
-                ref.read(dynamicColorProvider.notifier).set(true);
-              },
-              onSeedSelected: (seed) {
-                ref.read(themeSeedProvider.notifier).set(seed);
-                ref.read(dynamicColorProvider.notifier).set(false);
-              },
+            _AppearancePanel(
+              children: [
+                _PreferenceBlock(
+                  title: l10n.themeMode,
+                  child: _ThemeModePicker(
+                    selected: currentTheme,
+                    onChanged: (mode) =>
+                        ref.read(themeModeProvider.notifier).set(mode),
+                  ),
+                ),
+                const Divider(height: 24),
+                _PreferenceBlock(
+                  title: l10n.language,
+                  child: _LanguagePicker(
+                    selected: _languageOptionFor(currentLocale),
+                    onChanged: (option) => _setLanguage(ref, option),
+                  ),
+                ),
+              ],
             ),
-          ),
-          SectionHeader(
-            title: l10n.language,
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: _LanguagePicker(
-              selected: _languageOptionFor(currentLocale),
-              onChanged: (option) => _setLanguage(ref, option),
+            SectionHeader(
+              title: l10n.themeColor,
+              padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
             ),
-          ),
-          const TerminalAppearanceSection(),
-        ],
+            _AppearancePanel(
+              children: [
+                ThemeColorPicker(
+                  dynamicSelected: useDynamicColor,
+                  selectedSeed: currentSeed,
+                  onDynamicSelected: () {
+                    ref.read(dynamicColorProvider.notifier).set(true);
+                  },
+                  onSeedSelected: (seed) {
+                    ref.read(themeSeedProvider.notifier).set(seed);
+                    ref.read(dynamicColorProvider.notifier).set(false);
+                  },
+                ),
+              ],
+            ),
+            const TerminalAppearanceSection(),
+          ],
+        ),
       ),
     );
   }
@@ -87,6 +95,53 @@ class AppearancePage extends ConsumerWidget {
       _LanguageOption.system => null,
     };
     ref.read(localeProvider.notifier).set(locale);
+  }
+}
+
+class _AppearancePanel extends StatelessWidget {
+  final List<Widget> children;
+
+  const _AppearancePanel({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: tonalItemColor(context),
+      borderRadius: BorderRadius.circular(14),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
+        ),
+      ),
+    );
+  }
+}
+
+class _PreferenceBlock extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _PreferenceBlock({required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 10),
+        child,
+      ],
+    );
   }
 }
 

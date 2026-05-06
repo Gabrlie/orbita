@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
+import 'package:orbita/providers/server_group_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/widgets/common.dart';
 import 'package:orbita/widgets/os_icon.dart';
@@ -16,33 +17,56 @@ class ServerListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final serversAsync = ref.watch(serverListProvider);
+    final groupState = ref.watch(serverGroupProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsServers)),
-      body: serversAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
-        data: (servers) => servers.isEmpty
-            ? EmptyState(
-                icon: Ionicons.server_outline,
-                title: l10n.noServersTitle,
-                subtitle: l10n.noServersSubtitle,
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 16,
-                ),
-                itemCount: servers.length,
-                itemBuilder: (context, index) {
-                  final s = servers[index];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    clipBehavior: Clip.antiAlias,
-                    child: _ServerListTile(server: s),
-                  );
-                },
-              ),
+      appBar: compactPageAppBar(
+        context,
+        title: l10n.settingsServers,
+        fallbackLocation: '/settings',
+      ),
+      body: TonalListBackground(
+        child: serversAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('$e')),
+          data: (servers) {
+            final buckets = groupServersForDisplay(
+              servers: servers,
+              groupState: groupState,
+              unnamedGroupName: l10n.serverGroupUnnamed,
+            ).where((bucket) => bucket.servers.isNotEmpty).toList();
+            final showHeaders = shouldShowServerGroupHeaders(buckets);
+            return servers.isEmpty
+              ? EmptyState(
+                  icon: Ionicons.server_outline,
+                  title: l10n.noServersTitle,
+                  subtitle: l10n.noServersSubtitle,
+                )
+              : ListView(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  children: [
+                    for (final bucket in buckets) ...[
+                      if (showHeaders)
+                        SectionHeader(
+                          title: bucket.name,
+                          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                        ),
+                      for (final server in bucket.servers)
+                        Card(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          color: tonalItemColor(context),
+                          surfaceTintColor: Colors.transparent,
+                          clipBehavior: Clip.antiAlias,
+                          child: _ServerListTile(server: server),
+                        ),
+                    ],
+                  ],
+                );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.go('/settings/servers/add'),

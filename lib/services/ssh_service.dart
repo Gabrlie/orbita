@@ -42,11 +42,13 @@ class SshService implements SshClientSession {
     required String username,
     String? password,
     SshKey? key,
+    Duration timeout = const Duration(seconds: 10),
+    Duration keepAliveInterval = const Duration(seconds: 30),
   }) async {
     final socket = await SSHSocket.connect(
       host,
       port,
-      timeout: const Duration(seconds: 10),
+      timeout: timeout,
     );
 
     final client = key != null
@@ -54,13 +56,13 @@ class SshService implements SshClientSession {
             socket,
             username: username,
             identities: SSHKeyPair.fromPem(key.privateKeyPem, key.passphrase),
-            keepAliveInterval: const Duration(seconds: 30),
+            keepAliveInterval: keepAliveInterval,
           )
         : SSHClient(
             socket,
             username: username,
             onPasswordRequest: () => password ?? '',
-            keepAliveInterval: const Duration(seconds: 30),
+            keepAliveInterval: keepAliveInterval,
           );
 
     final service = SshService._(client);

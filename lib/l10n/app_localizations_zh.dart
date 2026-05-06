@@ -24,10 +24,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get commonDelete => '删除';
 
   @override
+  String get commonEdit => '编辑';
+
+  @override
   String get commonSave => '保存';
 
   @override
   String get commonRefresh => '刷新';
+
+  @override
+  String get commonTest => '测试';
+
+  @override
+  String get commonActionDone => '操作完成';
+
+  @override
+  String get commonActionFailed => '操作失败';
+
+  @override
+  String get newTab => '新标签页';
+
+  @override
+  String get openNewTab => '新建标签页';
+
+  @override
+  String get closeTab => '关闭标签页';
 
   @override
   String get unlock => '解锁';
@@ -213,6 +234,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get keyCopyPublicKey => '复制公钥';
+
+  @override
+  String keyUsedByServerCount(int count) {
+    return '$count 台服务器使用';
+  }
 
   @override
   String get noKeys => '暂无密钥';
@@ -480,6 +506,60 @@ class AppLocalizationsZh extends AppLocalizations {
   String get snippetsTitle => '片段';
 
   @override
+  String get serverGroupUnnamed => '未命名分组';
+
+  @override
+  String get serverGroupAdd => '新增分组';
+
+  @override
+  String get serverGroupEdit => '编辑分组';
+
+  @override
+  String get serverGroupName => '分组名称';
+
+  @override
+  String serverGroupCount(int count) {
+    return '$count 台服务器';
+  }
+
+  @override
+  String get serverGroupDropHint => '将服务器拖到这里';
+
+  @override
+  String get serverGroupDeleteTitle => '删除分组';
+
+  @override
+  String serverGroupDeleteContent(String name) {
+    return '确定要删除分组「$name」吗？服务器会移动到未命名分组。';
+  }
+
+  @override
+  String get commandSnippetAdd => '新增片段';
+
+  @override
+  String get commandSnippetEdit => '编辑片段';
+
+  @override
+  String get commandSnippetName => '片段名称';
+
+  @override
+  String get commandSnippetCommand => '命令内容';
+
+  @override
+  String get commandSnippetSearchHint => '搜索片段或命令';
+
+  @override
+  String get commandSnippetEmpty => '暂无命令片段';
+
+  @override
+  String get commandSnippetDeleteTitle => '删除片段';
+
+  @override
+  String commandSnippetDeleteContent(String name) {
+    return '确定要删除片段「$name」吗？';
+  }
+
+  @override
   String get scriptInstallArchiveTools => '安装压缩工具';
 
   @override
@@ -628,6 +708,35 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsAboutDesc => '版本信息与更新检查';
 
   @override
+  String aboutVersion(String version) {
+    return '版本 $version';
+  }
+
+  @override
+  String get aboutOverview => '概览';
+
+  @override
+  String get aboutPrivacyTitle => '隐私优先';
+
+  @override
+  String get aboutPrivacyDesc => '服务器配置保存在本地，敏感数据由系统安全存储保护。';
+
+  @override
+  String get aboutCrossPlatformTitle => '跨平台';
+
+  @override
+  String get aboutCrossPlatformDesc => '以 Flutter 构建，面向 Android 优先并兼顾桌面平台。';
+
+  @override
+  String get aboutNoAgentTitle => '无需服务端代理';
+
+  @override
+  String get aboutNoAgentDesc => '通过 SSH/SFTP 和 Linux 原生命令完成服务器管理。';
+
+  @override
+  String get aboutTechStack => '技术栈';
+
+  @override
   String get comingSoon => '即将推出';
 
   @override
@@ -748,7 +857,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminalConnectOptions => '终端连接';
 
   @override
+  String get terminalConnectDirect => '连接终端';
+
+  @override
   String get terminalConnectTmux => '复用 tmux 会话';
+
+  @override
+  String get terminalReuseTmuxShort => '复用 tmux';
 
   @override
   String get terminalTmuxUnavailable => '服务器未安装 tmux';
@@ -843,6 +958,77 @@ class AppLocalizationsZh extends AppLocalizations {
   String get metricBufferCache => 'BUF';
 
   @override
+  String get metricCpuUser => '用户';
+
+  @override
+  String get metricCpuNice => 'Nice';
+
+  @override
+  String get metricCpuSystem => '系统';
+
+  @override
+  String get metricCpuIoWait => 'I/O 等待';
+
+  @override
+  String get metricCpuIrq => 'IRQ';
+
+  @override
+  String get metricCpuSoftIrq => '软中断';
+
+  @override
+  String get metricCpuSteal => '窃取';
+
+  @override
+  String get metricCpuIdle => '空闲';
+
+  @override
+  String get metricUsageTrend => '使用率';
+
+  @override
+  String get metricRealtimeRateTrend => '实时速率趋势';
+
+  @override
+  String get metricUploadDownload => '上传 / 下载';
+
+  @override
+  String get metricUpload => '上传';
+
+  @override
+  String get metricDownload => '下载';
+
+  @override
+  String get metricSettingsTitle => '连接配置';
+
+  @override
+  String get metricSettingsDesc => '刷新间隔、SSH 超时、Keep-Alive 与重连';
+
+  @override
+  String get metricPollingSection => '轮询';
+
+  @override
+  String get metricConnectionSection => '连接';
+
+  @override
+  String get metricRefreshInterval => '刷新间隔';
+
+  @override
+  String get metricSshConnectTimeout => 'SSH 连接超时';
+
+  @override
+  String get metricKeepAliveInterval => 'Keep-Alive 间隔';
+
+  @override
+  String get metricAutoReconnect => '自动重连';
+
+  @override
+  String get metricAutoReconnectDesc => '指标连接断开后自动重新连接';
+
+  @override
+  String metricSecondsValue(int seconds) {
+    return '$seconds 秒';
+  }
+
+  @override
   String get serverScriptsSection => '脚本';
 
   @override
@@ -859,6 +1045,56 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get serverToolDocker => 'Docker';
+
+  @override
+  String get serverLogsShort => '日志';
+
+  @override
+  String get serverReboot => '重启';
+
+  @override
+  String get serverShutdown => '关机';
+
+  @override
+  String get serverRebootConfirmTitle => '重启服务器';
+
+  @override
+  String serverRebootConfirmContent(String name) {
+    return '确定要重启「$name」吗？';
+  }
+
+  @override
+  String get serverShutdownConfirmTitle => '关闭服务器';
+
+  @override
+  String serverShutdownConfirmContent(String name) {
+    return '确定要关闭「$name」吗？';
+  }
+
+  @override
+  String get serverConnectionTestTitle => '连接测试';
+
+  @override
+  String get serverConnectionLogs => '连接日志';
+
+  @override
+  String get serverConnectionTesting => '正在测试连接...';
+
+  @override
+  String serverConnectionLatency(int ms) {
+    return '延迟 $ms ms';
+  }
+
+  @override
+  String get serverConnectionLogResolving => '正在读取服务器与密钥配置';
+
+  @override
+  String serverConnectionLogConnecting(String host, int port) {
+    return '正在连接 $host:$port';
+  }
+
+  @override
+  String get serverConnectionLogSucceeded => '连接成功，SSH 响应正常';
 
   @override
   String get serverLogsTitle => '服务器日志';

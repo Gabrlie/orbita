@@ -54,85 +54,92 @@ class _ScriptEditorPageState extends ConsumerState<ScriptEditorPage> {
         : l10n.scriptEditTitle;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
+      appBar: compactPageAppBar(
+        context,
+        title: title,
+        fallbackLocation: '/settings/scripts',
         actions: [
           if (script != null)
             IconButton(
               tooltip: l10n.scriptRun,
-              icon: const Icon(Ionicons.play_outline),
+              icon: const Icon(Ionicons.play_outline, size: 20),
               onPressed: () => runRemoteScriptFromContext(context, ref, script),
             ),
           if (!readOnly)
             IconButton(
               tooltip: l10n.commonSave,
-              icon: const Icon(Ionicons.save_outline),
+              icon: const Icon(Ionicons.save_outline, size: 20),
               onPressed: _save,
             ),
           if (script != null && !readOnly)
             IconButton(
               tooltip: l10n.commonDelete,
-              icon: const Icon(Ionicons.trash_outline),
+              icon: const Icon(Ionicons.trash_outline, size: 20),
               onPressed: () => _delete(script),
             ),
         ],
       ),
-      body: script == null && !_isNew
-          ? EmptyState(
-              icon: Ionicons.document_text_outline,
-              title: l10n.scriptNotFound,
-            )
-          : Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                children: [
-                  if (readOnly)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(
-                        l10n.scriptSystemReadOnly,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+      body: TonalListBackground(
+        child: script == null && !_isNew
+            ? EmptyState(
+                icon: Ionicons.document_text_outline,
+                title: l10n.scriptNotFound,
+              )
+            : Form(
+                key: _formKey,
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                  children: [
+                    if (readOnly)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          l10n.scriptSystemReadOnly,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                         ),
                       ),
+                    TextFormField(
+                      controller: _nameController,
+                      readOnly: readOnly,
+                      decoration: InputDecoration(labelText: l10n.scriptName),
+                      validator: (value) =>
+                          _required(value, l10n.validationRequired),
                     ),
-                  TextFormField(
-                    controller: _nameController,
-                    readOnly: readOnly,
-                    decoration: InputDecoration(labelText: l10n.scriptName),
-                    validator: (value) =>
-                        _required(value, l10n.validationRequired),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _descriptionController,
-                    readOnly: readOnly,
-                    minLines: 2,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: l10n.scriptDescription,
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _descriptionController,
+                      readOnly: readOnly,
+                      minLines: 2,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: l10n.scriptDescription,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _commandController,
-                    readOnly: readOnly,
-                    minLines: 14,
-                    maxLines: 24,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
-                    decoration: InputDecoration(
-                      alignLabelWithHint: true,
-                      labelText: l10n.scriptContent,
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _commandController,
+                      readOnly: readOnly,
+                      minLines: 14,
+                      maxLines: 24,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontFamily: 'monospace',
+                      ),
+                      decoration: InputDecoration(
+                        alignLabelWithHint: true,
+                        labelText: l10n.scriptContent,
+                      ),
+                      validator: (value) =>
+                          _required(value, l10n.validationRequired),
                     ),
-                    validator: (value) =>
-                        _required(value, l10n.validationRequired),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+      ),
       floatingActionButton: readOnly
           ? null
           : FloatingActionButton.extended(

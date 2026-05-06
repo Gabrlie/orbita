@@ -6,6 +6,7 @@ import 'package:orbita/providers/key_provider.dart';
 import 'package:orbita/providers/ssh_connection_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/server_refresh_provider.dart';
+import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/providers/ssh_log_provider.dart';
 import 'package:orbita/services/ssh_connection_manager.dart';
 import 'package:orbita/services/ssh_service.dart';
@@ -16,6 +17,7 @@ import 'package:orbita/widgets/os_icon.dart';
 final serverStatusProvider = StreamProvider.autoDispose
     .family<ServerStatus?, String>((ref, serverId) async* {
       ref.watch(serverRefreshProvider(serverId));
+      final settings = ref.watch(metricSettingsProvider);
       final server = ref.read(serverByIdProvider(serverId));
       if (server == null) {
         yield null;
@@ -54,7 +56,7 @@ final serverStatusProvider = StreamProvider.autoDispose
         } catch (e) {
           log.error('Connection failed', '$e');
           yield null;
-          if (_isAuthenticationFailure(e)) return;
+          if (_isAuthenticationFailure(e) || !settings.autoReconnect) return;
           await Future.delayed(reconnectDelay);
           reconnectDelay = _nextReconnectDelay(reconnectDelay);
           continue;
@@ -80,7 +82,7 @@ final serverStatusProvider = StreamProvider.autoDispose
             yield null;
             break;
           }
-          await Future.delayed(const Duration(seconds: 10));
+          await Future.delayed(settings.refreshInterval);
         }
 
         if (ssh.isClosed) {
@@ -90,6 +92,7 @@ final serverStatusProvider = StreamProvider.autoDispose
 
         lease.release();
         lease = null;
+        if (!settings.autoReconnect) return;
         await Future.delayed(reconnectDelay);
         reconnectDelay = _nextReconnectDelay(reconnectDelay);
       }

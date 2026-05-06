@@ -15,91 +15,101 @@ class SettingsPage extends ConsumerWidget {
     final serverCount = ref.watch(serverListProvider).value?.length ?? 0;
 
     return Scaffold(
-      appBar: AppBar(),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 24),
-        children: [
-          _SettingsSection(
-            title: l10n.settingsServerSection,
+      body: TonalListBackground(
+        child: SafeArea(
+          bottom: false,
+          child: ListView(
+            padding: const EdgeInsets.only(top: 4, bottom: 24),
             children: [
-              _SettingsItem(
-                icon: Ionicons.server_outline,
-                title: l10n.settingsServers,
-                subtitle: l10n.serverCount(serverCount),
-                onTap: () => _open(context, '/settings/servers'),
+              _SettingsSection(
+                title: l10n.settingsServerSection,
+                children: [
+                  _SettingsItem(
+                    icon: Ionicons.server_outline,
+                    title: l10n.settingsServers,
+                    subtitle: l10n.serverCount(serverCount),
+                    onTap: () => _open(context, '/settings/servers'),
+                  ),
+                  _SettingsItem(
+                    icon: Ionicons.git_branch_outline,
+                    title: l10n.settingsGroups,
+                    subtitle: l10n.settingsGroupsDesc,
+                    onTap: () => _open(context, '/settings/groups'),
+                  ),
+                  _SettingsItem(
+                    icon: Ionicons.key_outline,
+                    title: l10n.keyManagement,
+                    subtitle: l10n.keyManagementDesc,
+                    onTap: () => _open(context, '/settings/keys'),
+                  ),
+                ],
               ),
-              _SettingsItem(
-                icon: Ionicons.git_branch_outline,
-                title: l10n.settingsGroups,
-                subtitle: l10n.settingsGroupsDesc,
-                onTap: () => _showDev(context, l10n),
+              _SettingsSection(
+                title: l10n.settingsToolsSection,
+                children: [
+                  _SettingsItem(
+                    icon: Ionicons.code_slash_outline,
+                    title: l10n.settingsScripts,
+                    subtitle: l10n.settingsScriptsDesc,
+                    onTap: () => _open(context, '/settings/scripts'),
+                  ),
+                  _SettingsItem(
+                    icon: Ionicons.extension_puzzle_outline,
+                    title: l10n.settingsSnippets,
+                    subtitle: l10n.settingsSnippetsDesc,
+                    onTap: () => _open(context, '/settings/snippets'),
+                  ),
+                  _SettingsItem(
+                    icon: Ionicons.git_network_outline,
+                    title: l10n.settingsNetwork,
+                    subtitle: l10n.comingSoon,
+                    enabled: false,
+                  ),
+                ],
               ),
-              _SettingsItem(
-                icon: Ionicons.key_outline,
-                title: l10n.keyManagement,
-                subtitle: l10n.keyManagementDesc,
-                onTap: () => _open(context, '/settings/keys'),
+              _SettingsSection(
+                title: l10n.settingsSecuritySection,
+                children: [
+                  _SettingsItem(
+                    icon: Ionicons.shield_checkmark_outline,
+                    title: l10n.settingsSecurity,
+                    subtitle: l10n.settingsSecurityDesc,
+                    onTap: () => _open(context, '/settings/security'),
+                  ),
+                  _SettingsItem(
+                    icon: Ionicons.sync_outline,
+                    title: l10n.settingsSync,
+                    subtitle: l10n.settingsSyncDesc,
+                    onTap: () => _showDev(context, l10n),
+                  ),
+                ],
+              ),
+              _SettingsSection(
+                title: l10n.settingsAppSection,
+                children: [
+                  _SettingsItem(
+                    icon: Ionicons.color_palette_outline,
+                    title: l10n.settingsAppearance,
+                    subtitle: l10n.settingsAppearanceDesc,
+                    onTap: () => _open(context, '/settings/appearance'),
+                  ),
+                  _SettingsItem(
+                    icon: Ionicons.speedometer_outline,
+                    title: l10n.metricSettingsTitle,
+                    subtitle: l10n.metricSettingsDesc,
+                    onTap: () => _open(context, '/settings/metrics'),
+                  ),
+                  _SettingsItem(
+                    icon: Ionicons.information_circle_outline,
+                    title: l10n.settingsAbout,
+                    subtitle: l10n.settingsAboutDesc,
+                    onTap: () => _open(context, '/settings/about'),
+                  ),
+                ],
               ),
             ],
           ),
-          _SettingsSection(
-            title: l10n.settingsToolsSection,
-            children: [
-              _SettingsItem(
-                icon: Ionicons.code_slash_outline,
-                title: l10n.settingsScripts,
-                subtitle: l10n.settingsScriptsDesc,
-                onTap: () => _open(context, '/settings/scripts'),
-              ),
-              _SettingsItem(
-                icon: Ionicons.extension_puzzle_outline,
-                title: l10n.settingsSnippets,
-                subtitle: l10n.settingsSnippetsDesc,
-                onTap: () => _open(context, '/settings/snippets'),
-              ),
-            ],
-          ),
-          _SettingsSection(
-            title: l10n.settingsSecuritySection,
-            children: [
-              _SettingsItem(
-                icon: Ionicons.shield_checkmark_outline,
-                title: l10n.settingsSecurity,
-                subtitle: l10n.settingsSecurityDesc,
-                onTap: () => _open(context, '/settings/security'),
-              ),
-              _SettingsItem(
-                icon: Ionicons.sync_outline,
-                title: l10n.settingsSync,
-                subtitle: l10n.settingsSyncDesc,
-                onTap: () => _showDev(context, l10n),
-              ),
-            ],
-          ),
-          _SettingsSection(
-            title: l10n.settingsAppSection,
-            children: [
-              _SettingsItem(
-                icon: Ionicons.color_palette_outline,
-                title: l10n.settingsAppearance,
-                subtitle: l10n.settingsAppearanceDesc,
-                onTap: () => _open(context, '/settings/appearance'),
-              ),
-              _SettingsItem(
-                icon: Ionicons.git_network_outline,
-                title: l10n.settingsNetwork,
-                subtitle: l10n.comingSoon,
-                enabled: false,
-              ),
-              _SettingsItem(
-                icon: Ionicons.information_circle_outline,
-                title: l10n.settingsAbout,
-                subtitle: l10n.settingsAboutDesc,
-                onTap: () => _showDev(context, l10n),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -111,9 +121,7 @@ class SettingsPage extends ConsumerWidget {
   }
 
   void _open(BuildContext context, String path) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) context.push(path);
-    });
+    context.push(path);
   }
 }
 
@@ -132,13 +140,22 @@ class _SettingsSection extends StatelessWidget {
           title: title,
           padding: const EdgeInsets.fromLTRB(28, 24, 24, 8),
         ),
-        Column(
-          children: [
-            for (var i = 0; i < children.length; i++) ...[
-              if (i > 0) const Divider(height: 1, indent: 24, endIndent: 24),
-              children[i],
-            ],
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Material(
+            color: tonalItemColor(context),
+            borderRadius: BorderRadius.circular(16),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                for (var i = 0; i < children.length; i++) ...[
+                  if (i > 0)
+                    const Divider(height: 1, indent: 24, endIndent: 24),
+                  children[i],
+                ],
+              ],
+            ),
+          ),
         ),
       ],
     );

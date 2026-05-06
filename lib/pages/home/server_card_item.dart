@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
+import 'package:orbita/providers/key_provider.dart';
 import 'package:orbita/providers/server_monitor_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/server_refresh_provider.dart';
+import 'package:orbita/providers/ssh_connection_provider.dart';
 import 'package:orbita/utils/format_utils.dart';
 import 'package:orbita/widgets/common.dart';
 import 'package:orbita/widgets/server_card.dart';
@@ -36,12 +39,11 @@ class ServerCardItem extends ConsumerWidget {
 
     return ServerCard(
       name: server.name,
-      subtitle: '${server.host}:${server.port}',
       osType: server.osType,
       online: online,
       statusMessage: statusMessage,
       uptime: status?.uptimeStr ?? '',
-      load: status?.loadAvg ?? '',
+      load: _latestLoad(status?.loadAvg),
       cpuPercent: status?.cpuPercent ?? 0,
       cpuSub: status?.cpuSub ?? '',
       memPercent: status?.memPercent ?? 0,
@@ -62,6 +64,12 @@ class ServerCardItem extends ConsumerWidget {
     );
   }
 
+  String _latestLoad(String? loadAvg) {
+    if (loadAvg == null) return '';
+    final parts = loadAvg.trim().split(RegExp(r'\s+'));
+    return parts.isEmpty || parts.first.isEmpty ? '' : parts.first;
+  }
+
   void _showServerMenu(
     BuildContext context,
     WidgetRef ref,
@@ -76,70 +84,63 @@ class ServerCardItem extends ConsumerWidget {
       Offset.zero & overlay.size,
     );
 
-    final disabledStyle = TextStyle(color: theme.disabledColor);
-    final errorStyle = TextStyle(color: theme.colorScheme.error);
-
     showMenu<String>(
       context: context,
       position: relativeRect,
       items: [
-        PopupMenuItem(
-          enabled: false,
-          child: Text(
-            '${l10n.actionConnect} (${l10n.inDevelopment})',
-            style: disabledStyle,
-          ),
-        ),
-        _menuItem('files', Icons.folder_outlined, l10n.actionFileManager),
-        PopupMenuItem(
-          enabled: false,
-          child: Text(
-            '${l10n.actionDocker} (${l10n.inDevelopment})',
-            style: disabledStyle,
-          ),
-        ),
-        PopupMenuItem(
-          enabled: false,
-          child: Text(
-            '${l10n.actionScripts} (${l10n.inDevelopment})',
-            style: disabledStyle,
-          ),
-        ),
+        _menuItem('terminal', Ionicons.terminal_outline, l10n.navTerminal),
+        _menuItem('files', Ionicons.folder_outline, l10n.actionFileManager),
+        _menuItem('docker', Ionicons.cube_outline, l10n.navDocker),
+        _menuItem('refresh', Ionicons.refresh_outline, l10n.commonRefresh),
+        _menuItem('test', Ionicons.speedometer_outline, l10n.commonTest),
+        _menuItem('logs', Ionicons.receipt_outline, l10n.serverLogsShort),
         const PopupMenuDivider(),
-        _menuItem('refresh', Icons.refresh, l10n.actionRefresh),
-        _menuItem('logs', Icons.receipt_long_outlined, l10n.actionLogs),
-        const PopupMenuDivider(),
-        _menuItem('edit', Icons.edit_outlined, l10n.actionEdit),
-        PopupMenuItem(
-          value: 'delete',
-          height: 48,
-          child: Row(
-            children: [
-              Icon(
-                Icons.delete_outline,
-                size: 20,
-                color: theme.colorScheme.error,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                l10n.actionDelete,
-                style: errorStyle.copyWith(fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
+        _menuItem('reboot', Ionicons.reload_outline, l10n.serverReboot),
+        _menuItem('shutdown', Ionicons.power_outline, l10n.serverShutdown),
+        _menuItem('edit', Ionicons.create_outline, l10n.commonEdit),
+        _menuItem(
+          'delete',
+          Ionicons.trash_outline,
+          l10n.commonDelete,
+          destructive: true,
+          color: theme.colorScheme.error,
         ),
       ],
     ).then((value) {
       if (value == null || !context.mounted) return;
       switch (value) {
+        case 'terminal':
+          context.go('/terminal/${server.id}');
+        case 'files':
+          context.go('/files/${server.id}');
+        case 'docker':
+          context.go('/docker/${server.id}');
         case 'refresh':
           ref
               .read(serverRefreshControllerProvider.notifier)
               .refreshServer(server.id);
+        case 'test':
+          context.go('/home/server/${server.id}/test');
         case 'logs':
           context.go('/home/server/${server.id}/logs');
-        case 'files':
-          context.go('/files/${server.id}');
+        case 'reboot':
+          _confirmRemotePowerAction(
+            context,
+            ref,
+            server,
+            title: l10n.serverRebootConfirmTitle,
+            content: l10n.serverRebootConfirmContent(server.name),
+            command: 'systemctl reboot || sudo -n reboot || reboot',
+          );
+        case 'shutdown':
+          _confirmRemotePowerAction(
+            context,
+            ref,
+            server,
+            title: l10n.serverShutdownConfirmTitle,
+            content: l10n.serverShutdownConfirmContent(server.name),
+            command: 'systemctl poweroff || sudo -n poweroff || poweroff',
+          );
         case 'edit':
           context.go('/home/server/${server.id}/edit');
         case 'delete':
@@ -148,15 +149,27 @@ class ServerCardItem extends ConsumerWidget {
     });
   }
 
-  PopupMenuItem<String> _menuItem(String value, IconData icon, String label) {
+  PopupMenuItem<String> _menuItem(
+    String value,
+    IconData icon,
+    String label, {
+    bool destructive = false,
+    Color? color,
+  }) {
     return PopupMenuItem(
       value: value,
-      height: 48,
+      height: 44,
       child: Row(
         children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 12),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: destructive ? FontWeight.w600 : FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
@@ -177,6 +190,51 @@ class ServerCardItem extends ConsumerWidget {
     );
     if (confirmed) {
       ref.read(serverListProvider.notifier).deleteServer(server.id);
+    }
+  }
+
+  Future<void> _confirmRemotePowerAction(
+    BuildContext context,
+    WidgetRef ref,
+    Server server, {
+    required String title,
+    required String content,
+    required String command,
+  }) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: title,
+      content: content,
+      confirmLabel: l10n.commonConfirm,
+      destructive: true,
+    );
+    if (!confirmed || !context.mounted) return;
+    try {
+      final key = await resolveServerKey(
+        server,
+        ref.read(keyListProvider.future),
+      );
+      if (server.authType == AuthType.key && key == null) {
+        throw StateError(l10n.authNoKey);
+      }
+      final lease = await ref
+          .read(sshConnectionManagerProvider)
+          .acquire(server, key: key);
+      try {
+        await lease.service.execute(command);
+      } finally {
+        lease.release();
+      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.commonActionDone)));
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${l10n.commonActionFailed}: $error')),
+      );
     }
   }
 }

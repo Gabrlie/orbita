@@ -18,12 +18,11 @@ class ServerLogPage extends ConsumerWidget {
     final logs = ref.watch(sshLogProvider(serverId)).reversed.toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          server == null
-              ? l10n.serverLogsTitle
-              : '${server.name} · ${l10n.serverLogsTitle}',
-        ),
+      appBar: compactPageAppBar(
+        context,
+        title: server == null
+            ? l10n.serverLogsTitle
+            : '${server.name} · ${l10n.serverLogsTitle}',
       ),
       body: logs.isEmpty
           ? EmptyState(

@@ -2,6 +2,7 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/widgets/common.dart';
 import 'package:orbita/widgets/circular_metric.dart';
 import 'package:orbita/widgets/os_icon.dart';
 import 'package:orbita/widgets/text_metric.dart';
@@ -76,7 +77,7 @@ class ServerCard extends StatelessWidget {
       elevation: 3,
       shadowColor: theme.colorScheme.shadow.withAlpha(36),
       surfaceTintColor: Colors.transparent,
-      color: theme.colorScheme.surface,
+      color: tonalItemColor(context),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       clipBehavior: Clip.antiAlias,

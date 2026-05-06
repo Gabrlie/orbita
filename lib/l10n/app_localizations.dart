@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'删除'**
   String get commonDelete;
 
+  /// No description provided for @commonEdit.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑'**
+  String get commonEdit;
+
   /// No description provided for @commonSave.
   ///
   /// In zh, this message translates to:
@@ -139,6 +145,42 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'刷新'**
   String get commonRefresh;
+
+  /// No description provided for @commonTest.
+  ///
+  /// In zh, this message translates to:
+  /// **'测试'**
+  String get commonTest;
+
+  /// No description provided for @commonActionDone.
+  ///
+  /// In zh, this message translates to:
+  /// **'操作完成'**
+  String get commonActionDone;
+
+  /// No description provided for @commonActionFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'操作失败'**
+  String get commonActionFailed;
+
+  /// No description provided for @newTab.
+  ///
+  /// In zh, this message translates to:
+  /// **'新标签页'**
+  String get newTab;
+
+  /// No description provided for @openNewTab.
+  ///
+  /// In zh, this message translates to:
+  /// **'新建标签页'**
+  String get openNewTab;
+
+  /// No description provided for @closeTab.
+  ///
+  /// In zh, this message translates to:
+  /// **'关闭标签页'**
+  String get closeTab;
 
   /// No description provided for @unlock.
   ///
@@ -493,6 +535,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'复制公钥'**
   String get keyCopyPublicKey;
+
+  /// No description provided for @keyUsedByServerCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 台服务器使用'**
+  String keyUsedByServerCount(int count);
 
   /// No description provided for @noKeys.
   ///
@@ -1004,6 +1052,102 @@ abstract class AppLocalizations {
   /// **'片段'**
   String get snippetsTitle;
 
+  /// No description provided for @serverGroupUnnamed.
+  ///
+  /// In zh, this message translates to:
+  /// **'未命名分组'**
+  String get serverGroupUnnamed;
+
+  /// No description provided for @serverGroupAdd.
+  ///
+  /// In zh, this message translates to:
+  /// **'新增分组'**
+  String get serverGroupAdd;
+
+  /// No description provided for @serverGroupEdit.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑分组'**
+  String get serverGroupEdit;
+
+  /// No description provided for @serverGroupName.
+  ///
+  /// In zh, this message translates to:
+  /// **'分组名称'**
+  String get serverGroupName;
+
+  /// No description provided for @serverGroupCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 台服务器'**
+  String serverGroupCount(int count);
+
+  /// No description provided for @serverGroupDropHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'将服务器拖到这里'**
+  String get serverGroupDropHint;
+
+  /// No description provided for @serverGroupDeleteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除分组'**
+  String get serverGroupDeleteTitle;
+
+  /// No description provided for @serverGroupDeleteContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要删除分组「{name}」吗？服务器会移动到未命名分组。'**
+  String serverGroupDeleteContent(String name);
+
+  /// No description provided for @commandSnippetAdd.
+  ///
+  /// In zh, this message translates to:
+  /// **'新增片段'**
+  String get commandSnippetAdd;
+
+  /// No description provided for @commandSnippetEdit.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑片段'**
+  String get commandSnippetEdit;
+
+  /// No description provided for @commandSnippetName.
+  ///
+  /// In zh, this message translates to:
+  /// **'片段名称'**
+  String get commandSnippetName;
+
+  /// No description provided for @commandSnippetCommand.
+  ///
+  /// In zh, this message translates to:
+  /// **'命令内容'**
+  String get commandSnippetCommand;
+
+  /// No description provided for @commandSnippetSearchHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索片段或命令'**
+  String get commandSnippetSearchHint;
+
+  /// No description provided for @commandSnippetEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无命令片段'**
+  String get commandSnippetEmpty;
+
+  /// No description provided for @commandSnippetDeleteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除片段'**
+  String get commandSnippetDeleteTitle;
+
+  /// No description provided for @commandSnippetDeleteContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要删除片段「{name}」吗？'**
+  String commandSnippetDeleteContent(String name);
+
   /// No description provided for @scriptInstallArchiveTools.
   ///
   /// In zh, this message translates to:
@@ -1286,6 +1430,60 @@ abstract class AppLocalizations {
   /// **'版本信息与更新检查'**
   String get settingsAboutDesc;
 
+  /// No description provided for @aboutVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'版本 {version}'**
+  String aboutVersion(String version);
+
+  /// No description provided for @aboutOverview.
+  ///
+  /// In zh, this message translates to:
+  /// **'概览'**
+  String get aboutOverview;
+
+  /// No description provided for @aboutPrivacyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐私优先'**
+  String get aboutPrivacyTitle;
+
+  /// No description provided for @aboutPrivacyDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器配置保存在本地，敏感数据由系统安全存储保护。'**
+  String get aboutPrivacyDesc;
+
+  /// No description provided for @aboutCrossPlatformTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'跨平台'**
+  String get aboutCrossPlatformTitle;
+
+  /// No description provided for @aboutCrossPlatformDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'以 Flutter 构建，面向 Android 优先并兼顾桌面平台。'**
+  String get aboutCrossPlatformDesc;
+
+  /// No description provided for @aboutNoAgentTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'无需服务端代理'**
+  String get aboutNoAgentTitle;
+
+  /// No description provided for @aboutNoAgentDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'通过 SSH/SFTP 和 Linux 原生命令完成服务器管理。'**
+  String get aboutNoAgentDesc;
+
+  /// No description provided for @aboutTechStack.
+  ///
+  /// In zh, this message translates to:
+  /// **'技术栈'**
+  String get aboutTechStack;
+
   /// No description provided for @comingSoon.
   ///
   /// In zh, this message translates to:
@@ -1526,11 +1724,23 @@ abstract class AppLocalizations {
   /// **'终端连接'**
   String get terminalConnectOptions;
 
+  /// No description provided for @terminalConnectDirect.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接终端'**
+  String get terminalConnectDirect;
+
   /// No description provided for @terminalConnectTmux.
   ///
   /// In zh, this message translates to:
   /// **'复用 tmux 会话'**
   String get terminalConnectTmux;
+
+  /// No description provided for @terminalReuseTmuxShort.
+  ///
+  /// In zh, this message translates to:
+  /// **'复用 tmux'**
+  String get terminalReuseTmuxShort;
 
   /// No description provided for @terminalTmuxUnavailable.
   ///
@@ -1712,6 +1922,144 @@ abstract class AppLocalizations {
   /// **'BUF'**
   String get metricBufferCache;
 
+  /// No description provided for @metricCpuUser.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户'**
+  String get metricCpuUser;
+
+  /// No description provided for @metricCpuNice.
+  ///
+  /// In zh, this message translates to:
+  /// **'Nice'**
+  String get metricCpuNice;
+
+  /// No description provided for @metricCpuSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统'**
+  String get metricCpuSystem;
+
+  /// No description provided for @metricCpuIoWait.
+  ///
+  /// In zh, this message translates to:
+  /// **'I/O 等待'**
+  String get metricCpuIoWait;
+
+  /// No description provided for @metricCpuIrq.
+  ///
+  /// In zh, this message translates to:
+  /// **'IRQ'**
+  String get metricCpuIrq;
+
+  /// No description provided for @metricCpuSoftIrq.
+  ///
+  /// In zh, this message translates to:
+  /// **'软中断'**
+  String get metricCpuSoftIrq;
+
+  /// No description provided for @metricCpuSteal.
+  ///
+  /// In zh, this message translates to:
+  /// **'窃取'**
+  String get metricCpuSteal;
+
+  /// No description provided for @metricCpuIdle.
+  ///
+  /// In zh, this message translates to:
+  /// **'空闲'**
+  String get metricCpuIdle;
+
+  /// No description provided for @metricUsageTrend.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用率'**
+  String get metricUsageTrend;
+
+  /// No description provided for @metricRealtimeRateTrend.
+  ///
+  /// In zh, this message translates to:
+  /// **'实时速率趋势'**
+  String get metricRealtimeRateTrend;
+
+  /// No description provided for @metricUploadDownload.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传 / 下载'**
+  String get metricUploadDownload;
+
+  /// No description provided for @metricUpload.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传'**
+  String get metricUpload;
+
+  /// No description provided for @metricDownload.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载'**
+  String get metricDownload;
+
+  /// No description provided for @metricSettingsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接配置'**
+  String get metricSettingsTitle;
+
+  /// No description provided for @metricSettingsDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新间隔、SSH 超时、Keep-Alive 与重连'**
+  String get metricSettingsDesc;
+
+  /// No description provided for @metricPollingSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'轮询'**
+  String get metricPollingSection;
+
+  /// No description provided for @metricConnectionSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接'**
+  String get metricConnectionSection;
+
+  /// No description provided for @metricRefreshInterval.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新间隔'**
+  String get metricRefreshInterval;
+
+  /// No description provided for @metricSshConnectTimeout.
+  ///
+  /// In zh, this message translates to:
+  /// **'SSH 连接超时'**
+  String get metricSshConnectTimeout;
+
+  /// No description provided for @metricKeepAliveInterval.
+  ///
+  /// In zh, this message translates to:
+  /// **'Keep-Alive 间隔'**
+  String get metricKeepAliveInterval;
+
+  /// No description provided for @metricAutoReconnect.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动重连'**
+  String get metricAutoReconnect;
+
+  /// No description provided for @metricAutoReconnectDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'指标连接断开后自动重新连接'**
+  String get metricAutoReconnectDesc;
+
+  /// No description provided for @metricSecondsValue.
+  ///
+  /// In zh, this message translates to:
+  /// **'{seconds} 秒'**
+  String metricSecondsValue(int seconds);
+
   /// No description provided for @serverScriptsSection.
   ///
   /// In zh, this message translates to:
@@ -1747,6 +2095,90 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'Docker'**
   String get serverToolDocker;
+
+  /// No description provided for @serverLogsShort.
+  ///
+  /// In zh, this message translates to:
+  /// **'日志'**
+  String get serverLogsShort;
+
+  /// No description provided for @serverReboot.
+  ///
+  /// In zh, this message translates to:
+  /// **'重启'**
+  String get serverReboot;
+
+  /// No description provided for @serverShutdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'关机'**
+  String get serverShutdown;
+
+  /// No description provided for @serverRebootConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'重启服务器'**
+  String get serverRebootConfirmTitle;
+
+  /// No description provided for @serverRebootConfirmContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要重启「{name}」吗？'**
+  String serverRebootConfirmContent(String name);
+
+  /// No description provided for @serverShutdownConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'关闭服务器'**
+  String get serverShutdownConfirmTitle;
+
+  /// No description provided for @serverShutdownConfirmContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要关闭「{name}」吗？'**
+  String serverShutdownConfirmContent(String name);
+
+  /// No description provided for @serverConnectionTestTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接测试'**
+  String get serverConnectionTestTitle;
+
+  /// No description provided for @serverConnectionLogs.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接日志'**
+  String get serverConnectionLogs;
+
+  /// No description provided for @serverConnectionTesting.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在测试连接...'**
+  String get serverConnectionTesting;
+
+  /// No description provided for @serverConnectionLatency.
+  ///
+  /// In zh, this message translates to:
+  /// **'延迟 {ms} ms'**
+  String serverConnectionLatency(int ms);
+
+  /// No description provided for @serverConnectionLogResolving.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在读取服务器与密钥配置'**
+  String get serverConnectionLogResolving;
+
+  /// No description provided for @serverConnectionLogConnecting.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在连接 {host}:{port}'**
+  String serverConnectionLogConnecting(String host, int port);
+
+  /// No description provided for @serverConnectionLogSucceeded.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接成功，SSH 响应正常'**
+  String get serverConnectionLogSucceeded;
 
   /// No description provided for @serverLogsTitle.
   ///

@@ -4,8 +4,14 @@ import 'package:orbita/models/remote_file_entry.dart';
 class FilePathBar extends StatelessWidget {
   final String path;
   final ValueChanged<String>? onTapPath;
+  final Color? backgroundColor;
 
-  const FilePathBar({super.key, required this.path, this.onTapPath});
+  const FilePathBar({
+    super.key,
+    required this.path,
+    this.onTapPath,
+    this.backgroundColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +19,7 @@ class FilePathBar extends StatelessWidget {
     final breadcrumbs = remotePathBreadcrumbs(path);
 
     return Material(
-      color: theme.colorScheme.surface,
+      color: backgroundColor ?? theme.colorScheme.surface,
       child: SizedBox(
         height: 48,
         child: ListView.separated(
