@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.1+2
+version: 1.0.2+3
 
 environment:
   sdk: ^3.11.4
@@ -61,6 +61,7 @@ dependencies:
   ota_update: ^7.1.0
   file_picker: ^10.3.7
   webdav_client: ^1.2.2
+  xml: ^6.6.1
 
 dev_dependencies:
   flutter_test:
@@ -124,11 +125,16 @@ flutter_launcher_icons:
   ios: true
   image_path: assets/images/orbita_icon.png
   min_sdk_android: 23
+  # Android 8+ adaptive icon: solid black background layer + foreground
+  # glyph rendered with safe-zone padding. This prevents launchers from
+  # adding a white circular/squircle background around the legacy icon.
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: assets/images/orbita_icon_foreground.png
   web:
     generate: true
     image_path: assets/images/orbita_icon.png
-    background_color: "#E9F4FF"
-    theme_color: "#1976D2"
+    background_color: "#000000"
+    theme_color: "#000000"
   windows:
     generate: true
     image_path: assets/images/orbita_icon.png

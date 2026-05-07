@@ -17,7 +17,7 @@ class AboutPage extends ConsumerWidget {
         .watch(packageInfoProvider)
         .maybeWhen(
           data: (info) => '${info.version}+${info.buildNumber}',
-          orElse: () => '1.0.1+2',
+          orElse: () => '1.0.2+3',
         );
 
     return Scaffold(

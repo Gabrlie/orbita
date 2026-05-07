@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/app_security.dart';
 import 'package:orbita/providers/security_provider.dart';
+import 'package:orbita/widgets/orbita_select_field.dart';
 
 class PasswordDialog extends StatefulWidget {
   final String title;
@@ -69,7 +70,7 @@ class _PasswordDialogState extends State<PasswordDialog> {
   }
 
   void _submit(AppLocalizations l10n) {
-    if (_password.text.length < 8) {
+    if (_password.text.length < 6) {
       setState(() => _error = l10n.securityPasswordTooShort);
       return;
     }
@@ -103,21 +104,17 @@ class _LockPolicyDialogState extends State<LockPolicyDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _modeTile(AppLockMode.never, l10n.securityLockNever),
-          _modeTile(AppLockMode.onExit, l10n.securityLockOnExit),
           _modeTile(AppLockMode.afterDuration, l10n.securityLockAfterTitle),
           if (_mode == AppLockMode.afterDuration)
-            DropdownButtonFormField<int>(
-              initialValue: _minutes,
-              decoration: InputDecoration(labelText: l10n.securityLockMinutes),
-              items: const [1, 5, 15, 30, 60, 120]
-                  .map(
-                    (minutes) => DropdownMenuItem(
-                      value: minutes,
-                      child: Text('$minutes'),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) => setState(() => _minutes = value ?? 5),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: OrbitaSelectField<int>(
+                label: l10n.securityLockMinutes,
+                value: _minutes,
+                options: const [1, 5, 15, 30, 60, 120],
+                labelBuilder: (minutes) => '$minutes',
+                onChanged: (value) => setState(() => _minutes = value),
+              ),
             ),
         ],
       ),

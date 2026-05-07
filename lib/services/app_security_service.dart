@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:orbita/services/backup_encryption_service.dart';
 import 'package:orbita/services/security_crypto_service.dart';
 
 class AppSecurityService {
@@ -12,6 +14,7 @@ class AppSecurityService {
   final FlutterSecureStorage _storage;
   final LocalAuthentication _localAuth;
   final SecurityCryptoService crypto;
+  late final BackupEncryptionService _backupEncryption;
 
   AppSecurityService({
     FlutterSecureStorage? storage,
@@ -19,7 +22,9 @@ class AppSecurityService {
     SecurityCryptoService? cryptoService,
   }) : _storage = storage ?? const FlutterSecureStorage(),
        _localAuth = localAuth ?? LocalAuthentication(),
-       crypto = cryptoService ?? const SecurityCryptoService();
+       crypto = cryptoService ?? const SecurityCryptoService() {
+    _backupEncryption = BackupEncryptionService(crypto: crypto);
+  }
 
   Future<bool> hasPassword() async {
     final salt = await _storage.read(key: _saltKey);
@@ -32,7 +37,7 @@ class AppSecurityService {
     final key = await crypto.derivePasswordKey(password, salt);
     await _storage.write(key: _saltKey, value: crypto.encodeBytes(salt));
     await _storage.write(key: _verifierKey, value: crypto.verifierForKey(key));
-    await clearAutoBackupKey();
+    await refreshAutoBackupSecret(password);
   }
 
   Future<void> clearPassword() async {
@@ -64,11 +69,22 @@ class AppSecurityService {
       return _localAuth.authenticate(
         localizedReason: reason,
         biometricOnly: true,
-        persistAcrossBackgrounding: true,
+        sensitiveTransaction: false,
       );
     } catch (_) {
       return false;
     }
+  }
+
+  Future<void> ensureAutoBackupSecret(String password) async {
+    final current = await readAutoBackupSecret();
+    if (current != null && current.isNotEmpty) return;
+    await refreshAutoBackupSecret(password);
+  }
+
+  Future<void> refreshAutoBackupSecret(String password) async {
+    final secret = await _backupEncryption.createSecretForPassword(password);
+    await storeAutoBackupSecret(jsonEncode(secret.toJson()));
   }
 
   Future<void> storeAutoBackupSecret(String json) async {

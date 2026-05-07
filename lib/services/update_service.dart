@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -12,15 +11,13 @@ const orbitaReleaseRepository = 'Gabrlie/Orbita';
 class UpdateService {
   static const _apiUrl =
       'https://api.github.com/repos/$orbitaReleaseRepository/releases/latest';
-  static const _cacheKey = 'update_cache';
-  static const _cacheTimeKey = 'update_cache_time';
-  static const _etagKey = 'update_etag';
   static const _autoCheckKey = 'update_auto_check';
   static const _skippedVersionKey = 'update_skipped_version';
-  static const _cacheValidDuration = Duration(hours: 1);
 
   final Dio _dio;
   final SharedPreferences _prefs;
+  String? _etag;
+  UpdateInfo? _lastInfo;
 
   UpdateService({Dio? dio, required SharedPreferences prefs})
     : _dio = dio ?? Dio(),
@@ -48,50 +45,46 @@ class UpdateService {
     final packageInfo = await PackageInfo.fromPlatform();
     final currentVersion = packageInfo.version;
     final currentBuild = packageInfo.buildNumber;
-    if (useCache) {
-      final cached = await _cachedInfo(currentVersion, currentBuild);
-      if (cached != null) return cached;
-    }
-    final etag = _prefs.getString(_etagKey);
+    if (useCache && _lastInfo != null) return _refreshCurrent(_lastInfo!);
     final headers = <String, Object?>{
       'Accept': 'application/vnd.github+json',
       'User-Agent': 'Orbita-App',
       'X-GitHub-Api-Version': '2022-11-28',
     };
-    if (etag != null) headers['If-None-Match'] = etag;
-    final response = await _dio.get<Object?>(
-      _apiUrl,
-      options: Options(
-        responseType: ResponseType.json,
-        validateStatus: (status) => status == 200 || status == 304,
-        headers: headers,
-      ),
-    );
-    if (response.statusCode == 304) {
-      final cached = await _cachedInfo(
-        currentVersion,
-        currentBuild,
-        ignoreExpiry: true,
+    if (_etag != null && _lastInfo != null) headers['If-None-Match'] = _etag;
+    try {
+      final response = await _dio.get<Object?>(
+        _apiUrl,
+        options: Options(
+          responseType: ResponseType.json,
+          validateStatus: (status) => status == 200 || status == 304,
+          headers: headers,
+        ),
       );
-      if (cached != null) {
-        await _prefs.setInt(
-          _cacheTimeKey,
-          DateTime.now().millisecondsSinceEpoch,
-        );
-        return cached;
+      if (response.statusCode == 304 && _lastInfo != null) {
+        return _refreshCurrent(_lastInfo!);
       }
+      _etag = response.headers.value('etag');
+      final data = Map<String, Object?>.from(response.data as Map);
+      final info = await parseRelease(
+        data,
+        currentVersion: currentVersion,
+        currentBuild: currentBuild,
+        skippedVersion: getSkippedVersion(),
+      );
+      _lastInfo = info;
+      return info;
+    } on DioException catch (error) {
+      throw UpdateCheckException.fromDio(error);
+    } on FormatException {
+      throw const UpdateCheckException('release response is not valid JSON');
+    } on TypeError {
+      throw const UpdateCheckException('release response has an invalid shape');
+    } on UpdateCheckException {
+      rethrow;
+    } catch (error) {
+      throw UpdateCheckException('unexpected update check error: $error');
     }
-    final newEtag = response.headers.value('etag');
-    if (newEtag != null) await _prefs.setString(_etagKey, newEtag);
-    final data = Map<String, Object?>.from(response.data as Map);
-    final info = await parseRelease(
-      data,
-      currentVersion: currentVersion,
-      currentBuild: currentBuild,
-      skippedVersion: getSkippedVersion(),
-    );
-    await _cacheInfo(info);
-    return info;
   }
 
   Future<UpdateInfo> parseRelease(
@@ -135,49 +128,25 @@ class UpdateService {
     }
   }
 
-  Future<UpdateInfo?> _cachedInfo(
-    String currentVersion,
-    String currentBuild, {
-    bool ignoreExpiry = false,
-  }) async {
-    final raw = _prefs.getString(_cacheKey);
-    final cachedAt = _prefs.getInt(_cacheTimeKey);
-    if (raw == null || cachedAt == null) return null;
-    if (!ignoreExpiry) {
-      final age = DateTime.now().difference(
-        DateTime.fromMillisecondsSinceEpoch(cachedAt),
-      );
-      if (age > _cacheValidDuration) return null;
-    }
-    try {
-      final cached = UpdateInfo.fromJson(
-        Map<String, Object?>.from(jsonDecode(raw) as Map),
-      );
-      final skipped =
-          normalizeVersion(cached.remoteVersion) ==
-          normalizeVersion(getSkippedVersion() ?? '');
-      return UpdateInfo(
-        currentVersion: currentVersion,
-        currentBuild: currentBuild,
-        remoteVersion: cached.remoteVersion,
-        tagName: cached.tagName,
-        releaseUrl: cached.releaseUrl,
-        releaseNotes: cached.releaseNotes,
-        hasUpdate:
-            compareVersions(cached.remoteVersion, currentVersion) > 0 &&
-            !skipped,
-        isSkipped: skipped,
-        matchedAsset: cached.matchedAsset,
-        assets: cached.assets,
-      );
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<void> _cacheInfo(UpdateInfo info) async {
-    await _prefs.setString(_cacheKey, jsonEncode(info.toJson()));
-    await _prefs.setInt(_cacheTimeKey, DateTime.now().millisecondsSinceEpoch);
+  Future<UpdateInfo> _refreshCurrent(UpdateInfo cached) async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    final skipped =
+        normalizeVersion(cached.remoteVersion) ==
+        normalizeVersion(getSkippedVersion() ?? '');
+    return UpdateInfo(
+      currentVersion: packageInfo.version,
+      currentBuild: packageInfo.buildNumber,
+      remoteVersion: cached.remoteVersion,
+      tagName: cached.tagName,
+      releaseUrl: cached.releaseUrl,
+      releaseNotes: cached.releaseNotes,
+      hasUpdate:
+          compareVersions(cached.remoteVersion, packageInfo.version) > 0 &&
+          !skipped,
+      isSkipped: skipped,
+      matchedAsset: cached.matchedAsset,
+      assets: cached.assets,
+    );
   }
 
   static String normalizeVersion(String version) {
@@ -265,4 +234,40 @@ class UpdateService {
     final match = RegExp(r'^[a-fA-F0-9]{64}').firstMatch(text.trim());
     return match?.group(0)?.toLowerCase();
   }
+}
+
+class UpdateCheckException implements Exception {
+  final String message;
+
+  const UpdateCheckException(this.message);
+
+  factory UpdateCheckException.fromDio(DioException error) {
+    final status = error.response?.statusCode;
+    if (status != null) {
+      return UpdateCheckException('GitHub Releases API returned HTTP $status');
+    }
+    return switch (error.type) {
+      DioExceptionType.connectionTimeout => const UpdateCheckException(
+        'connection timed out while contacting GitHub Releases',
+      ),
+      DioExceptionType.sendTimeout => const UpdateCheckException(
+        'request timed out while sending update check',
+      ),
+      DioExceptionType.receiveTimeout => const UpdateCheckException(
+        'GitHub Releases response timed out',
+      ),
+      DioExceptionType.badCertificate => const UpdateCheckException(
+        'GitHub Releases TLS certificate could not be verified',
+      ),
+      DioExceptionType.connectionError => const UpdateCheckException(
+        'network connection to GitHub Releases failed',
+      ),
+      _ => UpdateCheckException(
+        'GitHub Releases request failed: ${error.message ?? 'unknown error'}',
+      ),
+    };
+  }
+
+  @override
+  String toString() => message;
 }

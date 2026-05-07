@@ -782,7 +782,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityUnlockSection => '解锁方式';
 
   @override
-  String get securityBiometricDesc => '仅用于解锁应用，备份加密仍需应用密码。';
+  String get securityBiometricDesc => '仅用于解锁应用，备份恢复仍需输入应用密码。';
 
   @override
   String get securityLockPolicy => '锁定策略';
@@ -794,15 +794,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityLockOnExit => '退出应用时锁定';
 
   @override
-  String get securityLockAfterTitle => '一段时间后锁定';
+  String get securityLockAfterTitle => '空闲一定时间后锁定';
 
   @override
   String securityLockAfterMinutes(int minutes) {
-    return '$minutes 分钟后锁定';
+    return '空闲 $minutes 分钟后锁定';
   }
 
   @override
-  String get securityLockMinutes => '分钟数';
+  String get securityLockMinutes => '空闲分钟数';
 
   @override
   String get securitySaved => '安全设置已保存';
@@ -865,7 +865,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupAutoDesc => '配置后在数据变更时防抖写入已启用目标。';
 
   @override
-  String get backupPasswordRequired => '必须输入应用密码，不能用生物识别替代。';
+  String get backupPasswordRequired => '使用已保存的应用密码密钥加密，不会额外询问密码。';
 
   @override
   String get backupManual => '手动备份';
@@ -885,13 +885,64 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupOperationDone => '备份与同步操作完成';
 
   @override
+  String get backupRestoreDone => '备份恢复完成';
+
+  @override
+  String backupRestoreFailed(String message) {
+    return '备份恢复失败：$message';
+  }
+
+  @override
+  String get backupWebDavConnected => 'WebDAV 连接成功';
+
+  @override
+  String backupWebDavFailed(String message) {
+    return 'WebDAV 连接失败：$message';
+  }
+
+  @override
+  String get backupPasswordSetupRequired => '请先配置应用密码';
+
+  @override
+  String get backupPasswordSetupDesc => '备份、恢复和自动备份的密钥托管都依赖应用密码，生物识别不能替代。';
+
+  @override
+  String get backupNoTarget => '请先启用本地文件夹或 WebDAV 备份目标';
+
+  @override
+  String get backupNoBackups => '当前目标中暂无可恢复的备份';
+
+  @override
+  String get backupSelectBackup => '选择要恢复的备份';
+
+  @override
+  String get backupInvalidPassword => '密码不正确，无法恢复备份';
+
+  @override
+  String get backupInvalidSnapshot => '备份文件无效或已损坏，无法恢复';
+
+  @override
+  String get backupRetentionCount => '备份保留数量';
+
+  @override
+  String backupRetentionDesc(int count) {
+    return '每个目标保留最近 $count 份备份';
+  }
+
+  @override
+  String get backupRetentionTitle => '设置备份保留数量';
+
+  @override
+  String get backupRetentionHelp => '默认 3 份，可设置 1-100 之间的数量。';
+
+  @override
   String get backupWebDavUrl => 'WebDAV 地址';
 
   @override
   String get backupWebDavUsername => '用户名';
 
   @override
-  String get backupWebDavPath => '远端文件路径';
+  String get backupWebDavFolder => '远端文件夹';
 
   @override
   String get updateTitle => '在线更新';

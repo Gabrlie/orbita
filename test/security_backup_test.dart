@@ -1,5 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:orbita/models/backup_models.dart';
 import 'package:orbita/services/backup_encryption_service.dart';
+import 'package:orbita/services/backup_file_service.dart';
+import 'package:orbita/services/backup_snapshot_service.dart';
 import 'package:orbita/services/security_crypto_service.dart';
 
 void main() {
@@ -62,6 +65,67 @@ void main() {
     await expectLater(
       service.decryptWithPassword(result.envelope, 'bad-pass'),
       throwsA(isA<Object>()),
+    );
+  });
+
+  test(
+    'backup filenames are timestamped and retention keeps newest entries',
+    () {
+      const service = BackupFileService();
+      final first = BackupEntry(
+        location: BackupLocation.local,
+        name: 'orbita-backup-20260507-010000.json',
+        path: 'a',
+        modifiedAt: DateTime(2026, 5, 7, 1),
+      );
+      final second = BackupEntry(
+        location: BackupLocation.local,
+        name: 'orbita-backup-20260507-020000.json',
+        path: 'b',
+        modifiedAt: DateTime(2026, 5, 7, 2),
+      );
+      final third = BackupEntry(
+        location: BackupLocation.local,
+        name: 'orbita-backup-20260507-030000.json',
+        path: 'c',
+        modifiedAt: DateTime(2026, 5, 7, 3),
+      );
+
+      expect(
+        service.createFileName(DateTime(2026, 5, 7, 9, 8, 6)),
+        'orbita-backup-20260507-090806.json',
+      );
+      expect(service.isBackupName(BackupFileService.legacyName), isTrue);
+      expect(service.entriesToDelete([first, third, second], 2), [first]);
+    },
+  );
+
+  test('backup snapshot validation rejects unreadable restore payloads', () {
+    expect(
+      () => validateBackupSnapshot({
+        'schema': 1,
+        'createdAt': '2026-05-07T00:00:00Z',
+        'servers': const [],
+        'keys': const [],
+        'groups': const <String, Object?>{},
+        'scripts': const [],
+        'snippets': const [],
+      }),
+      returnsNormally,
+    );
+    expect(
+      () => validateBackupSnapshot({
+        'schema': 1,
+        'createdAt': '2026-05-07T00:00:00Z',
+        'servers': const [],
+      }),
+      throwsA(
+        isA<BackupException>().having(
+          (error) => error.message,
+          'message',
+          BackupException.invalidSnapshot,
+        ),
+      ),
     );
   });
 }

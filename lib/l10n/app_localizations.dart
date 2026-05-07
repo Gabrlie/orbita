@@ -1577,7 +1577,7 @@ abstract class AppLocalizations {
   /// No description provided for @securityBiometricDesc.
   ///
   /// In zh, this message translates to:
-  /// **'仅用于解锁应用，备份加密仍需应用密码。'**
+  /// **'仅用于解锁应用，备份恢复仍需输入应用密码。'**
   String get securityBiometricDesc;
 
   /// No description provided for @securityLockPolicy.
@@ -1601,19 +1601,19 @@ abstract class AppLocalizations {
   /// No description provided for @securityLockAfterTitle.
   ///
   /// In zh, this message translates to:
-  /// **'一段时间后锁定'**
+  /// **'空闲一定时间后锁定'**
   String get securityLockAfterTitle;
 
   /// No description provided for @securityLockAfterMinutes.
   ///
   /// In zh, this message translates to:
-  /// **'{minutes} 分钟后锁定'**
+  /// **'空闲 {minutes} 分钟后锁定'**
   String securityLockAfterMinutes(int minutes);
 
   /// No description provided for @securityLockMinutes.
   ///
   /// In zh, this message translates to:
-  /// **'分钟数'**
+  /// **'空闲分钟数'**
   String get securityLockMinutes;
 
   /// No description provided for @securitySaved.
@@ -1739,7 +1739,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupPasswordRequired.
   ///
   /// In zh, this message translates to:
-  /// **'必须输入应用密码，不能用生物识别替代。'**
+  /// **'使用已保存的应用密码密钥加密，不会额外询问密码。'**
   String get backupPasswordRequired;
 
   /// No description provided for @backupManual.
@@ -1772,6 +1772,96 @@ abstract class AppLocalizations {
   /// **'备份与同步操作完成'**
   String get backupOperationDone;
 
+  /// No description provided for @backupRestoreDone.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份恢复完成'**
+  String get backupRestoreDone;
+
+  /// No description provided for @backupRestoreFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份恢复失败：{message}'**
+  String backupRestoreFailed(String message);
+
+  /// No description provided for @backupWebDavConnected.
+  ///
+  /// In zh, this message translates to:
+  /// **'WebDAV 连接成功'**
+  String get backupWebDavConnected;
+
+  /// No description provided for @backupWebDavFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'WebDAV 连接失败：{message}'**
+  String backupWebDavFailed(String message);
+
+  /// No description provided for @backupPasswordSetupRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请先配置应用密码'**
+  String get backupPasswordSetupRequired;
+
+  /// No description provided for @backupPasswordSetupDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份、恢复和自动备份的密钥托管都依赖应用密码，生物识别不能替代。'**
+  String get backupPasswordSetupDesc;
+
+  /// No description provided for @backupNoTarget.
+  ///
+  /// In zh, this message translates to:
+  /// **'请先启用本地文件夹或 WebDAV 备份目标'**
+  String get backupNoTarget;
+
+  /// No description provided for @backupNoBackups.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前目标中暂无可恢复的备份'**
+  String get backupNoBackups;
+
+  /// No description provided for @backupSelectBackup.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择要恢复的备份'**
+  String get backupSelectBackup;
+
+  /// No description provided for @backupInvalidPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码不正确，无法恢复备份'**
+  String get backupInvalidPassword;
+
+  /// No description provided for @backupInvalidSnapshot.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份文件无效或已损坏，无法恢复'**
+  String get backupInvalidSnapshot;
+
+  /// No description provided for @backupRetentionCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份保留数量'**
+  String get backupRetentionCount;
+
+  /// No description provided for @backupRetentionDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'每个目标保留最近 {count} 份备份'**
+  String backupRetentionDesc(int count);
+
+  /// No description provided for @backupRetentionTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置备份保留数量'**
+  String get backupRetentionTitle;
+
+  /// No description provided for @backupRetentionHelp.
+  ///
+  /// In zh, this message translates to:
+  /// **'默认 3 份，可设置 1-100 之间的数量。'**
+  String get backupRetentionHelp;
+
   /// No description provided for @backupWebDavUrl.
   ///
   /// In zh, this message translates to:
@@ -1784,11 +1874,11 @@ abstract class AppLocalizations {
   /// **'用户名'**
   String get backupWebDavUsername;
 
-  /// No description provided for @backupWebDavPath.
+  /// No description provided for @backupWebDavFolder.
   ///
   /// In zh, this message translates to:
-  /// **'远端文件路径'**
-  String get backupWebDavPath;
+  /// **'远端文件夹'**
+  String get backupWebDavFolder;
 
   /// No description provided for @updateTitle.
   ///

@@ -792,7 +792,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get securityBiometricDesc =>
-      'Only unlocks the app. Backup encryption still requires the app password.';
+      'Only unlocks the app. Backup restore still requires the app password.';
 
   @override
   String get securityLockPolicy => 'Lock Policy';
@@ -804,15 +804,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get securityLockOnExit => 'Lock When Leaving App';
 
   @override
-  String get securityLockAfterTitle => 'Lock After Time';
+  String get securityLockAfterTitle => 'Lock after idle time';
 
   @override
   String securityLockAfterMinutes(int minutes) {
-    return 'Lock after $minutes min';
+    return 'Lock after $minutes min idle';
   }
 
   @override
-  String get securityLockMinutes => 'Minutes';
+  String get securityLockMinutes => 'Idle minutes';
 
   @override
   String get securitySaved => 'Security settings saved';
@@ -877,7 +877,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupPasswordRequired =>
-      'Requires the app password. Biometrics cannot replace it.';
+      'Uses the saved app-password key and will not ask again.';
 
   @override
   String get backupManual => 'Manual Backup';
@@ -897,13 +897,70 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupOperationDone => 'Backup and sync completed';
 
   @override
+  String get backupRestoreDone => 'Backup restored';
+
+  @override
+  String backupRestoreFailed(String message) {
+    return 'Backup restore failed: $message';
+  }
+
+  @override
+  String get backupWebDavConnected => 'WebDAV connected';
+
+  @override
+  String backupWebDavFailed(String message) {
+    return 'WebDAV connection failed: $message';
+  }
+
+  @override
+  String get backupPasswordSetupRequired => 'Set an app password first';
+
+  @override
+  String get backupPasswordSetupDesc =>
+      'Backup, restore, and automatic backup key escrow depend on the app password. Biometrics cannot replace it.';
+
+  @override
+  String get backupNoTarget =>
+      'Enable a local folder or WebDAV backup target first';
+
+  @override
+  String get backupNoBackups =>
+      'No restorable backups were found in this target';
+
+  @override
+  String get backupSelectBackup => 'Select a backup to restore';
+
+  @override
+  String get backupInvalidPassword =>
+      'Incorrect password. Backup restore was not started.';
+
+  @override
+  String get backupInvalidSnapshot =>
+      'This backup file is invalid or corrupted.';
+
+  @override
+  String get backupRetentionCount => 'Backup Retention';
+
+  @override
+  String backupRetentionDesc(int count) {
+    return 'Keep the latest $count backups in each target';
+  }
+
+  @override
+  String get backupRetentionTitle => 'Set Backup Retention';
+
+  @override
+  String get backupRetentionHelp =>
+      'Default is 3. Enter a number from 1 to 100.';
+
+  @override
   String get backupWebDavUrl => 'WebDAV URL';
 
   @override
   String get backupWebDavUsername => 'Username';
 
   @override
-  String get backupWebDavPath => 'Remote File Path';
+  String get backupWebDavFolder => 'Remote Folder';
 
   @override
   String get updateTitle => 'Online Update';

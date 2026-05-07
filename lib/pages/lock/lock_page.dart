@@ -70,6 +70,8 @@ class _LockPageState extends ConsumerState<LockPage> {
                     controller: _controller,
                     obscureText: true,
                     enabled: !_busy,
+                    autofocus: true,
+                    textInputAction: TextInputAction.done,
                     decoration: InputDecoration(
                       labelText: l10n.password,
                       errorText: _error,

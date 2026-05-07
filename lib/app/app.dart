@@ -50,10 +50,6 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       _backgroundedAt = DateTime.now();
-      final security = ref.read(appSecurityProvider).value;
-      if (security?.lockMode == AppLockMode.onExit) {
-        unawaited(ref.read(appSecurityProvider.notifier).lock());
-      }
     }
     if (state == AppLifecycleState.resumed) {
       final backgroundedAt = _backgroundedAt;
@@ -64,6 +60,8 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
       final elapsed = DateTime.now().difference(backgroundedAt);
       if (elapsed.inMinutes >= security!.lockAfterMinutes) {
         unawaited(ref.read(appSecurityProvider.notifier).lock());
+      } else {
+        _markActivity();
       }
     }
   }
@@ -74,8 +72,7 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
     final locale = ref.watch(localeProvider);
     final useDynamicColor = ref.watch(dynamicColorProvider);
     final themeSeed = ref.watch(themeSeedProvider);
-    ref.watch(backupSyncProvider);
-    ref.watch(appUpdateProvider);
+    final securityState = ref.watch(appSecurityProvider);
 
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
@@ -105,12 +102,15 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
           supportedLocales: const [Locale('zh'), Locale('en')],
           routerConfig: router,
           builder: (context, child) {
-            final security = ref.watch(appSecurityProvider).value;
-            final locked =
-                security != null &&
-                security.hasPassword &&
-                !security.isUnlocked;
+            final security = securityState.value;
+            if (securityState.isLoading) return const _StartupLoadingPage();
+            if (securityState.hasError || security == null) {
+              return _StartupErrorPage(error: securityState.error);
+            }
+            final locked = security.hasPassword && !security.isUnlocked;
             if (locked) return const LockPage();
+            ref.watch(backupSyncProvider);
+            ref.watch(appUpdateProvider);
             return Listener(
               behavior: HitTestBehavior.translucent,
               onPointerDown: (_) => _markActivity(),
@@ -139,5 +139,44 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
     if (idle.inMinutes >= security.lockAfterMinutes) {
       unawaited(ref.read(appSecurityProvider.notifier).lock());
     }
+  }
+}
+
+class _StartupLoadingPage extends StatelessWidget {
+  const _StartupLoadingPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('assets/images/orbita_icon.png', width: 72, height: 72),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StartupErrorPage extends StatelessWidget {
+  final Object? error;
+
+  const _StartupErrorPage({this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(body: Center(child: Text('$error')));
   }
 }

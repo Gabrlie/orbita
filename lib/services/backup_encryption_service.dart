@@ -12,6 +12,11 @@ class BackupEncryptionService {
     Map<String, Object?> snapshot,
     String password,
   ) async {
+    final secret = await createSecretForPassword(password);
+    return (envelope: encryptWithSecret(snapshot, secret), secret: secret);
+  }
+
+  Future<BackupAutoSecret> createSecretForPassword(String password) async {
     final dataKey = crypto.randomBytes(32);
     final salt = crypto.randomBytes(16);
     final wrapKey = await crypto.derivePasswordKey(password, salt);
@@ -28,7 +33,7 @@ class BackupEncryptionService {
       wrappedKey: crypto.encodeBytes(wrappedKey),
       dataKey: crypto.encodeBytes(dataKey),
     );
-    return (envelope: encryptWithSecret(snapshot, secret), secret: secret);
+    return secret;
   }
 
   String encryptWithSecret(

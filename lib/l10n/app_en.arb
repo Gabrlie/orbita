@@ -341,18 +341,18 @@
   "securityChangePassword": "Change App Password",
   "securityRemovePassword": "Remove App Password",
   "securityUnlockSection": "Unlock Method",
-  "securityBiometricDesc": "Only unlocks the app. Backup encryption still requires the app password.",
+  "securityBiometricDesc": "Only unlocks the app. Backup restore still requires the app password.",
   "securityLockPolicy": "Lock Policy",
   "securityLockNever": "Never Lock",
   "securityLockOnExit": "Lock When Leaving App",
-  "securityLockAfterTitle": "Lock After Time",
-  "securityLockAfterMinutes": "Lock after {minutes} min",
+  "securityLockAfterTitle": "Lock after idle time",
+  "securityLockAfterMinutes": "Lock after {minutes} min idle",
   "@securityLockAfterMinutes": {
     "placeholders": {
       "minutes": { "type": "int" }
     }
   },
-  "securityLockMinutes": "Minutes",
+  "securityLockMinutes": "Idle minutes",
   "securitySaved": "Security settings saved",
   "securityConfirmPassword": "Confirm Password",
   "securityPasswordTooShort": "Use at least 6 characters",
@@ -374,7 +374,7 @@
   "backupOperations": "Operations",
   "backupAuto": "Automatic Background Backup",
   "backupAutoDesc": "After setup, changed data is debounced and written to enabled targets.",
-  "backupPasswordRequired": "Requires the app password. Biometrics cannot replace it.",
+  "backupPasswordRequired": "Uses the saved app-password key and will not ask again.",
   "backupManual": "Manual Backup",
   "backupRestoreLocal": "Restore from Local File",
   "backupRestoreWebDav": "Restore from WebDAV",
@@ -385,9 +385,39 @@
     }
   },
   "backupOperationDone": "Backup and sync completed",
+  "backupRestoreDone": "Backup restored",
+  "backupRestoreFailed": "Backup restore failed: {message}",
+  "@backupRestoreFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "backupWebDavConnected": "WebDAV connected",
+  "backupWebDavFailed": "WebDAV connection failed: {message}",
+  "@backupWebDavFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "backupPasswordSetupRequired": "Set an app password first",
+  "backupPasswordSetupDesc": "Backup, restore, and automatic backup key escrow depend on the app password. Biometrics cannot replace it.",
+  "backupNoTarget": "Enable a local folder or WebDAV backup target first",
+  "backupNoBackups": "No restorable backups were found in this target",
+  "backupSelectBackup": "Select a backup to restore",
+  "backupInvalidPassword": "Incorrect password. Backup restore was not started.",
+  "backupInvalidSnapshot": "This backup file is invalid or corrupted.",
+  "backupRetentionCount": "Backup Retention",
+  "backupRetentionDesc": "Keep the latest {count} backups in each target",
+  "@backupRetentionDesc": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "backupRetentionTitle": "Set Backup Retention",
+  "backupRetentionHelp": "Default is 3. Enter a number from 1 to 100.",
   "backupWebDavUrl": "WebDAV URL",
   "backupWebDavUsername": "Username",
-  "backupWebDavPath": "Remote File Path",
+  "backupWebDavFolder": "Remote Folder",
 
   "updateTitle": "Online Update",
   "updateAutoCheck": "Automatically Check for Updates",

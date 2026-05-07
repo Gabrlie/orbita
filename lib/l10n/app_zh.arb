@@ -341,18 +341,18 @@
   "securityChangePassword": "修改应用密码",
   "securityRemovePassword": "移除应用密码",
   "securityUnlockSection": "解锁方式",
-  "securityBiometricDesc": "仅用于解锁应用，备份加密仍需应用密码。",
+  "securityBiometricDesc": "仅用于解锁应用，备份恢复仍需输入应用密码。",
   "securityLockPolicy": "锁定策略",
   "securityLockNever": "永不锁定",
   "securityLockOnExit": "退出应用时锁定",
-  "securityLockAfterTitle": "一段时间后锁定",
-  "securityLockAfterMinutes": "{minutes} 分钟后锁定",
+  "securityLockAfterTitle": "空闲一定时间后锁定",
+  "securityLockAfterMinutes": "空闲 {minutes} 分钟后锁定",
   "@securityLockAfterMinutes": {
     "placeholders": {
       "minutes": { "type": "int" }
     }
   },
-  "securityLockMinutes": "分钟数",
+  "securityLockMinutes": "空闲分钟数",
   "securitySaved": "安全设置已保存",
   "securityConfirmPassword": "确认密码",
   "securityPasswordTooShort": "密码至少 6 位",
@@ -374,7 +374,7 @@
   "backupOperations": "操作",
   "backupAuto": "自动无感备份",
   "backupAutoDesc": "配置后在数据变更时防抖写入已启用目标。",
-  "backupPasswordRequired": "必须输入应用密码，不能用生物识别替代。",
+  "backupPasswordRequired": "使用已保存的应用密码密钥加密，不会额外询问密码。",
   "backupManual": "手动备份",
   "backupRestoreLocal": "从本地恢复",
   "backupRestoreWebDav": "从 WebDAV 恢复",
@@ -385,9 +385,39 @@
     }
   },
   "backupOperationDone": "备份与同步操作完成",
+  "backupRestoreDone": "备份恢复完成",
+  "backupRestoreFailed": "备份恢复失败：{message}",
+  "@backupRestoreFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "backupWebDavConnected": "WebDAV 连接成功",
+  "backupWebDavFailed": "WebDAV 连接失败：{message}",
+  "@backupWebDavFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "backupPasswordSetupRequired": "请先配置应用密码",
+  "backupPasswordSetupDesc": "备份、恢复和自动备份的密钥托管都依赖应用密码，生物识别不能替代。",
+  "backupNoTarget": "请先启用本地文件夹或 WebDAV 备份目标",
+  "backupNoBackups": "当前目标中暂无可恢复的备份",
+  "backupSelectBackup": "选择要恢复的备份",
+  "backupInvalidPassword": "密码不正确，无法恢复备份",
+  "backupInvalidSnapshot": "备份文件无效或已损坏，无法恢复",
+  "backupRetentionCount": "备份保留数量",
+  "backupRetentionDesc": "每个目标保留最近 {count} 份备份",
+  "@backupRetentionDesc": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "backupRetentionTitle": "设置备份保留数量",
+  "backupRetentionHelp": "默认 3 份，可设置 1-100 之间的数量。",
   "backupWebDavUrl": "WebDAV 地址",
   "backupWebDavUsername": "用户名",
-  "backupWebDavPath": "远端文件路径",
+  "backupWebDavFolder": "远端文件夹",
 
   "updateTitle": "在线更新",
   "updateAutoCheck": "自动检查更新",

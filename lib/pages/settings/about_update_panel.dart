@@ -51,7 +51,7 @@ class AboutUpdatePanel extends ConsumerWidget {
                   )
                 : const Icon(Ionicons.cloud_download_outline),
             title: Text(_statusText(l10n, update)),
-            subtitle: _subtitle(context, l10n, update),
+            subtitle: _subtitle(l10n, update),
             trailing: TextButton(
               onPressed: update.checking
                   ? null
@@ -95,12 +95,7 @@ class AboutUpdatePanel extends ConsumerWidget {
     );
   }
 
-  Widget? _subtitle(
-    BuildContext context,
-    AppLocalizations l10n,
-    UpdateState update,
-  ) {
-    if (update.error != null) return Text(l10n.updateFailed(update.error!));
+  Widget? _subtitle(AppLocalizations l10n, UpdateState update) {
     final progress = update.download;
     if (progress.status == UpdateDownloadStatus.downloading) {
       return Text(l10n.updateDownloadProgress(progress.progress));
@@ -124,6 +119,7 @@ class AboutUpdatePanel extends ConsumerWidget {
 
   String _statusText(AppLocalizations l10n, UpdateState update) {
     if (update.checking) return l10n.updateChecking;
+    if (update.error != null) return l10n.updateFailed(update.error!);
     final info = update.info;
     if (info == null) return l10n.updateCheckNow;
     if (info.hasUpdate) return l10n.updateAvailable(info.remoteVersion);

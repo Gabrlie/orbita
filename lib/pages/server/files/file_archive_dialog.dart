@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/remote_file_entry.dart';
+import 'package:orbita/widgets/orbita_select_field.dart';
 
 class CompressOptions {
   final ArchiveFormat format;
@@ -86,18 +87,12 @@ class _CompressDialogState extends State<_CompressDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          DropdownButtonFormField<ArchiveFormat>(
-            initialValue: _format,
-            decoration: InputDecoration(labelText: l10n.fileArchiveFormat),
-            items: [
-              for (final format in ArchiveFormat.values)
-                DropdownMenuItem(
-                  value: format,
-                  child: Text(archiveFormatLabel(format)),
-                ),
-            ],
+          OrbitaSelectField<ArchiveFormat>(
+            label: l10n.fileArchiveFormat,
+            value: _format,
+            options: ArchiveFormat.values,
+            labelBuilder: archiveFormatLabel,
             onChanged: (value) {
-              if (value == null) return;
               setState(() {
                 _format = value;
                 if (_format != ArchiveFormat.zip) _usePassword = false;

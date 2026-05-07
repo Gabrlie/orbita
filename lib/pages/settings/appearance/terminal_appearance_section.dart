@@ -5,6 +5,7 @@ import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/pages/settings/appearance/terminal_color_picker_dialog.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_select_field.dart';
 
 class TerminalAppearanceSection extends ConsumerWidget {
   const TerminalAppearanceSection({super.key});
@@ -123,32 +124,18 @@ class _FontFamilyField extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
 
-    return DropdownButtonFormField<TerminalFontFamily>(
-      initialValue: appearance.fontFamily,
-      decoration: InputDecoration(
-        labelText: l10n.terminalFontFamily,
-        prefixIcon: const Icon(Ionicons.code_slash_outline),
-      ),
-      items: [
-        DropdownMenuItem(
-          value: TerminalFontFamily.jetbrainsMono,
-          child: Text(l10n.terminalFontJetBrainsMono),
-        ),
-        DropdownMenuItem(
-          value: TerminalFontFamily.system,
-          child: Text(l10n.terminalFontSystem),
-        ),
-        DropdownMenuItem(
-          value: TerminalFontFamily.monospace,
-          child: Text(l10n.terminalFontMonospace),
-        ),
-        DropdownMenuItem(
-          value: TerminalFontFamily.custom,
-          child: Text(l10n.terminalFontCustom),
-        ),
-      ],
+    return OrbitaSelectField<TerminalFontFamily>(
+      label: l10n.terminalFontFamily,
+      value: appearance.fontFamily,
+      options: TerminalFontFamily.values,
+      leadingIcon: Ionicons.code_slash_outline,
+      labelBuilder: (value) => switch (value) {
+        TerminalFontFamily.jetbrainsMono => l10n.terminalFontJetBrainsMono,
+        TerminalFontFamily.system => l10n.terminalFontSystem,
+        TerminalFontFamily.monospace => l10n.terminalFontMonospace,
+        TerminalFontFamily.custom => l10n.terminalFontCustom,
+      },
       onChanged: (value) {
-        if (value == null) return;
         ref
             .read(terminalAppearanceProvider.notifier)
             .set(appearance.copyWith(fontFamily: value));

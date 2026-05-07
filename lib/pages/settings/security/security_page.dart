@@ -110,7 +110,6 @@ class _SecurityContent extends ConsumerWidget {
   String _lockPolicyText(AppLocalizations l10n, AppSecurityState state) {
     return switch (state.lockMode) {
       AppLockMode.never => l10n.securityLockNever,
-      AppLockMode.onExit => l10n.securityLockOnExit,
       AppLockMode.afterDuration => l10n.securityLockAfterMinutes(
         state.lockAfterMinutes,
       ),

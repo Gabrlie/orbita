@@ -4,25 +4,25 @@ import 'package:orbita/services/update_service.dart';
 
 void main() {
   test('compares semantic versions without build suffix', () {
-    expect(UpdateService.compareVersions('1.0.1', '1.0.0+1'), greaterThan(0));
-    expect(UpdateService.compareVersions('v1.0.1', '1.0.1+2'), 0);
+    expect(UpdateService.compareVersions('1.0.2', '1.0.1+2'), greaterThan(0));
+    expect(UpdateService.compareVersions('v1.0.2', '1.0.2+3'), 0);
     expect(UpdateService.compareVersions('1.2.0', '1.10.0'), lessThan(0));
   });
 
   test('parses release assets and matches device architecture', () {
     final assets = UpdateService.parseAssets([
       {
-        'name': 'orbita-1.0.1-android-arm64-v8a.apk',
+        'name': 'orbita-1.0.2-android-arm64-v8a.apk',
         'browser_download_url': 'https://example.com/arm64.apk',
         'size': 10,
       },
       {
-        'name': 'orbita-1.0.1-android-arm64-v8a.apk.sha256',
+        'name': 'orbita-1.0.2-android-arm64-v8a.apk.sha256',
         'browser_download_url': 'https://example.com/arm64.apk.sha256',
         'size': 1,
       },
       {
-        'name': 'orbita-1.0.1-android-x86_64.apk',
+        'name': 'orbita-1.0.2-android-x86_64.apk',
         'browser_download_url': 'https://example.com/x64.apk',
         'size': 20,
       },
@@ -47,11 +47,11 @@ void main() {
 
   test('update info respects skipped version', () {
     const info = UpdateInfo(
-      currentVersion: '1.0.0',
-      currentBuild: '1',
-      remoteVersion: '1.0.1',
-      tagName: 'v1.0.1',
-      releaseUrl: 'https://github.com/Gabrlie/Orbita/releases/tag/v1.0.1',
+      currentVersion: '1.0.1',
+      currentBuild: '2',
+      remoteVersion: '1.0.2',
+      tagName: 'v1.0.2',
+      releaseUrl: 'https://github.com/Gabrlie/Orbita/releases/tag/v1.0.2',
       releaseNotes: '',
       hasUpdate: false,
       isSkipped: true,

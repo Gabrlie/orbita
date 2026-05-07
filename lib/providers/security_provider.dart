@@ -24,10 +24,11 @@ class AppSecurityNotifier extends AsyncNotifier<AppSecurityState> {
         .read(appSecurityServiceProvider)
         .hasPassword();
     final lockModeName = prefs.getString(_keyLockMode);
-    final lockMode = AppLockMode.values.firstWhere(
-      (mode) => mode.name == lockModeName,
-      orElse: () => AppLockMode.never,
-    );
+    final lockMode = switch (lockModeName) {
+      'afterDuration' => AppLockMode.afterDuration,
+      'onExit' => AppLockMode.afterDuration,
+      _ => AppLockMode.never,
+    };
     return AppSecurityState(
       hasPassword: hasPassword,
       biometricEnabled:
@@ -59,10 +60,10 @@ class AppSecurityNotifier extends AsyncNotifier<AppSecurityState> {
   }
 
   Future<bool> unlockWithPassword(String password) async {
-    final key = await ref
-        .read(appSecurityServiceProvider)
-        .verifyPassword(password);
+    final service = ref.read(appSecurityServiceProvider);
+    final key = await service.verifyPassword(password);
     if (key == null) return false;
+    await service.ensureAutoBackupSecret(password);
     final current = await future;
     state = AsyncData(current.copyWith(isUnlocked: true));
     return true;

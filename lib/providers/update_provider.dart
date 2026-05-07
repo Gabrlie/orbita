@@ -37,7 +37,9 @@ class AppUpdateNotifier extends AsyncNotifier<UpdateState> {
   }
 
   Future<void> check({bool manual = true}) async {
-    state = AsyncData(_current().copyWith(checking: true, error: () => null));
+    state = AsyncData(
+      _current().copyWith(checking: true, info: () => null, error: () => null),
+    );
     try {
       final info = await ref
           .read(updateServiceProvider)
@@ -51,7 +53,11 @@ class AppUpdateNotifier extends AsyncNotifier<UpdateState> {
       );
     } catch (error) {
       state = AsyncData(
-        _current().copyWith(checking: false, error: () => '$error'),
+        _current().copyWith(
+          checking: false,
+          info: () => null,
+          error: () => _formatError(error),
+        ),
       );
     }
   }
@@ -110,4 +116,9 @@ class AppUpdateNotifier extends AsyncNotifier<UpdateState> {
   }
 
   UpdateState _current() => state.value ?? const UpdateState();
+
+  String _formatError(Object error) {
+    if (error is UpdateCheckException) return error.message;
+    return 'update check failed with an unexpected error';
+  }
 }
