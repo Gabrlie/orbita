@@ -48,6 +48,11 @@ class KeyListNotifier extends AsyncNotifier<List<SshKey>> {
     state = AsyncData(current);
   }
 
+  Future<void> replaceAll(List<SshKey> keys) async {
+    await ref.read(storageServiceProvider).saveKeys(keys);
+    state = AsyncData(keys);
+  }
+
   /// Generate a new key pair and return it (not yet saved).
   Future<SshKey> generateKey({
     required String id,

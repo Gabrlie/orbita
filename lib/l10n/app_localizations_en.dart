@@ -684,10 +684,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsSecurityDesc => 'Password & biometrics';
 
   @override
-  String get settingsSync => 'WebDAV Sync';
+  String get settingsSync => 'Backup & Sync';
 
   @override
-  String get settingsSyncDesc => 'Backup and sync server configs';
+  String get settingsSyncDesc => 'Encrypted local folder and WebDAV backups';
 
   @override
   String get settingsAppSection => 'Application';
@@ -769,6 +769,199 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get securityBiometric => 'Biometric Unlock';
+
+  @override
+  String get securityAppPasswordEnabled =>
+      'Enabled for app unlock and encrypted backups.';
+
+  @override
+  String get securityAppPasswordDisabled =>
+      'Not enabled. Backup and restore require an app password.';
+
+  @override
+  String get securitySetPassword => 'Set App Password';
+
+  @override
+  String get securityChangePassword => 'Change App Password';
+
+  @override
+  String get securityRemovePassword => 'Remove App Password';
+
+  @override
+  String get securityUnlockSection => 'Unlock Method';
+
+  @override
+  String get securityBiometricDesc =>
+      'Only unlocks the app. Backup encryption still requires the app password.';
+
+  @override
+  String get securityLockPolicy => 'Lock Policy';
+
+  @override
+  String get securityLockNever => 'Never Lock';
+
+  @override
+  String get securityLockOnExit => 'Lock When Leaving App';
+
+  @override
+  String get securityLockAfterTitle => 'Lock After Time';
+
+  @override
+  String securityLockAfterMinutes(int minutes) {
+    return 'Lock after $minutes min';
+  }
+
+  @override
+  String get securityLockMinutes => 'Minutes';
+
+  @override
+  String get securitySaved => 'Security settings saved';
+
+  @override
+  String get securityConfirmPassword => 'Confirm Password';
+
+  @override
+  String get securityPasswordTooShort => 'Use at least 6 characters';
+
+  @override
+  String get securityPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get securityChecking => 'Checking security settings...';
+
+  @override
+  String get securityInvalidPassword => 'Incorrect password';
+
+  @override
+  String get securityBiometricReason => 'Unlock Orbita with biometrics';
+
+  @override
+  String get securityBiometricFailed => 'Biometric authentication failed';
+
+  @override
+  String get backupSyncTitle => 'Backup & Sync';
+
+  @override
+  String get backupLocalFolder => 'Local Folder Backup';
+
+  @override
+  String get backupLocalFolderUnset => 'No local backup folder selected';
+
+  @override
+  String get backupChooseFolder => 'Choose Local Folder';
+
+  @override
+  String get backupRemoteSection => 'Remote Backup';
+
+  @override
+  String get backupWebDav => 'WebDAV Remote Backup';
+
+  @override
+  String get backupWebDavUnset => 'WebDAV is not configured';
+
+  @override
+  String get backupWebDavConfig => 'Configure WebDAV';
+
+  @override
+  String get backupTestWebDav => 'Test WebDAV Connection';
+
+  @override
+  String get backupOperations => 'Operations';
+
+  @override
+  String get backupAuto => 'Automatic Background Backup';
+
+  @override
+  String get backupAutoDesc =>
+      'After setup, changed data is debounced and written to enabled targets.';
+
+  @override
+  String get backupPasswordRequired =>
+      'Requires the app password. Biometrics cannot replace it.';
+
+  @override
+  String get backupManual => 'Manual Backup';
+
+  @override
+  String get backupRestoreLocal => 'Restore from Local File';
+
+  @override
+  String get backupRestoreWebDav => 'Restore from WebDAV';
+
+  @override
+  String backupLastAt(String time) {
+    return 'Last backup: $time';
+  }
+
+  @override
+  String get backupOperationDone => 'Backup and sync completed';
+
+  @override
+  String get backupWebDavUrl => 'WebDAV URL';
+
+  @override
+  String get backupWebDavUsername => 'Username';
+
+  @override
+  String get backupWebDavPath => 'Remote File Path';
+
+  @override
+  String get updateTitle => 'Online Update';
+
+  @override
+  String get updateAutoCheck => 'Automatically Check for Updates';
+
+  @override
+  String get updateCheck => 'Check';
+
+  @override
+  String get updateCheckNow => 'Check GitHub Release Updates';
+
+  @override
+  String get updateChecking => 'Checking for updates...';
+
+  @override
+  String updateAvailable(String version) {
+    return 'New version $version available';
+  }
+
+  @override
+  String get updateLatest => 'You are up to date';
+
+  @override
+  String updateSkipped(String version) {
+    return 'Skipped version $version';
+  }
+
+  @override
+  String get updateDownload => 'Download and Install';
+
+  @override
+  String get updateSkip => 'Skip Version';
+
+  @override
+  String get updateNoAsset => 'No installer matches this device';
+
+  @override
+  String updateAsset(String architecture) {
+    return 'Matched package: $architecture';
+  }
+
+  @override
+  String updateDownloadProgress(int progress) {
+    return 'Download progress: $progress%';
+  }
+
+  @override
+  String get updateInstalling => 'Opening installer...';
+
+  @override
+  String get updateCompleted => 'Update file is ready';
+
+  @override
+  String updateFailed(String message) {
+    return 'Update failed: $message';
+  }
 
   @override
   String get appearanceTitle => 'Appearance & Language';

@@ -130,6 +130,10 @@ class ServerGroupNotifier extends Notifier<ServerGroupState> {
     );
   }
 
+  Future<void> replaceAll(ServerGroupState next) async {
+    await _save(next);
+  }
+
   Future<void> _save(ServerGroupState next) async {
     state = next;
     await ref

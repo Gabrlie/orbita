@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/models/app_security.dart';
+import 'package:orbita/pages/settings/security/security_dialogs.dart';
+import 'package:orbita/pages/settings/security/security_widgets.dart';
+import 'package:orbita/providers/security_provider.dart';
 import 'package:orbita/widgets/common.dart';
 
-class SecurityPage extends StatelessWidget {
+class SecurityPage extends ConsumerWidget {
   const SecurityPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final disabledColor = theme.colorScheme.onSurface.withAlpha(97);
+    final state = ref.watch(appSecurityProvider);
 
     return Scaffold(
       appBar: compactPageAppBar(
@@ -19,140 +23,164 @@ class SecurityPage extends StatelessWidget {
         fallbackLocation: '/settings',
       ),
       body: TonalListBackground(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: state.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(child: Text('$error')),
+          data: (security) => _SecurityContent(security: security),
+        ),
+      ),
+    );
+  }
+}
+
+class _SecurityContent extends ConsumerWidget {
+  final AppSecurityState security;
+
+  const _SecurityContent({required this.security});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      children: [
+        SectionHeader(
+          title: l10n.securityCurrentTier,
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        ),
+        SecurityPanel(
           children: [
-            SectionHeader(
-              title: l10n.securityCurrentTier,
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            SecurityInfoTile(
+              icon: Ionicons.phone_portrait_outline,
+              title: l10n.securityDeviceEncryption,
+              subtitle: l10n.securityDeviceEncryptionDesc,
+              trailing: const Icon(Ionicons.checkmark_circle_outline),
             ),
-            Card(
-              margin: EdgeInsets.zero,
-              color: tonalItemColor(context),
-              surfaceTintColor: Colors.transparent,
-              clipBehavior: Clip.antiAlias,
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 4,
+            SecurityInfoTile(
+              icon: Ionicons.lock_closed_outline,
+              title: l10n.securityAppPassword,
+              subtitle: security.hasPassword
+                  ? l10n.securityAppPasswordEnabled
+                  : l10n.securityAppPasswordDisabled,
+              trailing: FilledButton.tonal(
+                onPressed: () => _showPasswordDialog(context, ref),
+                child: Text(
+                  security.hasPassword
+                      ? l10n.securityChangePassword
+                      : l10n.securitySetPassword,
                 ),
-                leading: Icon(
-                  Ionicons.phone_portrait_outline,
-                  color: theme.colorScheme.primary,
-                  size: 20,
-                ),
-                minLeadingWidth: 24,
-                title: Text(
-                  l10n.securityDeviceEncryption,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                subtitle: Text(l10n.securityDeviceEncryptionDesc),
-                trailing: Icon(
-                  Ionicons.checkmark_circle_outline,
-                  color: theme.colorScheme.primary,
-                  size: 20,
-                ),
-              ),
-            ),
-
-            SectionHeader(
-              title: l10n.securityAdditional,
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            ),
-            Card(
-              margin: EdgeInsets.zero,
-              color: tonalItemColor(context),
-              surfaceTintColor: Colors.transparent,
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                children: [
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 4,
-                    ),
-                    leading: Icon(
-                      Ionicons.lock_closed_outline,
-                      color: disabledColor,
-                      size: 20,
-                    ),
-                    minLeadingWidth: 24,
-                    title: Text(
-                      l10n.securityAppPassword,
-                      style: TextStyle(
-                        color: disabledColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(
-                      l10n.comingSoon,
-                      style: TextStyle(color: disabledColor),
-                    ),
-                  ),
-                  const Divider(height: 1, indent: 24, endIndent: 24),
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 4,
-                    ),
-                    leading: Icon(
-                      Ionicons.finger_print_outline,
-                      color: disabledColor,
-                      size: 20,
-                    ),
-                    minLeadingWidth: 24,
-                    title: Text(
-                      l10n.securityBiometric,
-                      style: TextStyle(
-                        color: disabledColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(
-                      l10n.comingSoon,
-                      style: TextStyle(color: disabledColor),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 32),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: tonalItemColor(context),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.colorScheme.outlineVariant),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Ionicons.information_circle_outline,
-                    color: theme.colorScheme.primary,
-                    size: 22,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      l10n.securityDeviceEncryptionDesc,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
         ),
+        SectionHeader(
+          title: l10n.securityUnlockSection,
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+        ),
+        SecurityPanel(
+          children: [
+            SwitchListTile(
+              secondary: const Icon(Ionicons.finger_print_outline),
+              title: Text(l10n.securityBiometric),
+              subtitle: Text(l10n.securityBiometricDesc),
+              value: security.biometricEnabled,
+              onChanged: security.hasPassword
+                  ? (value) => _setBiometric(context, ref, value)
+                  : null,
+            ),
+            ListTile(
+              leading: const Icon(Ionicons.timer_outline),
+              title: Text(l10n.securityLockPolicy),
+              subtitle: Text(_lockPolicyText(l10n, security)),
+              onTap: () => _showLockPolicyDialog(context, ref),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        if (security.hasPassword)
+          OutlinedButton.icon(
+            onPressed: () => _clearPassword(context, ref),
+            icon: const Icon(Ionicons.trash_outline),
+            label: Text(l10n.securityRemovePassword),
+          ),
+      ],
+    );
+  }
+
+  String _lockPolicyText(AppLocalizations l10n, AppSecurityState state) {
+    return switch (state.lockMode) {
+      AppLockMode.never => l10n.securityLockNever,
+      AppLockMode.onExit => l10n.securityLockOnExit,
+      AppLockMode.afterDuration => l10n.securityLockAfterMinutes(
+        state.lockAfterMinutes,
+      ),
+    };
+  }
+
+  Future<void> _setBiometric(
+    BuildContext context,
+    WidgetRef ref,
+    bool enabled,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final ok = await ref
+        .read(appSecurityProvider.notifier)
+        .setBiometricEnabled(
+          enabled: enabled,
+          reason: l10n.securityBiometricReason,
+        );
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(ok ? l10n.securitySaved : l10n.securityBiometricFailed),
       ),
     );
+  }
+
+  Future<void> _showPasswordDialog(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    final password = await showDialog<String>(
+      context: context,
+      builder: (context) => PasswordDialog(
+        title: security.hasPassword
+            ? l10n.securityChangePassword
+            : l10n.securitySetPassword,
+      ),
+    );
+    if (password == null) return;
+    await ref.read(appSecurityProvider.notifier).setPassword(password);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.securitySaved)));
+  }
+
+  Future<void> _clearPassword(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    final ok = await verifySecurityPassword(
+      context,
+      ref,
+      l10n.securityRemovePassword,
+    );
+    if (!ok) return;
+    await ref.read(appSecurityProvider.notifier).clearPassword();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.securitySaved)));
+  }
+
+  Future<void> _showLockPolicyDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final result = await showDialog<({AppLockMode mode, int minutes})>(
+      context: context,
+      builder: (context) => LockPolicyDialog(security: security),
+    );
+    if (result == null) return;
+    await ref
+        .read(appSecurityProvider.notifier)
+        .setLockPolicy(result.mode, result.minutes);
   }
 }

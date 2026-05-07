@@ -1379,13 +1379,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSync.
   ///
   /// In zh, this message translates to:
-  /// **'WebDAV 同步'**
+  /// **'备份与同步'**
   String get settingsSync;
 
   /// No description provided for @settingsSyncDesc.
   ///
   /// In zh, this message translates to:
-  /// **'备份与同步服务器配置'**
+  /// **'本地文件夹与 WebDAV 加密备份'**
   String get settingsSyncDesc;
 
   /// No description provided for @settingsAppSection.
@@ -1537,6 +1537,354 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'生物识别解锁'**
   String get securityBiometric;
+
+  /// No description provided for @securityAppPasswordEnabled.
+  ///
+  /// In zh, this message translates to:
+  /// **'已启用，可用于解锁应用与加密备份。'**
+  String get securityAppPasswordEnabled;
+
+  /// No description provided for @securityAppPasswordDisabled.
+  ///
+  /// In zh, this message translates to:
+  /// **'未启用，备份与恢复功能需要先设置应用密码。'**
+  String get securityAppPasswordDisabled;
+
+  /// No description provided for @securitySetPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置应用密码'**
+  String get securitySetPassword;
+
+  /// No description provided for @securityChangePassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改应用密码'**
+  String get securityChangePassword;
+
+  /// No description provided for @securityRemovePassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'移除应用密码'**
+  String get securityRemovePassword;
+
+  /// No description provided for @securityUnlockSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'解锁方式'**
+  String get securityUnlockSection;
+
+  /// No description provided for @securityBiometricDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'仅用于解锁应用，备份加密仍需应用密码。'**
+  String get securityBiometricDesc;
+
+  /// No description provided for @securityLockPolicy.
+  ///
+  /// In zh, this message translates to:
+  /// **'锁定策略'**
+  String get securityLockPolicy;
+
+  /// No description provided for @securityLockNever.
+  ///
+  /// In zh, this message translates to:
+  /// **'永不锁定'**
+  String get securityLockNever;
+
+  /// No description provided for @securityLockOnExit.
+  ///
+  /// In zh, this message translates to:
+  /// **'退出应用时锁定'**
+  String get securityLockOnExit;
+
+  /// No description provided for @securityLockAfterTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'一段时间后锁定'**
+  String get securityLockAfterTitle;
+
+  /// No description provided for @securityLockAfterMinutes.
+  ///
+  /// In zh, this message translates to:
+  /// **'{minutes} 分钟后锁定'**
+  String securityLockAfterMinutes(int minutes);
+
+  /// No description provided for @securityLockMinutes.
+  ///
+  /// In zh, this message translates to:
+  /// **'分钟数'**
+  String get securityLockMinutes;
+
+  /// No description provided for @securitySaved.
+  ///
+  /// In zh, this message translates to:
+  /// **'安全设置已保存'**
+  String get securitySaved;
+
+  /// No description provided for @securityConfirmPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认密码'**
+  String get securityConfirmPassword;
+
+  /// No description provided for @securityPasswordTooShort.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码至少 6 位'**
+  String get securityPasswordTooShort;
+
+  /// No description provided for @securityPasswordMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次密码不一致'**
+  String get securityPasswordMismatch;
+
+  /// No description provided for @securityChecking.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在校验安全设置...'**
+  String get securityChecking;
+
+  /// No description provided for @securityInvalidPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码不正确'**
+  String get securityInvalidPassword;
+
+  /// No description provided for @securityBiometricReason.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用生物识别解锁 Orbita'**
+  String get securityBiometricReason;
+
+  /// No description provided for @securityBiometricFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'生物识别验证失败'**
+  String get securityBiometricFailed;
+
+  /// No description provided for @backupSyncTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份与同步'**
+  String get backupSyncTitle;
+
+  /// No description provided for @backupLocalFolder.
+  ///
+  /// In zh, this message translates to:
+  /// **'本地文件夹备份'**
+  String get backupLocalFolder;
+
+  /// No description provided for @backupLocalFolderUnset.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未选择本地备份目录'**
+  String get backupLocalFolderUnset;
+
+  /// No description provided for @backupChooseFolder.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择本地文件夹'**
+  String get backupChooseFolder;
+
+  /// No description provided for @backupRemoteSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'远程备份'**
+  String get backupRemoteSection;
+
+  /// No description provided for @backupWebDav.
+  ///
+  /// In zh, this message translates to:
+  /// **'WebDAV 远程备份'**
+  String get backupWebDav;
+
+  /// No description provided for @backupWebDavUnset.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未配置 WebDAV'**
+  String get backupWebDavUnset;
+
+  /// No description provided for @backupWebDavConfig.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置 WebDAV'**
+  String get backupWebDavConfig;
+
+  /// No description provided for @backupTestWebDav.
+  ///
+  /// In zh, this message translates to:
+  /// **'测试 WebDAV 连接'**
+  String get backupTestWebDav;
+
+  /// No description provided for @backupOperations.
+  ///
+  /// In zh, this message translates to:
+  /// **'操作'**
+  String get backupOperations;
+
+  /// No description provided for @backupAuto.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动无感备份'**
+  String get backupAuto;
+
+  /// No description provided for @backupAutoDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置后在数据变更时防抖写入已启用目标。'**
+  String get backupAutoDesc;
+
+  /// No description provided for @backupPasswordRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'必须输入应用密码，不能用生物识别替代。'**
+  String get backupPasswordRequired;
+
+  /// No description provided for @backupManual.
+  ///
+  /// In zh, this message translates to:
+  /// **'手动备份'**
+  String get backupManual;
+
+  /// No description provided for @backupRestoreLocal.
+  ///
+  /// In zh, this message translates to:
+  /// **'从本地恢复'**
+  String get backupRestoreLocal;
+
+  /// No description provided for @backupRestoreWebDav.
+  ///
+  /// In zh, this message translates to:
+  /// **'从 WebDAV 恢复'**
+  String get backupRestoreWebDav;
+
+  /// No description provided for @backupLastAt.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次备份：{time}'**
+  String backupLastAt(String time);
+
+  /// No description provided for @backupOperationDone.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份与同步操作完成'**
+  String get backupOperationDone;
+
+  /// No description provided for @backupWebDavUrl.
+  ///
+  /// In zh, this message translates to:
+  /// **'WebDAV 地址'**
+  String get backupWebDavUrl;
+
+  /// No description provided for @backupWebDavUsername.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户名'**
+  String get backupWebDavUsername;
+
+  /// No description provided for @backupWebDavPath.
+  ///
+  /// In zh, this message translates to:
+  /// **'远端文件路径'**
+  String get backupWebDavPath;
+
+  /// No description provided for @updateTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'在线更新'**
+  String get updateTitle;
+
+  /// No description provided for @updateAutoCheck.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动检查更新'**
+  String get updateAutoCheck;
+
+  /// No description provided for @updateCheck.
+  ///
+  /// In zh, this message translates to:
+  /// **'检查'**
+  String get updateCheck;
+
+  /// No description provided for @updateCheckNow.
+  ///
+  /// In zh, this message translates to:
+  /// **'检查 GitHub Release 更新'**
+  String get updateCheckNow;
+
+  /// No description provided for @updateChecking.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在检查更新...'**
+  String get updateChecking;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'发现新版本 {version}'**
+  String updateAvailable(String version);
+
+  /// No description provided for @updateLatest.
+  ///
+  /// In zh, this message translates to:
+  /// **'已是最新版本'**
+  String get updateLatest;
+
+  /// No description provided for @updateSkipped.
+  ///
+  /// In zh, this message translates to:
+  /// **'已跳过版本 {version}'**
+  String updateSkipped(String version);
+
+  /// No description provided for @updateDownload.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载并安装'**
+  String get updateDownload;
+
+  /// No description provided for @updateSkip.
+  ///
+  /// In zh, this message translates to:
+  /// **'跳过版本'**
+  String get updateSkip;
+
+  /// No description provided for @updateNoAsset.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有匹配当前设备的安装包'**
+  String get updateNoAsset;
+
+  /// No description provided for @updateAsset.
+  ///
+  /// In zh, this message translates to:
+  /// **'匹配安装包：{architecture}'**
+  String updateAsset(String architecture);
+
+  /// No description provided for @updateDownloadProgress.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载进度：{progress}%'**
+  String updateDownloadProgress(int progress);
+
+  /// No description provided for @updateInstalling.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在打开安装器...'**
+  String get updateInstalling;
+
+  /// No description provided for @updateCompleted.
+  ///
+  /// In zh, this message translates to:
+  /// **'更新文件已就绪'**
+  String get updateCompleted;
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'更新失败：{message}'**
+  String updateFailed(String message);
 
   /// No description provided for @appearanceTitle.
   ///

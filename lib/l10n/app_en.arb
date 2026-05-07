@@ -302,8 +302,8 @@
   "settingsSecuritySection": "Security & Sync",
   "settingsSecurity": "Security",
   "settingsSecurityDesc": "Password & biometrics",
-  "settingsSync": "WebDAV Sync",
-  "settingsSyncDesc": "Backup and sync server configs",
+  "settingsSync": "Backup & Sync",
+  "settingsSyncDesc": "Encrypted local folder and WebDAV backups",
   "settingsAppSection": "Application",
   "settingsAppearance": "Appearance & Language",
   "settingsAppearanceDesc": "Theme mode and display language",
@@ -335,6 +335,101 @@
   "securityAdditional": "Additional Protection",
   "securityAppPassword": "App Password",
   "securityBiometric": "Biometric Unlock",
+  "securityAppPasswordEnabled": "Enabled for app unlock and encrypted backups.",
+  "securityAppPasswordDisabled": "Not enabled. Backup and restore require an app password.",
+  "securitySetPassword": "Set App Password",
+  "securityChangePassword": "Change App Password",
+  "securityRemovePassword": "Remove App Password",
+  "securityUnlockSection": "Unlock Method",
+  "securityBiometricDesc": "Only unlocks the app. Backup encryption still requires the app password.",
+  "securityLockPolicy": "Lock Policy",
+  "securityLockNever": "Never Lock",
+  "securityLockOnExit": "Lock When Leaving App",
+  "securityLockAfterTitle": "Lock After Time",
+  "securityLockAfterMinutes": "Lock after {minutes} min",
+  "@securityLockAfterMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "securityLockMinutes": "Minutes",
+  "securitySaved": "Security settings saved",
+  "securityConfirmPassword": "Confirm Password",
+  "securityPasswordTooShort": "Use at least 6 characters",
+  "securityPasswordMismatch": "Passwords do not match",
+  "securityChecking": "Checking security settings...",
+  "securityInvalidPassword": "Incorrect password",
+  "securityBiometricReason": "Unlock Orbita with biometrics",
+  "securityBiometricFailed": "Biometric authentication failed",
+
+  "backupSyncTitle": "Backup & Sync",
+  "backupLocalFolder": "Local Folder Backup",
+  "backupLocalFolderUnset": "No local backup folder selected",
+  "backupChooseFolder": "Choose Local Folder",
+  "backupRemoteSection": "Remote Backup",
+  "backupWebDav": "WebDAV Remote Backup",
+  "backupWebDavUnset": "WebDAV is not configured",
+  "backupWebDavConfig": "Configure WebDAV",
+  "backupTestWebDav": "Test WebDAV Connection",
+  "backupOperations": "Operations",
+  "backupAuto": "Automatic Background Backup",
+  "backupAutoDesc": "After setup, changed data is debounced and written to enabled targets.",
+  "backupPasswordRequired": "Requires the app password. Biometrics cannot replace it.",
+  "backupManual": "Manual Backup",
+  "backupRestoreLocal": "Restore from Local File",
+  "backupRestoreWebDav": "Restore from WebDAV",
+  "backupLastAt": "Last backup: {time}",
+  "@backupLastAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "backupOperationDone": "Backup and sync completed",
+  "backupWebDavUrl": "WebDAV URL",
+  "backupWebDavUsername": "Username",
+  "backupWebDavPath": "Remote File Path",
+
+  "updateTitle": "Online Update",
+  "updateAutoCheck": "Automatically Check for Updates",
+  "updateCheck": "Check",
+  "updateCheckNow": "Check GitHub Release Updates",
+  "updateChecking": "Checking for updates...",
+  "updateAvailable": "New version {version} available",
+  "@updateAvailable": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "updateLatest": "You are up to date",
+  "updateSkipped": "Skipped version {version}",
+  "@updateSkipped": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "updateDownload": "Download and Install",
+  "updateSkip": "Skip Version",
+  "updateNoAsset": "No installer matches this device",
+  "updateAsset": "Matched package: {architecture}",
+  "@updateAsset": {
+    "placeholders": {
+      "architecture": { "type": "String" }
+    }
+  },
+  "updateDownloadProgress": "Download progress: {progress}%",
+  "@updateDownloadProgress": {
+    "placeholders": {
+      "progress": { "type": "int" }
+    }
+  },
+  "updateInstalling": "Opening installer...",
+  "updateCompleted": "Update file is ready",
+  "updateFailed": "Update failed: {message}",
+  "@updateFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
 
   "appearanceTitle": "Appearance & Language",
   "themeMode": "Theme Mode",

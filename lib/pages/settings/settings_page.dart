@@ -80,7 +80,7 @@ class SettingsPage extends ConsumerWidget {
                     icon: Ionicons.sync_outline,
                     title: l10n.settingsSync,
                     subtitle: l10n.settingsSyncDesc,
-                    onTap: () => _showDev(context, l10n),
+                    onTap: () => _open(context, '/settings/backup-sync'),
                   ),
                 ],
               ),
@@ -112,12 +112,6 @@ class SettingsPage extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  void _showDev(BuildContext context, AppLocalizations l10n) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.inDevelopment)));
   }
 
   void _open(BuildContext context, String path) {
