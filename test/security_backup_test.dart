@@ -2,8 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:orbita/models/backup_models.dart';
 import 'package:orbita/services/backup_encryption_service.dart';
 import 'package:orbita/services/backup_file_service.dart';
+import 'package:orbita/services/backup_settings_store.dart';
 import 'package:orbita/services/backup_snapshot_service.dart';
 import 'package:orbita/services/security_crypto_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   final crypto = SecurityCryptoService(memoryKb: 1024, iterations: 1);
@@ -127,5 +129,26 @@ void main() {
         ),
       ),
     );
+  });
+
+  test('backup settings persist daily auto backup time', () async {
+    SharedPreferences.setMockInitialValues({
+      'backup_auto_time_minutes': 25 * 60,
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final store = BackupSettingsStore(prefs);
+
+    expect(store.read().autoBackupTimeMinutes, 1439);
+
+    await store.save(
+      const BackupSettings(
+        autoBackupEnabled: true,
+        autoBackupTimeMinutes: 9 * 60 + 30,
+      ),
+    );
+
+    final restored = store.read();
+    expect(restored.autoBackupEnabled, isTrue);
+    expect(restored.autoBackupTimeMinutes, 570);
   });
 }

@@ -104,6 +104,7 @@ class _LockPolicyDialogState extends State<LockPolicyDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _modeTile(AppLockMode.never, l10n.securityLockNever),
+          _modeTile(AppLockMode.onExit, l10n.securityLockOnExit),
           _modeTile(AppLockMode.afterDuration, l10n.securityLockAfterTitle),
           if (_mode == AppLockMode.afterDuration)
             Padding(

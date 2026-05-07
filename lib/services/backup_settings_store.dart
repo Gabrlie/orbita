@@ -9,6 +9,7 @@ const _keyWebDavUsername = 'backup_webdav_username';
 const _keyWebDavRemoteFolder = 'backup_webdav_remote_folder';
 const _keyWebDavRemotePath = 'backup_webdav_remote_path';
 const _keyAutoBackup = 'backup_auto_enabled';
+const _keyAutoBackupTimeMinutes = 'backup_auto_time_minutes';
 const _keyRetentionCount = 'backup_retention_count';
 const _keyLastBackupAt = 'backup_last_backup_at';
 const _keyLastError = 'backup_last_error';
@@ -30,6 +31,9 @@ class BackupSettingsStore {
           _legacyFolder(_prefs.getString(_keyWebDavRemotePath)) ??
           '/orbita',
       autoBackupEnabled: _prefs.getBool(_keyAutoBackup) ?? false,
+      autoBackupTimeMinutes: normalizeAutoBackupTimeMinutes(
+        _prefs.getInt(_keyAutoBackupTimeMinutes) ?? 180,
+      ),
       retentionCount: normalizeRetention(
         _prefs.getInt(_keyRetentionCount) ?? 3,
       ),
@@ -47,6 +51,10 @@ class BackupSettingsStore {
     await _prefs.setString(_keyWebDavRemoteFolder, settings.webdavRemoteFolder);
     await _prefs.setInt(_keyRetentionCount, settings.retentionCount);
     await _prefs.setBool(_keyAutoBackup, settings.autoBackupEnabled);
+    await _prefs.setInt(
+      _keyAutoBackupTimeMinutes,
+      normalizeAutoBackupTimeMinutes(settings.autoBackupTimeMinutes),
+    );
     await _writeNullableString(
       _keyLastBackupAt,
       settings.lastBackupAt?.toIso8601String(),
@@ -55,6 +63,10 @@ class BackupSettingsStore {
   }
 
   static int normalizeRetention(int count) => count.clamp(1, 100).toInt();
+
+  static int normalizeAutoBackupTimeMinutes(int minutes) {
+    return minutes.clamp(0, 1439).toInt();
+  }
 
   static String normalizeRemoteFolder(String folder) {
     final trimmed = folder.trim();

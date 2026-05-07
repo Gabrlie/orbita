@@ -1,4 +1,4 @@
-enum AppLockMode { never, afterDuration }
+enum AppLockMode { never, onExit, afterDuration }
 
 class AppSecurityState {
   final bool hasPassword;

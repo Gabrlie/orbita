@@ -859,13 +859,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupOperations => '操作';
 
   @override
-  String get backupAuto => '自动无感备份';
+  String get backupAuto => '自动备份';
 
   @override
-  String get backupAutoDesc => '配置后在数据变更时防抖写入已启用目标。';
+  String get backupAutoDesc => '每天在配置时间向已启用目标写入一份加密备份。';
 
   @override
-  String get backupPasswordRequired => '使用已保存的应用密码密钥加密，不会额外询问密码。';
+  String get backupAutoTime => '自动备份时间';
+
+  @override
+  String backupAutoTimeDesc(String time) {
+    return '每天 $time 自动备份一次';
+  }
+
+  @override
+  String get backupPasswordRequired => '使用已保存的应用密码密钥加密';
 
   @override
   String get backupManual => '手动备份';

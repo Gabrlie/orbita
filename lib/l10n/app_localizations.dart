@@ -1727,19 +1727,31 @@ abstract class AppLocalizations {
   /// No description provided for @backupAuto.
   ///
   /// In zh, this message translates to:
-  /// **'自动无感备份'**
+  /// **'自动备份'**
   String get backupAuto;
 
   /// No description provided for @backupAutoDesc.
   ///
   /// In zh, this message translates to:
-  /// **'配置后在数据变更时防抖写入已启用目标。'**
+  /// **'每天在配置时间向已启用目标写入一份加密备份。'**
   String get backupAutoDesc;
+
+  /// No description provided for @backupAutoTime.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动备份时间'**
+  String get backupAutoTime;
+
+  /// No description provided for @backupAutoTimeDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'每天 {time} 自动备份一次'**
+  String backupAutoTimeDesc(String time);
 
   /// No description provided for @backupPasswordRequired.
   ///
   /// In zh, this message translates to:
-  /// **'使用已保存的应用密码密钥加密，不会额外询问密码。'**
+  /// **'使用已保存的应用密码密钥加密'**
   String get backupPasswordRequired;
 
   /// No description provided for @backupManual.

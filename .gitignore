@@ -1,8 +1,9 @@
 # Claude Code
 .claude/
 
-# AI agent instructions (local only)
+# AI agent instructions and local AI docs (local only)
 AGENTS.md
+.ai/
 
 # Miscellaneous
 *.class

@@ -372,9 +372,16 @@
   "backupWebDavConfig": "配置 WebDAV",
   "backupTestWebDav": "测试 WebDAV 连接",
   "backupOperations": "操作",
-  "backupAuto": "自动无感备份",
-  "backupAutoDesc": "配置后在数据变更时防抖写入已启用目标。",
-  "backupPasswordRequired": "使用已保存的应用密码密钥加密，不会额外询问密码。",
+  "backupAuto": "自动备份",
+  "backupAutoDesc": "每天在配置时间向已启用目标写入一份加密备份。",
+  "backupAutoTime": "自动备份时间",
+  "backupAutoTimeDesc": "每天 {time} 自动备份一次",
+  "@backupAutoTimeDesc": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "backupPasswordRequired": "使用已保存的应用密码密钥加密",
   "backupManual": "手动备份",
   "backupRestoreLocal": "从本地恢复",
   "backupRestoreWebDav": "从 WebDAV 恢复",

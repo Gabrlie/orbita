@@ -869,15 +869,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupOperations => 'Operations';
 
   @override
-  String get backupAuto => 'Automatic Background Backup';
+  String get backupAuto => 'Automatic Backup';
 
   @override
   String get backupAutoDesc =>
-      'After setup, changed data is debounced and written to enabled targets.';
+      'Writes one encrypted backup to enabled targets at the configured time each day.';
+
+  @override
+  String get backupAutoTime => 'Automatic Backup Time';
+
+  @override
+  String backupAutoTimeDesc(String time) {
+    return 'Back up once daily at $time';
+  }
 
   @override
   String get backupPasswordRequired =>
-      'Uses the saved app-password key and will not ask again.';
+      'Encrypted with the saved app-password key';
 
   @override
   String get backupManual => 'Manual Backup';

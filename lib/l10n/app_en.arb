@@ -372,9 +372,16 @@
   "backupWebDavConfig": "Configure WebDAV",
   "backupTestWebDav": "Test WebDAV Connection",
   "backupOperations": "Operations",
-  "backupAuto": "Automatic Background Backup",
-  "backupAutoDesc": "After setup, changed data is debounced and written to enabled targets.",
-  "backupPasswordRequired": "Uses the saved app-password key and will not ask again.",
+  "backupAuto": "Automatic Backup",
+  "backupAutoDesc": "Writes one encrypted backup to enabled targets at the configured time each day.",
+  "backupAutoTime": "Automatic Backup Time",
+  "backupAutoTimeDesc": "Back up once daily at {time}",
+  "@backupAutoTimeDesc": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "backupPasswordRequired": "Encrypted with the saved app-password key",
   "backupManual": "Manual Backup",
   "backupRestoreLocal": "Restore from Local File",
   "backupRestoreWebDav": "Restore from WebDAV",

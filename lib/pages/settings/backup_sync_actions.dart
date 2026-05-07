@@ -108,6 +108,24 @@ class BackupSyncActions {
     });
   }
 
+  Future<void> setAutoBackupTime(
+    BuildContext context,
+    WidgetRef ref,
+    BackupSettings backup,
+  ) async {
+    final current = TimeOfDay(
+      hour: backup.autoBackupTimeMinutes ~/ 60,
+      minute: backup.autoBackupTimeMinutes % 60,
+    );
+    final picked = await showTimePicker(context: context, initialTime: current);
+    if (picked == null || !context.mounted) return;
+    await run(context, () {
+      return ref
+          .read(backupSyncProvider.notifier)
+          .setAutoBackupTime(picked.hour * 60 + picked.minute);
+    });
+  }
+
   Future<void> configureWebDav(
     BuildContext context,
     WidgetRef ref,

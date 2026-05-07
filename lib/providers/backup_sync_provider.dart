@@ -5,12 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:orbita/models/backup_models.dart';
-import 'package:orbita/providers/command_snippet_provider.dart';
-import 'package:orbita/providers/key_provider.dart';
-import 'package:orbita/providers/remote_script_provider.dart';
 import 'package:orbita/providers/security_provider.dart';
-import 'package:orbita/providers/server_group_provider.dart';
-import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/services/backup_encryption_service.dart';
 import 'package:orbita/services/backup_file_service.dart';
@@ -55,8 +50,9 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
   @override
   Future<BackupSettings> build() async {
     ref.onDispose(() => _autoTimer?.cancel());
-    _watchDataChanges();
-    return BackupSettingsStore(ref.read(sharedPrefsProvider)).read();
+    final settings = BackupSettingsStore(ref.read(sharedPrefsProvider)).read();
+    _scheduleNextAutoBackup(settings);
+    return settings;
   }
 
   Future<void> pickLocalFolder() async {
@@ -106,6 +102,15 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     );
   }
 
+  Future<void> setAutoBackupTime(int minutes) async {
+    await _save(
+      (settings) => settings.copyWith(
+        autoBackupTimeMinutes:
+            BackupSettingsStore.normalizeAutoBackupTimeMinutes(minutes),
+      ),
+    );
+  }
+
   Future<void> testWebDav() async {
     final settings = await future;
     await ref
@@ -126,7 +131,6 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     await _requireTarget();
     await _storedAutoSecret();
     await _save((settings) => settings.copyWith(autoBackupEnabled: true));
-    await _runAutoBackup();
   }
 
   Future<void> manualBackup() async {
@@ -159,21 +163,30 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     await _restoreEnvelope(envelope, password);
   }
 
-  void _watchDataChanges() {
-    ref.listen(serverListProvider, (_, _) => _scheduleAutoBackup());
-    ref.listen(keyListProvider, (_, _) => _scheduleAutoBackup());
-    ref.listen(serverGroupProvider, (_, _) => _scheduleAutoBackup());
-    ref.listen(userScriptsProvider, (_, _) => _scheduleAutoBackup());
-    ref.listen(commandSnippetProvider, (_, _) => _scheduleAutoBackup());
-  }
-
-  void _scheduleAutoBackup() {
-    final settings = state.value;
-    if (settings == null || !settings.autoBackupEnabled) return;
+  void _scheduleNextAutoBackup(BackupSettings settings) {
     _autoTimer?.cancel();
-    _autoTimer = Timer(const Duration(seconds: 5), () {
+    if (!settings.autoBackupEnabled) return;
+    final delay = _nextAutoBackupAt(settings).difference(DateTime.now());
+    _autoTimer = Timer(delay.isNegative ? Duration.zero : delay, () {
       unawaited(_runAutoBackup());
     });
+  }
+
+  DateTime _nextAutoBackupAt(BackupSettings settings) {
+    final now = DateTime.now();
+    final today = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      settings.autoBackupTimeMinutes ~/ 60,
+      settings.autoBackupTimeMinutes % 60,
+    );
+    if (now.isBefore(today)) return today;
+    final last = settings.lastBackupAt;
+    if (last == null || !_sameDay(last, now)) {
+      return now.add(const Duration(seconds: 5));
+    }
+    return today.add(const Duration(days: 1));
   }
 
   Future<void> _runAutoBackup() async {
@@ -183,6 +196,10 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
         .read(backupEncryptionServiceProvider)
         .encryptWithSecret(await buildBackupSnapshot(ref), secret);
     await _writeTargets(envelope, silent: true);
+  }
+
+  bool _sameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   Future<void> _restoreEnvelope(String envelope, String password) async {
@@ -269,5 +286,6 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     final next = update(current);
     state = AsyncData(next);
     await BackupSettingsStore(ref.read(sharedPrefsProvider)).save(next);
+    _scheduleNextAutoBackup(next);
   }
 }

@@ -49,6 +49,10 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
+      final security = ref.read(appSecurityProvider).value;
+      if (security?.lockMode == AppLockMode.onExit) {
+        unawaited(ref.read(appSecurityProvider.notifier).lock());
+      }
       _backgroundedAt = DateTime.now();
     }
     if (state == AppLifecycleState.resumed) {

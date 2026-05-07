@@ -6,6 +6,7 @@ class BackupSettings {
   final String webdavUsername;
   final String webdavRemoteFolder;
   final bool autoBackupEnabled;
+  final int autoBackupTimeMinutes;
   final int retentionCount;
   final DateTime? lastBackupAt;
   final String? lastError;
@@ -18,6 +19,7 @@ class BackupSettings {
     this.webdavUsername = '',
     this.webdavRemoteFolder = '/orbita',
     this.autoBackupEnabled = false,
+    this.autoBackupTimeMinutes = 180,
     this.retentionCount = 3,
     this.lastBackupAt,
     this.lastError,
@@ -31,6 +33,7 @@ class BackupSettings {
     String? webdavUsername,
     String? webdavRemoteFolder,
     bool? autoBackupEnabled,
+    int? autoBackupTimeMinutes,
     int? retentionCount,
     DateTime? Function()? lastBackupAt,
     String? Function()? lastError,
@@ -43,6 +46,8 @@ class BackupSettings {
       webdavUsername: webdavUsername ?? this.webdavUsername,
       webdavRemoteFolder: webdavRemoteFolder ?? this.webdavRemoteFolder,
       autoBackupEnabled: autoBackupEnabled ?? this.autoBackupEnabled,
+      autoBackupTimeMinutes:
+          autoBackupTimeMinutes ?? this.autoBackupTimeMinutes,
       retentionCount: retentionCount ?? this.retentionCount,
       lastBackupAt: lastBackupAt != null ? lastBackupAt() : this.lastBackupAt,
       lastError: lastError != null ? lastError() : this.lastError,

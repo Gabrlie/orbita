@@ -26,7 +26,7 @@ class AppSecurityNotifier extends AsyncNotifier<AppSecurityState> {
     final lockModeName = prefs.getString(_keyLockMode);
     final lockMode = switch (lockModeName) {
       'afterDuration' => AppLockMode.afterDuration,
-      'onExit' => AppLockMode.afterDuration,
+      'onExit' => AppLockMode.onExit,
       _ => AppLockMode.never,
     };
     return AppSecurityState(
