@@ -1,5 +1,5 @@
 name: orbita
-description: "A new Flutter project."
+description: "Orbita server management application."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.11.4
@@ -52,6 +52,15 @@ dependencies:
   path_provider: ^2.1.5
   open_filex: ^4.7.0
   syntax_highlight: ^0.5.0
+  cryptography: ^2.9.0
+  crypto: ^3.0.7
+  dio: ^5.9.0
+  package_info_plus: ^9.0.0
+  device_info_plus: ^11.5.0
+  local_auth: ^3.0.0
+  ota_update: ^7.1.0
+  file_picker: ^10.3.7
+  webdav_client: ^1.2.2
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +72,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -76,10 +86,8 @@ flutter:
   uses-material-design: true
   generate: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/orbita_icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -110,3 +118,20 @@ flutter:
     - family: JetBrains Mono
       fonts:
         - asset: assets/fonts/JetBrainsMono-Regular.ttf
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/images/orbita_icon.png
+  min_sdk_android: 23
+  web:
+    generate: true
+    image_path: assets/images/orbita_icon.png
+    background_color: "#E9F4FF"
+    theme_color: "#1976D2"
+  windows:
+    generate: true
+    image_path: assets/images/orbita_icon.png
+  macos:
+    generate: true
+    image_path: assets/images/orbita_icon.png

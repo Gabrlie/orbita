@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/pages/settings/about_update_panel.dart';
+import 'package:orbita/providers/update_provider.dart';
 import 'package:orbita/widgets/common.dart';
 
-class AboutPage extends StatelessWidget {
+class AboutPage extends ConsumerWidget {
   const AboutPage({super.key});
 
-  static const _version = '1.0.0+1';
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final version = ref
+        .watch(packageInfoProvider)
+        .maybeWhen(
+          data: (info) => '${info.version}+${info.buildNumber}',
+          orElse: () => '1.0.1+2',
+        );
 
     return Scaffold(
       appBar: compactPageAppBar(
@@ -30,17 +37,12 @@ class AboutPage extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Row(
                   children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        Ionicons.terminal_outline,
-                        color: theme.colorScheme.primary,
-                        size: 28,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        'assets/images/orbita_icon.png',
+                        width: 52,
+                        height: 52,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -56,7 +58,7 @@ class AboutPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            l10n.aboutVersion(_version),
+                            l10n.aboutVersion(version),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -68,6 +70,11 @@ class AboutPage extends StatelessWidget {
                 ),
               ),
             ),
+            SectionHeader(
+              title: l10n.updateTitle,
+              padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
+            ),
+            const AboutUpdatePanel(),
             SectionHeader(
               title: l10n.aboutOverview,
               padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),

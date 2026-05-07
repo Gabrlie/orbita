@@ -77,6 +77,11 @@ class UserScriptsNotifier extends Notifier<List<RemoteScript>> {
     await _persist();
   }
 
+  Future<void> replaceAll(List<RemoteScript> scripts) async {
+    state = scripts;
+    await _persist();
+  }
+
   Future<void> _persist() async {
     final prefs = ref.read(sharedPrefsProvider);
     await prefs.setString(

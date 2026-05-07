@@ -1,11 +1,11 @@
 {
-    "name": "orbita",
-    "short_name": "orbita",
+    "name": "Orbita",
+    "short_name": "Orbita",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "SSH-based server management and backup tool.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

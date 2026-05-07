@@ -49,6 +49,10 @@ class CommandSnippetNotifier extends Notifier<List<CommandSnippet>> {
     await _save(state.where((snippet) => snippet.id != id).toList());
   }
 
+  Future<void> replaceAll(List<CommandSnippet> snippets) async {
+    await _save(snippets);
+  }
+
   Future<void> _save(List<CommandSnippet> snippets) async {
     state = snippets;
     final encoded = jsonEncode(snippets.map((item) => item.toJson()).toList());

@@ -302,8 +302,8 @@
   "settingsSecuritySection": "安全与同步",
   "settingsSecurity": "安全设置",
   "settingsSecurityDesc": "密码与生物识别",
-  "settingsSync": "WebDAV 同步",
-  "settingsSyncDesc": "备份与同步服务器配置",
+  "settingsSync": "备份与同步",
+  "settingsSyncDesc": "本地文件夹与 WebDAV 加密备份",
   "settingsAppSection": "应用",
   "settingsAppearance": "外观与语言",
   "settingsAppearanceDesc": "主题模式和显示语言",
@@ -335,6 +335,101 @@
   "securityAdditional": "额外保护",
   "securityAppPassword": "应用密码",
   "securityBiometric": "生物识别解锁",
+  "securityAppPasswordEnabled": "已启用，可用于解锁应用与加密备份。",
+  "securityAppPasswordDisabled": "未启用，备份与恢复功能需要先设置应用密码。",
+  "securitySetPassword": "设置应用密码",
+  "securityChangePassword": "修改应用密码",
+  "securityRemovePassword": "移除应用密码",
+  "securityUnlockSection": "解锁方式",
+  "securityBiometricDesc": "仅用于解锁应用，备份加密仍需应用密码。",
+  "securityLockPolicy": "锁定策略",
+  "securityLockNever": "永不锁定",
+  "securityLockOnExit": "退出应用时锁定",
+  "securityLockAfterTitle": "一段时间后锁定",
+  "securityLockAfterMinutes": "{minutes} 分钟后锁定",
+  "@securityLockAfterMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "securityLockMinutes": "分钟数",
+  "securitySaved": "安全设置已保存",
+  "securityConfirmPassword": "确认密码",
+  "securityPasswordTooShort": "密码至少 6 位",
+  "securityPasswordMismatch": "两次密码不一致",
+  "securityChecking": "正在校验安全设置...",
+  "securityInvalidPassword": "密码不正确",
+  "securityBiometricReason": "使用生物识别解锁 Orbita",
+  "securityBiometricFailed": "生物识别验证失败",
+
+  "backupSyncTitle": "备份与同步",
+  "backupLocalFolder": "本地文件夹备份",
+  "backupLocalFolderUnset": "尚未选择本地备份目录",
+  "backupChooseFolder": "选择本地文件夹",
+  "backupRemoteSection": "远程备份",
+  "backupWebDav": "WebDAV 远程备份",
+  "backupWebDavUnset": "尚未配置 WebDAV",
+  "backupWebDavConfig": "配置 WebDAV",
+  "backupTestWebDav": "测试 WebDAV 连接",
+  "backupOperations": "操作",
+  "backupAuto": "自动无感备份",
+  "backupAutoDesc": "配置后在数据变更时防抖写入已启用目标。",
+  "backupPasswordRequired": "必须输入应用密码，不能用生物识别替代。",
+  "backupManual": "手动备份",
+  "backupRestoreLocal": "从本地恢复",
+  "backupRestoreWebDav": "从 WebDAV 恢复",
+  "backupLastAt": "上次备份：{time}",
+  "@backupLastAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "backupOperationDone": "备份与同步操作完成",
+  "backupWebDavUrl": "WebDAV 地址",
+  "backupWebDavUsername": "用户名",
+  "backupWebDavPath": "远端文件路径",
+
+  "updateTitle": "在线更新",
+  "updateAutoCheck": "自动检查更新",
+  "updateCheck": "检查",
+  "updateCheckNow": "检查 GitHub Release 更新",
+  "updateChecking": "正在检查更新...",
+  "updateAvailable": "发现新版本 {version}",
+  "@updateAvailable": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "updateLatest": "已是最新版本",
+  "updateSkipped": "已跳过版本 {version}",
+  "@updateSkipped": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "updateDownload": "下载并安装",
+  "updateSkip": "跳过版本",
+  "updateNoAsset": "没有匹配当前设备的安装包",
+  "updateAsset": "匹配安装包：{architecture}",
+  "@updateAsset": {
+    "placeholders": {
+      "architecture": { "type": "String" }
+    }
+  },
+  "updateDownloadProgress": "下载进度：{progress}%",
+  "@updateDownloadProgress": {
+    "placeholders": {
+      "progress": { "type": "int" }
+    }
+  },
+  "updateInstalling": "正在打开安装器...",
+  "updateCompleted": "更新文件已就绪",
+  "updateFailed": "更新失败：{message}",
+  "@updateFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
 
   "appearanceTitle": "外观与语言",
   "themeMode": "主题模式",

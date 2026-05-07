@@ -17,8 +17,8 @@ final storageServiceProvider = Provider<SecureStorageService>(
 
 final serverListProvider =
     AsyncNotifierProvider<ServerListNotifier, List<Server>>(
-  ServerListNotifier.new,
-);
+      ServerListNotifier.new,
+    );
 
 class ServerListNotifier extends AsyncNotifier<List<Server>> {
   @override
@@ -41,10 +41,14 @@ class ServerListNotifier extends AsyncNotifier<List<Server>> {
   }
 
   Future<void> deleteServer(String id) async {
-    final current =
-        (state.value ?? []).where((s) => s.id != id).toList();
+    final current = (state.value ?? []).where((s) => s.id != id).toList();
     await ref.read(storageServiceProvider).saveServers(current);
     state = AsyncData(current);
+  }
+
+  Future<void> replaceAll(List<Server> servers) async {
+    await ref.read(storageServiceProvider).saveServers(servers);
+    state = AsyncData(servers);
   }
 }
 

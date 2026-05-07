@@ -14,6 +14,7 @@ import '../pages/server/files/files_tabs_page.dart';
 import '../pages/server/docker/docker_page.dart';
 import '../pages/settings/settings_page.dart';
 import '../pages/settings/about_page.dart';
+import '../pages/settings/backup_sync_page.dart';
 import '../pages/settings/server_groups_page.dart';
 import '../pages/settings/server_list_page.dart';
 import '../pages/settings/appearance/appearance_page.dart';
@@ -31,7 +32,10 @@ import '../pages/snippets/snippets_page.dart';
 final router = GoRouter(
   initialLocation: '/home',
   routes: [
-    GoRoute(path: '/lock', builder: (context, state) => const LockPage()),
+    GoRoute(
+      path: '/lock',
+      builder: (context, state) => const LockPage(redirectOnUnlock: true),
+    ),
     StatefulShellRoute(
       builder: (context, state, navigationShell) {
         final path = state.uri.path;
@@ -184,6 +188,10 @@ final router = GoRouter(
                 GoRoute(
                   path: 'security',
                   builder: (context, state) => const SecurityPage(),
+                ),
+                GoRoute(
+                  path: 'backup-sync',
+                  builder: (context, state) => const BackupSyncPage(),
                 ),
                 GoRoute(
                   path: 'keys',

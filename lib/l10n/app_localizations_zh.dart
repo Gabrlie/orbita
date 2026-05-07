@@ -681,10 +681,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSecurityDesc => '密码与生物识别';
 
   @override
-  String get settingsSync => 'WebDAV 同步';
+  String get settingsSync => '备份与同步';
 
   @override
-  String get settingsSyncDesc => '备份与同步服务器配置';
+  String get settingsSyncDesc => '本地文件夹与 WebDAV 加密备份';
 
   @override
   String get settingsAppSection => '应用';
@@ -762,6 +762,194 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get securityBiometric => '生物识别解锁';
+
+  @override
+  String get securityAppPasswordEnabled => '已启用，可用于解锁应用与加密备份。';
+
+  @override
+  String get securityAppPasswordDisabled => '未启用，备份与恢复功能需要先设置应用密码。';
+
+  @override
+  String get securitySetPassword => '设置应用密码';
+
+  @override
+  String get securityChangePassword => '修改应用密码';
+
+  @override
+  String get securityRemovePassword => '移除应用密码';
+
+  @override
+  String get securityUnlockSection => '解锁方式';
+
+  @override
+  String get securityBiometricDesc => '仅用于解锁应用，备份加密仍需应用密码。';
+
+  @override
+  String get securityLockPolicy => '锁定策略';
+
+  @override
+  String get securityLockNever => '永不锁定';
+
+  @override
+  String get securityLockOnExit => '退出应用时锁定';
+
+  @override
+  String get securityLockAfterTitle => '一段时间后锁定';
+
+  @override
+  String securityLockAfterMinutes(int minutes) {
+    return '$minutes 分钟后锁定';
+  }
+
+  @override
+  String get securityLockMinutes => '分钟数';
+
+  @override
+  String get securitySaved => '安全设置已保存';
+
+  @override
+  String get securityConfirmPassword => '确认密码';
+
+  @override
+  String get securityPasswordTooShort => '密码至少 6 位';
+
+  @override
+  String get securityPasswordMismatch => '两次密码不一致';
+
+  @override
+  String get securityChecking => '正在校验安全设置...';
+
+  @override
+  String get securityInvalidPassword => '密码不正确';
+
+  @override
+  String get securityBiometricReason => '使用生物识别解锁 Orbita';
+
+  @override
+  String get securityBiometricFailed => '生物识别验证失败';
+
+  @override
+  String get backupSyncTitle => '备份与同步';
+
+  @override
+  String get backupLocalFolder => '本地文件夹备份';
+
+  @override
+  String get backupLocalFolderUnset => '尚未选择本地备份目录';
+
+  @override
+  String get backupChooseFolder => '选择本地文件夹';
+
+  @override
+  String get backupRemoteSection => '远程备份';
+
+  @override
+  String get backupWebDav => 'WebDAV 远程备份';
+
+  @override
+  String get backupWebDavUnset => '尚未配置 WebDAV';
+
+  @override
+  String get backupWebDavConfig => '配置 WebDAV';
+
+  @override
+  String get backupTestWebDav => '测试 WebDAV 连接';
+
+  @override
+  String get backupOperations => '操作';
+
+  @override
+  String get backupAuto => '自动无感备份';
+
+  @override
+  String get backupAutoDesc => '配置后在数据变更时防抖写入已启用目标。';
+
+  @override
+  String get backupPasswordRequired => '必须输入应用密码，不能用生物识别替代。';
+
+  @override
+  String get backupManual => '手动备份';
+
+  @override
+  String get backupRestoreLocal => '从本地恢复';
+
+  @override
+  String get backupRestoreWebDav => '从 WebDAV 恢复';
+
+  @override
+  String backupLastAt(String time) {
+    return '上次备份：$time';
+  }
+
+  @override
+  String get backupOperationDone => '备份与同步操作完成';
+
+  @override
+  String get backupWebDavUrl => 'WebDAV 地址';
+
+  @override
+  String get backupWebDavUsername => '用户名';
+
+  @override
+  String get backupWebDavPath => '远端文件路径';
+
+  @override
+  String get updateTitle => '在线更新';
+
+  @override
+  String get updateAutoCheck => '自动检查更新';
+
+  @override
+  String get updateCheck => '检查';
+
+  @override
+  String get updateCheckNow => '检查 GitHub Release 更新';
+
+  @override
+  String get updateChecking => '正在检查更新...';
+
+  @override
+  String updateAvailable(String version) {
+    return '发现新版本 $version';
+  }
+
+  @override
+  String get updateLatest => '已是最新版本';
+
+  @override
+  String updateSkipped(String version) {
+    return '已跳过版本 $version';
+  }
+
+  @override
+  String get updateDownload => '下载并安装';
+
+  @override
+  String get updateSkip => '跳过版本';
+
+  @override
+  String get updateNoAsset => '没有匹配当前设备的安装包';
+
+  @override
+  String updateAsset(String architecture) {
+    return '匹配安装包：$architecture';
+  }
+
+  @override
+  String updateDownloadProgress(int progress) {
+    return '下载进度：$progress%';
+  }
+
+  @override
+  String get updateInstalling => '正在打开安装器...';
+
+  @override
+  String get updateCompleted => '更新文件已就绪';
+
+  @override
+  String updateFailed(String message) {
+    return '更新失败：$message';
+  }
 
   @override
   String get appearanceTitle => '外观与语言';

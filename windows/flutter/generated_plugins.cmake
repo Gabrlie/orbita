@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   dynamic_color
   flutter_secure_storage_windows
   irondash_engine_context
+  local_auth_windows
   super_native_extensions
 )
 
