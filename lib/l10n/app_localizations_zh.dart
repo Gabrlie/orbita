@@ -984,10 +984,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get updateDownload => '下载并安装';
 
   @override
+  String get updateLater => '稍后提醒';
+
+  @override
   String get updateSkip => '跳过版本';
 
   @override
   String get updateNoAsset => '没有匹配当前设备的安装包';
+
+  @override
+  String get updateNoReleaseNotes => '本次发布未填写更新内容。';
 
   @override
   String updateAsset(String architecture) {

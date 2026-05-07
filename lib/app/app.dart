@@ -10,10 +10,10 @@ import 'package:orbita/pages/lock/lock_page.dart';
 import 'package:orbita/providers/backup_sync_provider.dart';
 import 'package:orbita/providers/security_provider.dart';
 import 'package:orbita/providers/settings_provider.dart';
-import 'package:orbita/providers/update_provider.dart';
 
 import 'theme.dart';
 import 'router.dart';
+import 'update_prompt_gate.dart';
 
 class OrbitaApp extends ConsumerStatefulWidget {
   const OrbitaApp({super.key});
@@ -114,12 +114,11 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
             final locked = security.hasPassword && !security.isUnlocked;
             if (locked) return const LockPage();
             ref.watch(backupSyncProvider);
-            ref.watch(appUpdateProvider);
             return Listener(
               behavior: HitTestBehavior.translucent,
               onPointerDown: (_) => _markActivity(),
               onPointerMove: (_) => _markActivity(),
-              child: child ?? const SizedBox.shrink(),
+              child: UpdatePromptGate(child: child ?? const SizedBox.shrink()),
             );
           },
         );

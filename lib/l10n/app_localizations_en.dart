@@ -1002,10 +1002,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateDownload => 'Download and Install';
 
   @override
+  String get updateLater => 'Later';
+
+  @override
   String get updateSkip => 'Skip Version';
 
   @override
   String get updateNoAsset => 'No installer matches this device';
+
+  @override
+  String get updateNoReleaseNotes =>
+      'No release notes were provided for this release.';
 
   @override
   String updateAsset(String architecture) {

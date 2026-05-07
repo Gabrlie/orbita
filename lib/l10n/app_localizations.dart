@@ -1946,6 +1946,12 @@ abstract class AppLocalizations {
   /// **'下载并安装'**
   String get updateDownload;
 
+  /// No description provided for @updateLater.
+  ///
+  /// In zh, this message translates to:
+  /// **'稍后提醒'**
+  String get updateLater;
+
   /// No description provided for @updateSkip.
   ///
   /// In zh, this message translates to:
@@ -1957,6 +1963,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'没有匹配当前设备的安装包'**
   String get updateNoAsset;
+
+  /// No description provided for @updateNoReleaseNotes.
+  ///
+  /// In zh, this message translates to:
+  /// **'本次发布未填写更新内容。'**
+  String get updateNoReleaseNotes;
 
   /// No description provided for @updateAsset.
   ///

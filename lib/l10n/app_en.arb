@@ -445,8 +445,10 @@
     }
   },
   "updateDownload": "Download and Install",
+  "updateLater": "Later",
   "updateSkip": "Skip Version",
   "updateNoAsset": "No installer matches this device",
+  "updateNoReleaseNotes": "No release notes were provided for this release.",
   "updateAsset": "Matched package: {architecture}",
   "@updateAsset": {
     "placeholders": {

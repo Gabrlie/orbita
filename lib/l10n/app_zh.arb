@@ -445,8 +445,10 @@
     }
   },
   "updateDownload": "下载并安装",
+  "updateLater": "稍后提醒",
   "updateSkip": "跳过版本",
   "updateNoAsset": "没有匹配当前设备的安装包",
+  "updateNoReleaseNotes": "本次发布未填写更新内容。",
   "updateAsset": "匹配安装包：{architecture}",
   "@updateAsset": {
     "placeholders": {

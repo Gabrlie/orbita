@@ -33,7 +33,7 @@ class AppSecurityNotifier extends AsyncNotifier<AppSecurityState> {
       hasPassword: hasPassword,
       biometricEnabled:
           hasPassword && (prefs.getBool(_keyBiometricEnabled) ?? false),
-      isUnlocked: !hasPassword,
+      isUnlocked: !hasPassword || lockMode == AppLockMode.never,
       lockMode: lockMode,
       lockAfterMinutes: (prefs.getInt(_keyLockAfterMinutes) ?? 5).clamp(1, 240),
     );
