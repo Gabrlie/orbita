@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
+import 'package:orbita/models/tailnet_models.dart';
 import 'package:orbita/pages/server/server_key_picker.dart';
+import 'package:orbita/pages/server/server_network_section.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/widgets/common.dart';
 import 'package:orbita/widgets/os_icon.dart';
@@ -13,11 +15,7 @@ class ServerFormPage extends ConsumerStatefulWidget {
   final String? serverId;
   final String returnPath;
 
-  const ServerFormPage({
-    super.key,
-    this.serverId,
-    this.returnPath = '/home',
-  });
+  const ServerFormPage({super.key, this.serverId, this.returnPath = '/home'});
 
   @override
   ConsumerState<ServerFormPage> createState() => _ServerFormPageState();
@@ -32,6 +30,10 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
   late final TextEditingController _password;
   late final TextEditingController _tags;
   AuthType _authType = AuthType.password;
+  ServerConnectionMode _connectionMode = ServerConnectionMode.direct;
+  String? _tailscalePeerId;
+  String? _tailscalePeerName;
+  String? _tailscaleDnsName;
   String? _selectedKeyId;
 
   OsType _existingOsType = OsType.unknown;
@@ -52,6 +54,10 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
     _password = TextEditingController(text: server?.password ?? '');
     _tags = TextEditingController(text: server?.tags.join(', ') ?? '');
     _authType = server?.authType ?? AuthType.password;
+    _connectionMode = server?.connectionMode ?? ServerConnectionMode.direct;
+    _tailscalePeerId = server?.tailscalePeerId;
+    _tailscalePeerName = server?.tailscalePeerName;
+    _tailscaleDnsName = server?.tailscaleDnsName;
     _existingOsType = server?.osType ?? OsType.unknown;
     _selectedKeyId = server?.keyId;
   }
@@ -96,47 +102,45 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
                     : null,
               ),
               const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: TextFormField(
-                      controller: _host,
-                      decoration: InputDecoration(
-                        labelText: l10n.serverHost,
-                        border: const OutlineInputBorder(),
-                      ),
-                      validator: (v) {
-                        if (v == null || v.trim().isEmpty) {
-                          return l10n.validationRequired;
-                        }
-                        if (v.contains(' ')) return l10n.validationInvalidHost;
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 1,
-                    child: TextFormField(
-                      controller: _port,
-                      decoration: InputDecoration(
-                        labelText: l10n.serverPort,
-                        border: const OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (v) {
-                        final p = int.tryParse(v ?? '');
-                        if (p == null || p < 1 || p > 65535) {
-                          return l10n.validationInvalidPort;
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
+              ServerNetworkSection(
+                connectionMode: _connectionMode,
+                onConnectionModeChanged: (mode) {
+                  setState(() => _connectionMode = mode);
+                },
+                selectedPeerName: _tailscalePeerName,
+                selectedPeerDnsName: _tailscaleDnsName,
+                onPeerChanged: _setTailnetPeer,
               ),
+              const SizedBox(height: 16),
+              if (_connectionMode == ServerConnectionMode.direct)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: TextFormField(
+                        controller: _host,
+                        decoration: InputDecoration(
+                          labelText: l10n.serverHost,
+                          border: const OutlineInputBorder(),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty) {
+                            return l10n.validationRequired;
+                          }
+                          if (v.contains(' ')) {
+                            return l10n.validationInvalidHost;
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(child: _PortField(controller: _port)),
+                  ],
+                )
+              else
+                _PortField(controller: _port),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _username,
@@ -149,7 +153,6 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
                     : null,
               ),
               const SizedBox(height: 16),
-
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
@@ -172,7 +175,6 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
                 onSelectionChanged: (s) => setState(() => _authType = s.first),
               ),
               const SizedBox(height: 16),
-
               if (_authType == AuthType.password)
                 TextFormField(
                   controller: _password,
@@ -206,17 +208,29 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
 
   void _save() {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
 
     final tags = _tags.text
         .split(',')
         .map((t) => t.trim())
         .where((t) => t.isNotEmpty)
         .toList();
+    if (_connectionMode == ServerConnectionMode.tailscale &&
+        (_tailscaleDnsName == null || _tailscaleDnsName!.trim().isEmpty) &&
+        (_tailscalePeerName == null || _tailscalePeerName!.trim().isEmpty) &&
+        (_tailscalePeerId == null || _tailscalePeerId!.trim().isEmpty)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.tailnetPeerRequired)));
+      return;
+    }
 
     final server = Server(
       id: widget.serverId ?? const Uuid().v4(),
       name: _name.text.trim(),
-      host: _host.text.trim(),
+      host: _connectionMode == ServerConnectionMode.direct
+          ? _host.text.trim()
+          : '',
       port: int.parse(_port.text),
       username: _username.text.trim(),
       authType: _authType,
@@ -224,6 +238,16 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
       keyId: _authType == AuthType.key ? _selectedKeyId : null,
       osType: _existingOsType,
       tags: tags,
+      connectionMode: _connectionMode,
+      tailscalePeerId: _connectionMode == ServerConnectionMode.tailscale
+          ? _tailscalePeerId
+          : null,
+      tailscalePeerName: _connectionMode == ServerConnectionMode.tailscale
+          ? _tailscalePeerName
+          : null,
+      tailscaleDnsName: _connectionMode == ServerConnectionMode.tailscale
+          ? _tailscaleDnsName
+          : null,
     );
 
     final notifier = ref.read(serverListProvider.notifier);
@@ -237,5 +261,39 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
     } else {
       context.go(widget.returnPath);
     }
+  }
+
+  void _setTailnetPeer(TailnetPeer? peer) {
+    setState(() {
+      _tailscalePeerId = peer?.id;
+      _tailscalePeerName = peer?.hostName;
+      _tailscaleDnsName = peer?.dnsNameWithoutTrailingDot;
+    });
+  }
+}
+
+class _PortField extends StatelessWidget {
+  final TextEditingController controller;
+
+  const _PortField({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: l10n.serverPort,
+        border: const OutlineInputBorder(),
+      ),
+      keyboardType: TextInputType.number,
+      validator: (v) {
+        final p = int.tryParse(v ?? '');
+        if (p == null || p < 1 || p > 65535) {
+          return l10n.validationInvalidPort;
+        }
+        return null;
+      },
+    );
   }
 }

@@ -64,10 +64,7 @@ class GroupDropSection extends ConsumerWidget {
                   )
                 else
                   for (final server in bucket.servers)
-                    _DraggableServerTile(
-                      server: server,
-                      bucketId: bucket.id,
-                    ),
+                    _DraggableServerTile(server: server, bucketId: bucket.id),
               ],
             ),
           );
@@ -198,10 +195,7 @@ class _DraggableServerTile extends ConsumerWidget {
   final Server server;
   final String bucketId;
 
-  const _DraggableServerTile({
-    required this.server,
-    required this.bucketId,
-  });
+  const _DraggableServerTile({required this.server, required this.bucketId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -252,7 +246,7 @@ class _ServerTile extends StatelessWidget {
     return ListTile(
       leading: OsIcon(type: server.osType, size: 20),
       title: Text(server.name),
-      subtitle: Text('${server.host}:${server.port}'),
+      subtitle: Text(server.displayEndpoint),
       trailing: const Icon(Ionicons.reorder_three_outline),
     );
   }

@@ -37,34 +37,34 @@ class ServerListPage extends ConsumerWidget {
             ).where((bucket) => bucket.servers.isNotEmpty).toList();
             final showHeaders = shouldShowServerGroupHeaders(buckets);
             return servers.isEmpty
-              ? EmptyState(
-                  icon: Ionicons.server_outline,
-                  title: l10n.noServersTitle,
-                  subtitle: l10n.noServersSubtitle,
-                )
-              : ListView(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 16,
-                  ),
-                  children: [
-                    for (final bucket in buckets) ...[
-                      if (showHeaders)
-                        SectionHeader(
-                          title: bucket.name,
-                          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                        ),
-                      for (final server in bucket.servers)
-                        Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          color: tonalItemColor(context),
-                          surfaceTintColor: Colors.transparent,
-                          clipBehavior: Clip.antiAlias,
-                          child: _ServerListTile(server: server),
-                        ),
+                ? EmptyState(
+                    icon: Ionicons.server_outline,
+                    title: l10n.noServersTitle,
+                    subtitle: l10n.noServersSubtitle,
+                  )
+                : ListView(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
+                    children: [
+                      for (final bucket in buckets) ...[
+                        if (showHeaders)
+                          SectionHeader(
+                            title: bucket.name,
+                            padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                          ),
+                        for (final server in bucket.servers)
+                          Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            color: tonalItemColor(context),
+                            surfaceTintColor: Colors.transparent,
+                            clipBehavior: Clip.antiAlias,
+                            child: _ServerListTile(server: server),
+                          ),
+                      ],
                     ],
-                  ],
-                );
+                  );
           },
         ),
       ),
@@ -95,7 +95,7 @@ class _ServerListTile extends ConsumerWidget {
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 2),
         child: Text(
-          '${server.host}:${server.port} · ${server.username}',
+          '${server.displayEndpoint} · ${server.username}',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),

@@ -131,23 +131,6 @@ class BackupSyncPage extends ConsumerWidget {
                           : null,
                     ),
                     ListTile(
-                      leading: const Icon(Ionicons.time_outline),
-                      title: Text(l10n.backupAutoTime),
-                      subtitle: Text(
-                        l10n.backupAutoTimeDesc(
-                          _formatBackupTime(
-                            context,
-                            backup.autoBackupTimeMinutes,
-                          ),
-                        ),
-                      ),
-                      enabled: hasPassword && backup.autoBackupEnabled,
-                      onTap: hasPassword && backup.autoBackupEnabled
-                          ? () =>
-                                actions.setAutoBackupTime(context, ref, backup)
-                          : null,
-                    ),
-                    ListTile(
                       leading: const Icon(Ionicons.layers_outline),
                       title: Text(l10n.backupRetentionCount),
                       subtitle: Text(
@@ -200,9 +183,5 @@ class BackupSyncPage extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  String _formatBackupTime(BuildContext context, int minutes) {
-    return TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60).format(context);
   }
 }

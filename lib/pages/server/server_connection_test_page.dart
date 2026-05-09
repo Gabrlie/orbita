@@ -40,10 +40,7 @@ class _ServerConnectionTestPageState
     final server = ref.watch(serverByIdProvider(widget.serverId));
 
     return Scaffold(
-      appBar: compactPageAppBar(
-        context,
-        title: l10n.serverConnectionTestTitle,
-      ),
+      appBar: compactPageAppBar(context, title: l10n.serverConnectionTestTitle),
       body: TonalListBackground(
         child: server == null
             ? EmptyState(
@@ -74,10 +71,7 @@ class _ServerConnectionTestPageState
                           if (i > 0) const Divider(height: 1),
                           ListTile(
                             dense: true,
-                            leading: const Icon(
-                              Ionicons.ellipse,
-                              size: 8,
-                            ),
+                            leading: const Icon(Ionicons.ellipse, size: 8),
                             title: Text(_logs[i]),
                           ),
                         ],
@@ -104,7 +98,9 @@ class _ServerConnectionTestPageState
       if (server.authType == AuthType.key && key == null) {
         throw StateError(l10n.authNoKey);
       }
-      _append(l10n.serverConnectionLogConnecting(server.host, server.port));
+      _append(
+        l10n.serverConnectionLogConnecting(server.displayHost, server.port),
+      );
 
       final stopwatch = Stopwatch()..start();
       final lease = await ref
@@ -184,9 +180,7 @@ class _SummaryCard extends StatelessWidget {
                   Text(
                     latency == null
                         ? l10n.serverConnectionTesting
-                        : l10n.serverConnectionLatency(
-                            latency.inMilliseconds,
-                          ),
+                        : l10n.serverConnectionLatency(latency.inMilliseconds),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

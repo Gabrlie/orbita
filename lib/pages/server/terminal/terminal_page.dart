@@ -121,7 +121,7 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
         throw StateError(l10n.authNoKey);
       }
 
-      log.info('Opening terminal for ${server.host}:${server.port}');
+      log.info('Opening terminal for ${server.displayEndpoint}');
       _shell = await _openShellWithRetry(server, key, log, l10n);
 
       _terminal.buffer.clear();
@@ -253,5 +253,4 @@ class _TerminalPageState extends ConsumerState<TerminalPage> {
       body: body,
     );
   }
-
 }

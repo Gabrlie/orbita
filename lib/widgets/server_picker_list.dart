@@ -125,7 +125,7 @@ class _ServerPickerTile extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${server.host}:${server.port}',
+                        server.displayEndpoint,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),

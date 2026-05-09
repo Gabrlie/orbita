@@ -133,6 +133,44 @@ void main() {
     expect(services.last.disconnectCount, 1);
   });
 
+  test('acquire connects through the resolved endpoint host', () async {
+    final hosts = <String>[];
+    var closeCount = 0;
+    final manager = SshConnectionManager(
+      idleTimeout: Duration.zero,
+      endpointResolver: (server) async => ResolvedEndpointLease(
+        server: server.copyWith(host: '127.0.0.1', port: 43001),
+        release: () async => closeCount += 1,
+      ),
+      connector:
+          ({
+            required host,
+            required port,
+            required username,
+            password,
+            key,
+          }) async {
+            hosts.add('$host:$port');
+            return _FakeSshService();
+          },
+    );
+    const server = Server(
+      id: 'server-1',
+      name: 'Server',
+      host: '',
+      username: 'root',
+      connectionMode: ServerConnectionMode.tailscale,
+      tailscaleDnsName: 'box.tail.ts.net',
+    );
+
+    final lease = await manager.acquire(server);
+
+    expect(hosts, ['127.0.0.1:43001']);
+    lease.release();
+    await Future<void>.delayed(Duration.zero);
+    expect(closeCount, 1);
+  });
+
   test('tmuxSessionNameForServer sanitizes unsupported characters', () {
     const server = Server(
       id: 'srv:01',

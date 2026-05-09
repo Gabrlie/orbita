@@ -49,6 +49,55 @@
   "authNoKey": "未选择密钥",
   "serverTags": "标签",
   "serverTagsHint": "标签1, 标签2, ...",
+  "serverNetworkSection": "网络与隧道",
+  "serverConnectionMode": "连接方式",
+  "connectionModeDirect": "直连",
+  "connectionModeTailscale": "Tailscale",
+  "tailnetEmbeddedService": "内置 Tailnet 节点",
+  "tailnetBackendState": "状态：{state}",
+  "@tailnetBackendState": {
+    "placeholders": {
+      "state": { "type": "String" }
+    }
+  },
+  "tailnetLogin": "登录 Tailnet",
+  "tailnetAuthUrlUnavailable": "当前没有可用的登录链接，请刷新 Tailnet 状态后重试。",
+  "tailnetAuthUrlCopied": "登录链接已复制：\n{url}",
+  "@tailnetAuthUrlCopied": {
+    "placeholders": {
+      "url": { "type": "String" }
+    }
+  },
+  "tailnetAuthOpenFailed": "打开登录链接失败：{message}",
+  "@tailnetAuthOpenFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "tailnetSelectPeer": "选择 Tailnet 设备",
+  "tailnetPeerRequired": "请选择一个 Tailnet 设备",
+  "tailnetPeerPickerTitle": "选择 Tailnet 设备",
+  "tailnetNoPeers": "没有检测到可绑定的 Tailnet 设备。",
+  "tailnetPeerLoadFailed": "Tailnet 检测失败：{message}",
+  "@tailnetPeerLoadFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "tailnetPeerNoIp": "无 Tailscale IP",
+  "tailnetPeerOnline": "在线",
+  "tailnetStarting": "启动 Tailnet 中...",
+  "tailscaleDetectPeers": "检测 Tailnet 设备",
+  "tailscalePeerPickerTitle": "选择 Tailnet 设备",
+  "tailscaleNoPeers": "没有检测到可绑定的 Tailnet 设备。",
+  "tailscalePeerLoadFailed": "Tailnet 检测失败：{message}",
+  "@tailscalePeerLoadFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "tailscalePeerNoIp": "无 Tailscale IP",
+  "tailscalePeerOnline": "在线",
   "selectOsType": "选择操作系统",
   "deleteServerTitle": "删除服务器",
   "deleteServerContent": "确定要删除「{name}」吗？此操作不可撤销。",
@@ -308,7 +357,41 @@
   "settingsAppearance": "外观与语言",
   "settingsAppearanceDesc": "主题模式和显示语言",
   "settingsNetwork": "网络与隧道",
-  "settingsNetworkDesc": "Cloudflared / Tailscale",
+  "settingsNetworkDesc": "内置 Tailnet 代理",
+  "tailnetSection": "Tailnet",
+  "tailnetRefreshStatus": "刷新 Tailnet 状态",
+  "tailnetPeers": "Tailnet 设备",
+  "tailnetPeerCount": "{count} 台设备",
+  "@tailnetPeerCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "tailnetUnavailable": "Tailnet 不可用",
+  "tailnetClearState": "清除登录状态",
+  "tailscaleSection": "Tailscale",
+  "tailscaleRefreshStatus": "刷新 Tailscale 状态",
+  "tailscaleStatus": "本机服务",
+  "tailscaleBackendState": "状态：{state}",
+  "@tailscaleBackendState": {
+    "placeholders": {
+      "state": { "type": "String" }
+    }
+  },
+  "tailscalePeers": "Tailnet 设备",
+  "tailscalePeerCount": "{count} 台设备",
+  "@tailscalePeerCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "tailscaleUnavailable": "Tailscale 不可用",
+  "tailscaleInstallHint": "Orbita 不会内置安装 Tailscale，请先自行安装并登录。本次检测结果：{message}",
+  "@tailscaleInstallHint": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
   "settingsAbout": "关于 Orbita",
   "settingsAboutDesc": "版本信息与更新检查",
   "aboutVersion": "版本 {version}",
@@ -373,7 +456,7 @@
   "backupTestWebDav": "测试 WebDAV 连接",
   "backupOperations": "操作",
   "backupAuto": "自动备份",
-  "backupAutoDesc": "每天在配置时间向已启用目标写入一份加密备份。",
+  "backupAutoDesc": "服务器、密钥、分组、脚本或片段变化后自动写入一份加密备份。",
   "backupAutoTime": "自动备份时间",
   "backupAutoTimeDesc": "每天 {time} 自动备份一次",
   "@backupAutoTimeDesc": {

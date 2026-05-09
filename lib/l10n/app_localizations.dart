@@ -368,6 +368,150 @@ abstract class AppLocalizations {
   /// **'标签1, 标签2, ...'**
   String get serverTagsHint;
 
+  /// No description provided for @serverNetworkSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络与隧道'**
+  String get serverNetworkSection;
+
+  /// No description provided for @serverConnectionMode.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接方式'**
+  String get serverConnectionMode;
+
+  /// No description provided for @connectionModeDirect.
+  ///
+  /// In zh, this message translates to:
+  /// **'直连'**
+  String get connectionModeDirect;
+
+  /// No description provided for @connectionModeTailscale.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tailscale'**
+  String get connectionModeTailscale;
+
+  /// No description provided for @tailnetEmbeddedService.
+  ///
+  /// In zh, this message translates to:
+  /// **'内置 Tailnet 节点'**
+  String get tailnetEmbeddedService;
+
+  /// No description provided for @tailnetBackendState.
+  ///
+  /// In zh, this message translates to:
+  /// **'状态：{state}'**
+  String tailnetBackendState(String state);
+
+  /// No description provided for @tailnetLogin.
+  ///
+  /// In zh, this message translates to:
+  /// **'登录 Tailnet'**
+  String get tailnetLogin;
+
+  /// No description provided for @tailnetAuthUrlUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前没有可用的登录链接，请刷新 Tailnet 状态后重试。'**
+  String get tailnetAuthUrlUnavailable;
+
+  /// No description provided for @tailnetAuthUrlCopied.
+  ///
+  /// In zh, this message translates to:
+  /// **'登录链接已复制：\n{url}'**
+  String tailnetAuthUrlCopied(String url);
+
+  /// No description provided for @tailnetAuthOpenFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'打开登录链接失败：{message}'**
+  String tailnetAuthOpenFailed(String message);
+
+  /// No description provided for @tailnetSelectPeer.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 Tailnet 设备'**
+  String get tailnetSelectPeer;
+
+  /// No description provided for @tailnetPeerRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请选择一个 Tailnet 设备'**
+  String get tailnetPeerRequired;
+
+  /// No description provided for @tailnetPeerPickerTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 Tailnet 设备'**
+  String get tailnetPeerPickerTitle;
+
+  /// No description provided for @tailnetNoPeers.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有检测到可绑定的 Tailnet 设备。'**
+  String get tailnetNoPeers;
+
+  /// No description provided for @tailnetPeerLoadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tailnet 检测失败：{message}'**
+  String tailnetPeerLoadFailed(String message);
+
+  /// No description provided for @tailnetPeerNoIp.
+  ///
+  /// In zh, this message translates to:
+  /// **'无 Tailscale IP'**
+  String get tailnetPeerNoIp;
+
+  /// No description provided for @tailnetPeerOnline.
+  ///
+  /// In zh, this message translates to:
+  /// **'在线'**
+  String get tailnetPeerOnline;
+
+  /// No description provided for @tailnetStarting.
+  ///
+  /// In zh, this message translates to:
+  /// **'启动 Tailnet 中...'**
+  String get tailnetStarting;
+
+  /// No description provided for @tailscaleDetectPeers.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测 Tailnet 设备'**
+  String get tailscaleDetectPeers;
+
+  /// No description provided for @tailscalePeerPickerTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 Tailnet 设备'**
+  String get tailscalePeerPickerTitle;
+
+  /// No description provided for @tailscaleNoPeers.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有检测到可绑定的 Tailnet 设备。'**
+  String get tailscaleNoPeers;
+
+  /// No description provided for @tailscalePeerLoadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tailnet 检测失败：{message}'**
+  String tailscalePeerLoadFailed(String message);
+
+  /// No description provided for @tailscalePeerNoIp.
+  ///
+  /// In zh, this message translates to:
+  /// **'无 Tailscale IP'**
+  String get tailscalePeerNoIp;
+
+  /// No description provided for @tailscalePeerOnline.
+  ///
+  /// In zh, this message translates to:
+  /// **'在线'**
+  String get tailscalePeerOnline;
+
   /// No description provided for @selectOsType.
   ///
   /// In zh, this message translates to:
@@ -1415,8 +1559,92 @@ abstract class AppLocalizations {
   /// No description provided for @settingsNetworkDesc.
   ///
   /// In zh, this message translates to:
-  /// **'Cloudflared / Tailscale'**
+  /// **'内置 Tailnet 代理'**
   String get settingsNetworkDesc;
+
+  /// No description provided for @tailnetSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tailnet'**
+  String get tailnetSection;
+
+  /// No description provided for @tailnetRefreshStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新 Tailnet 状态'**
+  String get tailnetRefreshStatus;
+
+  /// No description provided for @tailnetPeers.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tailnet 设备'**
+  String get tailnetPeers;
+
+  /// No description provided for @tailnetPeerCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 台设备'**
+  String tailnetPeerCount(int count);
+
+  /// No description provided for @tailnetUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tailnet 不可用'**
+  String get tailnetUnavailable;
+
+  /// No description provided for @tailnetClearState.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除登录状态'**
+  String get tailnetClearState;
+
+  /// No description provided for @tailscaleSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tailscale'**
+  String get tailscaleSection;
+
+  /// No description provided for @tailscaleRefreshStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新 Tailscale 状态'**
+  String get tailscaleRefreshStatus;
+
+  /// No description provided for @tailscaleStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'本机服务'**
+  String get tailscaleStatus;
+
+  /// No description provided for @tailscaleBackendState.
+  ///
+  /// In zh, this message translates to:
+  /// **'状态：{state}'**
+  String tailscaleBackendState(String state);
+
+  /// No description provided for @tailscalePeers.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tailnet 设备'**
+  String get tailscalePeers;
+
+  /// No description provided for @tailscalePeerCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 台设备'**
+  String tailscalePeerCount(int count);
+
+  /// No description provided for @tailscaleUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tailscale 不可用'**
+  String get tailscaleUnavailable;
+
+  /// No description provided for @tailscaleInstallHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'Orbita 不会内置安装 Tailscale，请先自行安装并登录。本次检测结果：{message}'**
+  String tailscaleInstallHint(String message);
 
   /// No description provided for @settingsAbout.
   ///
@@ -1733,7 +1961,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupAutoDesc.
   ///
   /// In zh, this message translates to:
-  /// **'每天在配置时间向已启用目标写入一份加密备份。'**
+  /// **'服务器、密钥、分组、脚本或片段变化后自动写入一份加密备份。'**
   String get backupAutoDesc;
 
   /// No description provided for @backupAutoTime.

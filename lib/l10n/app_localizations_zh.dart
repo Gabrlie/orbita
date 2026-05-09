@@ -144,6 +144,88 @@ class AppLocalizationsZh extends AppLocalizations {
   String get serverTagsHint => '标签1, 标签2, ...';
 
   @override
+  String get serverNetworkSection => '网络与隧道';
+
+  @override
+  String get serverConnectionMode => '连接方式';
+
+  @override
+  String get connectionModeDirect => '直连';
+
+  @override
+  String get connectionModeTailscale => 'Tailscale';
+
+  @override
+  String get tailnetEmbeddedService => '内置 Tailnet 节点';
+
+  @override
+  String tailnetBackendState(String state) {
+    return '状态：$state';
+  }
+
+  @override
+  String get tailnetLogin => '登录 Tailnet';
+
+  @override
+  String get tailnetAuthUrlUnavailable => '当前没有可用的登录链接，请刷新 Tailnet 状态后重试。';
+
+  @override
+  String tailnetAuthUrlCopied(String url) {
+    return '登录链接已复制：\n$url';
+  }
+
+  @override
+  String tailnetAuthOpenFailed(String message) {
+    return '打开登录链接失败：$message';
+  }
+
+  @override
+  String get tailnetSelectPeer => '选择 Tailnet 设备';
+
+  @override
+  String get tailnetPeerRequired => '请选择一个 Tailnet 设备';
+
+  @override
+  String get tailnetPeerPickerTitle => '选择 Tailnet 设备';
+
+  @override
+  String get tailnetNoPeers => '没有检测到可绑定的 Tailnet 设备。';
+
+  @override
+  String tailnetPeerLoadFailed(String message) {
+    return 'Tailnet 检测失败：$message';
+  }
+
+  @override
+  String get tailnetPeerNoIp => '无 Tailscale IP';
+
+  @override
+  String get tailnetPeerOnline => '在线';
+
+  @override
+  String get tailnetStarting => '启动 Tailnet 中...';
+
+  @override
+  String get tailscaleDetectPeers => '检测 Tailnet 设备';
+
+  @override
+  String get tailscalePeerPickerTitle => '选择 Tailnet 设备';
+
+  @override
+  String get tailscaleNoPeers => '没有检测到可绑定的 Tailnet 设备。';
+
+  @override
+  String tailscalePeerLoadFailed(String message) {
+    return 'Tailnet 检测失败：$message';
+  }
+
+  @override
+  String get tailscalePeerNoIp => '无 Tailscale IP';
+
+  @override
+  String get tailscalePeerOnline => '在线';
+
+  @override
   String get selectOsType => '选择操作系统';
 
   @override
@@ -699,7 +781,57 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsNetwork => '网络与隧道';
 
   @override
-  String get settingsNetworkDesc => 'Cloudflared / Tailscale';
+  String get settingsNetworkDesc => '内置 Tailnet 代理';
+
+  @override
+  String get tailnetSection => 'Tailnet';
+
+  @override
+  String get tailnetRefreshStatus => '刷新 Tailnet 状态';
+
+  @override
+  String get tailnetPeers => 'Tailnet 设备';
+
+  @override
+  String tailnetPeerCount(int count) {
+    return '$count 台设备';
+  }
+
+  @override
+  String get tailnetUnavailable => 'Tailnet 不可用';
+
+  @override
+  String get tailnetClearState => '清除登录状态';
+
+  @override
+  String get tailscaleSection => 'Tailscale';
+
+  @override
+  String get tailscaleRefreshStatus => '刷新 Tailscale 状态';
+
+  @override
+  String get tailscaleStatus => '本机服务';
+
+  @override
+  String tailscaleBackendState(String state) {
+    return '状态：$state';
+  }
+
+  @override
+  String get tailscalePeers => 'Tailnet 设备';
+
+  @override
+  String tailscalePeerCount(int count) {
+    return '$count 台设备';
+  }
+
+  @override
+  String get tailscaleUnavailable => 'Tailscale 不可用';
+
+  @override
+  String tailscaleInstallHint(String message) {
+    return 'Orbita 不会内置安装 Tailscale，请先自行安装并登录。本次检测结果：$message';
+  }
 
   @override
   String get settingsAbout => '关于 Orbita';
@@ -862,7 +994,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupAuto => '自动备份';
 
   @override
-  String get backupAutoDesc => '每天在配置时间向已启用目标写入一份加密备份。';
+  String get backupAutoDesc => '服务器、密钥、分组、脚本或片段变化后自动写入一份加密备份。';
 
   @override
   String get backupAutoTime => '自动备份时间';

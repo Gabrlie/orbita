@@ -5,7 +5,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:orbita/models/backup_models.dart';
+import 'package:orbita/providers/command_snippet_provider.dart';
+import 'package:orbita/providers/key_provider.dart';
+import 'package:orbita/providers/remote_script_provider.dart';
 import 'package:orbita/providers/security_provider.dart';
+import 'package:orbita/providers/server_group_provider.dart';
+import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/services/backup_encryption_service.dart';
 import 'package:orbita/services/backup_file_service.dart';
@@ -50,8 +55,8 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
   @override
   Future<BackupSettings> build() async {
     ref.onDispose(() => _autoTimer?.cancel());
+    _listenForBackupDataChanges();
     final settings = BackupSettingsStore(ref.read(sharedPrefsProvider)).read();
-    _scheduleNextAutoBackup(settings);
     return settings;
   }
 
@@ -131,6 +136,7 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     await _requireTarget();
     await _storedAutoSecret();
     await _save((settings) => settings.copyWith(autoBackupEnabled: true));
+    _scheduleAutoBackupSoon();
   }
 
   Future<void> manualBackup() async {
@@ -163,43 +169,15 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     await _restoreEnvelope(envelope, password);
   }
 
-  void _scheduleNextAutoBackup(BackupSettings settings) {
-    _autoTimer?.cancel();
-    if (!settings.autoBackupEnabled) return;
-    final delay = _nextAutoBackupAt(settings).difference(DateTime.now());
-    _autoTimer = Timer(delay.isNegative ? Duration.zero : delay, () {
-      unawaited(_runAutoBackup());
-    });
-  }
-
-  DateTime _nextAutoBackupAt(BackupSettings settings) {
-    final now = DateTime.now();
-    final today = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      settings.autoBackupTimeMinutes ~/ 60,
-      settings.autoBackupTimeMinutes % 60,
-    );
-    if (now.isBefore(today)) return today;
-    final last = settings.lastBackupAt;
-    if (last == null || !_sameDay(last, now)) {
-      return now.add(const Duration(seconds: 5));
-    }
-    return today.add(const Duration(days: 1));
-  }
-
   Future<void> _runAutoBackup() async {
+    final settings = await future;
+    if (!settings.autoBackupEnabled || !_hasTarget(settings)) return;
     final secret = await _storedAutoSecretOrNull();
     if (secret == null) return;
     final envelope = ref
         .read(backupEncryptionServiceProvider)
         .encryptWithSecret(await buildBackupSnapshot(ref), secret);
     await _writeTargets(envelope, silent: true);
-  }
-
-  bool _sameDay(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   Future<void> _restoreEnvelope(String envelope, String password) async {
@@ -286,6 +264,28 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     final next = update(current);
     state = AsyncData(next);
     await BackupSettingsStore(ref.read(sharedPrefsProvider)).save(next);
-    _scheduleNextAutoBackup(next);
+  }
+
+  void _listenForBackupDataChanges() {
+    ref.listen(serverListProvider, (previous, next) {
+      if (previous?.hasValue == true && next.hasValue) {
+        _scheduleAutoBackupSoon();
+      }
+    });
+    ref.listen(keyListProvider, (previous, next) {
+      if (previous?.hasValue == true && next.hasValue) {
+        _scheduleAutoBackupSoon();
+      }
+    });
+    ref.listen(serverGroupProvider, (_, _) => _scheduleAutoBackupSoon());
+    ref.listen(userScriptsProvider, (_, _) => _scheduleAutoBackupSoon());
+    ref.listen(commandSnippetProvider, (_, _) => _scheduleAutoBackupSoon());
+  }
+
+  void _scheduleAutoBackupSoon() {
+    _autoTimer?.cancel();
+    _autoTimer = Timer(const Duration(seconds: 3), () {
+      unawaited(_runAutoBackup());
+    });
   }
 }

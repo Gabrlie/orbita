@@ -29,7 +29,9 @@ class ServerCardItem extends ConsumerWidget {
     String? statusMessage;
     if (!online) {
       if (statusAsync.isLoading) {
-        statusMessage = l10n.sshConnecting;
+        statusMessage = server.connectionMode == ServerConnectionMode.tailscale
+            ? l10n.tailnetStarting
+            : l10n.sshConnecting;
       } else if (statusAsync.hasError) {
         statusMessage = '${l10n.sshConnectionFailed}: ${statusAsync.error}';
       } else {

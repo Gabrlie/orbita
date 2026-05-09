@@ -4,36 +4,8 @@ import 'package:orbita/models/server.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/services/ssh_service.dart';
 
-typedef SshServiceConnector =
-    Future<SshClientSession> Function({
-      required String host,
-      required int port,
-      required String username,
-      String? password,
-      SshKey? key,
-    });
-
-enum SshConnectionLifecycleState { disconnected, connecting, connected, error }
-
-class SshConnectionLease {
-  final String serverId;
-  final SshClientSession service;
-  final void Function(SshClientSession service) _release;
-
-  bool _released = false;
-
-  SshConnectionLease._({
-    required this.serverId,
-    required this.service,
-    required void Function(SshClientSession service) release,
-  }) : _release = release;
-
-  void release() {
-    if (_released) return;
-    _released = true;
-    _release(service);
-  }
-}
+part 'ssh_connection_manager_state.dart';
+part 'ssh_connection_manager_fingerprint.dart';
 
 class SshConnectionManager {
   SshConnectionManager({
@@ -41,12 +13,15 @@ class SshConnectionManager {
     Duration idleTimeout = const Duration(minutes: 2),
     Duration connectTimeout = const Duration(seconds: 10),
     Duration keepAliveInterval = const Duration(seconds: 30),
+    ServerEndpointResolver? endpointResolver,
   }) : _connector =
            connector ?? _defaultConnector(connectTimeout, keepAliveInterval),
-       _idleTimeout = idleTimeout;
+       _idleTimeout = idleTimeout,
+       _endpointResolver = endpointResolver ?? _defaultEndpointResolver;
 
   final SshServiceConnector _connector;
   final Duration _idleTimeout;
+  final ServerEndpointResolver _endpointResolver;
   final Map<String, _ManagedSshConnection> _connections = {};
 
   static SshServiceConnector _defaultConnector(
@@ -119,12 +94,13 @@ class SshConnectionManager {
     bool retain = true,
   }) async {
     final entry = _entryFor(server.id);
-    final fingerprint = _connectionFingerprint(server, key);
 
     if (retain) {
       entry.cancelIdleClose();
       entry.refCount += 1;
     }
+
+    final fingerprint = _connectionFingerprint(server, key);
 
     final existing = entry.service;
     if (existing != null &&
@@ -152,11 +128,24 @@ class SshConnectionManager {
     entry.fingerprint = fingerprint;
     entry.emit(SshConnectionLifecycleState.connecting);
 
+    late final ResolvedEndpointLease endpointLease;
+    try {
+      endpointLease = await _endpointResolver(server);
+      entry.endpointLease = endpointLease;
+    } catch (_) {
+      entry.emit(SshConnectionLifecycleState.error);
+      if (retain) {
+        _rollbackRetain(server.id, entry);
+      }
+      rethrow;
+    }
+
+    final endpoint = endpointLease.server;
     final connecting = _connector(
-      host: server.host,
-      port: server.port,
-      username: server.username,
-      password: server.password,
+      host: endpoint.host,
+      port: endpoint.port,
+      username: endpoint.username,
+      password: endpoint.password,
       key: key,
     );
     entry.connecting = connecting;
@@ -171,6 +160,9 @@ class SshConnectionManager {
     } catch (_) {
       entry.connecting = null;
       entry.service = null;
+      final lease = entry.endpointLease;
+      entry.endpointLease = null;
+      unawaited(lease?.release());
       entry.emit(SshConnectionLifecycleState.error);
       if (retain) {
         _rollbackRetain(server.id, entry);
@@ -195,8 +187,11 @@ class SshConnectionManager {
     }
     entry.service = null;
     entry.connecting = null;
+    final endpointLease = entry.endpointLease;
+    entry.endpointLease = null;
     entry.fingerprint = null;
     entry.emit(SshConnectionLifecycleState.disconnected);
+    unawaited(endpointLease?.release());
     if (entry.refCount == 0) {
       _disposeEntry(serverId, entry);
     }
@@ -265,13 +260,16 @@ class SshConnectionManager {
   }) {
     entry.cancelIdleClose();
     final service = entry.service;
+    final endpointLease = entry.endpointLease;
     entry.service = null;
     entry.connecting = null;
+    entry.endpointLease = null;
     entry.fingerprint = null;
     entry.emit(SshConnectionLifecycleState.disconnected);
     if (service != null && !service.isClosed) {
       service.disconnect();
     }
+    unawaited(endpointLease?.release());
     if (dispose) {
       _disposeEntry(serverId, entry);
     }
@@ -292,44 +290,9 @@ class SshConnectionManager {
     );
   }
 
-  String _connectionFingerprint(Server server, SshKey? key) {
-    return [
-      server.host,
-      server.port,
-      server.username,
-      server.authType.name,
-      server.password ?? '',
-      server.keyId ?? '',
-      key?.id ?? '',
-      key?.privateKeyPem.hashCode ?? 0,
-      key?.passphrase?.hashCode ?? 0,
-    ].join('|');
-  }
-}
-
-class _ManagedSshConnection {
-  final String serverId;
-  final StreamController<SshConnectionLifecycleState> controller =
-      StreamController<SshConnectionLifecycleState>.broadcast();
-
-  SshClientSession? service;
-  Future<SshClientSession>? connecting;
-  String? fingerprint;
-  int refCount = 0;
-  SshConnectionLifecycleState state = SshConnectionLifecycleState.disconnected;
-  Timer? idleCloseTimer;
-
-  _ManagedSshConnection(this.serverId);
-
-  void emit(SshConnectionLifecycleState nextState) {
-    state = nextState;
-    if (!controller.isClosed) {
-      controller.add(nextState);
-    }
-  }
-
-  void cancelIdleClose() {
-    idleCloseTimer?.cancel();
-    idleCloseTimer = null;
+  static Future<ResolvedEndpointLease> _defaultEndpointResolver(
+    Server server,
+  ) async {
+    return ResolvedEndpointLease.direct(server);
   }
 }

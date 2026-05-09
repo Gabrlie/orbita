@@ -72,6 +72,7 @@ flutter {
 }
 
 dependencies {
+    implementation(files("libs/tailproxy.aar"))
     implementation("androidx.appcompat:appcompat:1.7.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

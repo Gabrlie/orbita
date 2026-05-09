@@ -62,8 +62,8 @@ class SettingsPage extends ConsumerWidget {
                   _SettingsItem(
                     icon: Ionicons.git_network_outline,
                     title: l10n.settingsNetwork,
-                    subtitle: l10n.comingSoon,
-                    enabled: false,
+                    subtitle: l10n.settingsNetworkDesc,
+                    onTap: () => _open(context, '/settings/network'),
                   ),
                 ],
               ),
@@ -160,36 +160,28 @@ class _SettingsItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final bool enabled;
   final VoidCallback? onTap;
 
   const _SettingsItem({
     required this.icon,
     required this.title,
     required this.subtitle,
-    this.enabled = true,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final disabledColor = theme.colorScheme.onSurface.withAlpha(97);
-    final iconColor = enabled ? theme.colorScheme.primary : disabledColor;
-    final titleColor = enabled ? theme.colorScheme.onSurface : disabledColor;
-    final subtitleColor = enabled
-        ? theme.colorScheme.onSurfaceVariant
-        : disabledColor;
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-      leading: Icon(icon, color: iconColor, size: 20),
+      leading: Icon(icon, color: theme.colorScheme.primary, size: 20),
       minLeadingWidth: 24,
       horizontalTitleGap: 14,
       title: Text(
         title,
         style: TextStyle(
-          color: titleColor,
+          color: theme.colorScheme.onSurface,
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -198,7 +190,11 @@ class _SettingsItem extends StatelessWidget {
         padding: const EdgeInsets.only(top: 2),
         child: Text(
           subtitle,
-          style: TextStyle(color: subtitleColor, fontSize: 12, height: 1.25),
+          style: TextStyle(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontSize: 12,
+            height: 1.25,
+          ),
         ),
       ),
       trailing: onTap != null
@@ -208,8 +204,7 @@ class _SettingsItem extends StatelessWidget {
               size: 18,
             )
           : null,
-      enabled: enabled,
-      onTap: enabled ? onTap : null,
+      onTap: onTap,
     );
   }
 }

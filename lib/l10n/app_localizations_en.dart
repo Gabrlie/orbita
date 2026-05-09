@@ -144,6 +144,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serverTagsHint => 'tag1, tag2, ...';
 
   @override
+  String get serverNetworkSection => 'Network & Tunnels';
+
+  @override
+  String get serverConnectionMode => 'Connection Method';
+
+  @override
+  String get connectionModeDirect => 'Direct';
+
+  @override
+  String get connectionModeTailscale => 'Tailscale';
+
+  @override
+  String get tailnetEmbeddedService => 'Embedded Tailnet Node';
+
+  @override
+  String tailnetBackendState(String state) {
+    return 'State: $state';
+  }
+
+  @override
+  String get tailnetLogin => 'Log in to Tailnet';
+
+  @override
+  String get tailnetAuthUrlUnavailable =>
+      'No login URL is available. Refresh Tailnet status and try again.';
+
+  @override
+  String tailnetAuthUrlCopied(String url) {
+    return 'Login URL copied:\n$url';
+  }
+
+  @override
+  String tailnetAuthOpenFailed(String message) {
+    return 'Failed to open login URL: $message';
+  }
+
+  @override
+  String get tailnetSelectPeer => 'Select Tailnet Device';
+
+  @override
+  String get tailnetPeerRequired => 'Select a Tailnet device';
+
+  @override
+  String get tailnetPeerPickerTitle => 'Select Tailnet Device';
+
+  @override
+  String get tailnetNoPeers => 'No Tailnet devices were detected for binding.';
+
+  @override
+  String tailnetPeerLoadFailed(String message) {
+    return 'Tailnet detection failed: $message';
+  }
+
+  @override
+  String get tailnetPeerNoIp => 'No Tailscale IP';
+
+  @override
+  String get tailnetPeerOnline => 'Online';
+
+  @override
+  String get tailnetStarting => 'Starting Tailnet...';
+
+  @override
+  String get tailscaleDetectPeers => 'Detect Tailnet Devices';
+
+  @override
+  String get tailscalePeerPickerTitle => 'Select Tailnet Device';
+
+  @override
+  String get tailscaleNoPeers =>
+      'No Tailnet devices were detected for binding.';
+
+  @override
+  String tailscalePeerLoadFailed(String message) {
+    return 'Tailnet detection failed: $message';
+  }
+
+  @override
+  String get tailscalePeerNoIp => 'No Tailscale IP';
+
+  @override
+  String get tailscalePeerOnline => 'Online';
+
+  @override
   String get selectOsType => 'Select OS Type';
 
   @override
@@ -702,7 +786,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsNetwork => 'Network & Tunnels';
 
   @override
-  String get settingsNetworkDesc => 'Cloudflared / Tailscale';
+  String get settingsNetworkDesc => 'Embedded Tailnet proxy';
+
+  @override
+  String get tailnetSection => 'Tailnet';
+
+  @override
+  String get tailnetRefreshStatus => 'Refresh Tailnet status';
+
+  @override
+  String get tailnetPeers => 'Tailnet Devices';
+
+  @override
+  String tailnetPeerCount(int count) {
+    return '$count devices';
+  }
+
+  @override
+  String get tailnetUnavailable => 'Tailnet Unavailable';
+
+  @override
+  String get tailnetClearState => 'Clear login state';
+
+  @override
+  String get tailscaleSection => 'Tailscale';
+
+  @override
+  String get tailscaleRefreshStatus => 'Refresh Tailscale status';
+
+  @override
+  String get tailscaleStatus => 'Local Service';
+
+  @override
+  String tailscaleBackendState(String state) {
+    return 'State: $state';
+  }
+
+  @override
+  String get tailscalePeers => 'Tailnet Devices';
+
+  @override
+  String tailscalePeerCount(int count) {
+    return '$count devices';
+  }
+
+  @override
+  String get tailscaleUnavailable => 'Tailscale Unavailable';
+
+  @override
+  String tailscaleInstallHint(String message) {
+    return 'Orbita does not bundle Tailscale. Install and sign in to Tailscale first. Detection result: $message';
+  }
 
   @override
   String get settingsAbout => 'About Orbita';
@@ -873,7 +1007,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupAutoDesc =>
-      'Writes one encrypted backup to enabled targets at the configured time each day.';
+      'Writes an encrypted backup after servers, keys, groups, scripts, or snippets change.';
 
   @override
   String get backupAutoTime => 'Automatic Backup Time';

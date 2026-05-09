@@ -90,7 +90,7 @@ Future<Server?> _selectServer(
                       children: [
                         Text(server.name),
                         Text(
-                          '${server.host}:${server.port}',
+                          server.displayEndpoint,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],

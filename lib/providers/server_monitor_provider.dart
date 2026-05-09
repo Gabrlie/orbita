@@ -48,7 +48,7 @@ final serverStatusProvider = StreamProvider.autoDispose
       var reconnectDelay = const Duration(seconds: 2);
       while (true) {
         try {
-          log.info('Connecting to ${server.host}:${server.port}...');
+          log.info('Connecting to ${server.displayEndpoint}...');
           lease = await ref
               .read(sshConnectionManagerProvider)
               .acquire(server, key: key);

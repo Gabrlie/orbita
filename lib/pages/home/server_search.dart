@@ -13,7 +13,7 @@ List<Server> filterServersForQuery(List<Server> servers, String query) {
   return servers.where((server) {
     final searchable = [
       server.name,
-      server.host,
+      server.displayHost,
       server.port.toString(),
       server.username,
       server.osType.name,

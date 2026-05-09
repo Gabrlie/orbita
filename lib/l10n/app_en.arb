@@ -49,6 +49,55 @@
   "authNoKey": "No key selected",
   "serverTags": "Tags",
   "serverTagsHint": "tag1, tag2, ...",
+  "serverNetworkSection": "Network & Tunnels",
+  "serverConnectionMode": "Connection Method",
+  "connectionModeDirect": "Direct",
+  "connectionModeTailscale": "Tailscale",
+  "tailnetEmbeddedService": "Embedded Tailnet Node",
+  "tailnetBackendState": "State: {state}",
+  "@tailnetBackendState": {
+    "placeholders": {
+      "state": { "type": "String" }
+    }
+  },
+  "tailnetLogin": "Log in to Tailnet",
+  "tailnetAuthUrlUnavailable": "No login URL is available. Refresh Tailnet status and try again.",
+  "tailnetAuthUrlCopied": "Login URL copied:\n{url}",
+  "@tailnetAuthUrlCopied": {
+    "placeholders": {
+      "url": { "type": "String" }
+    }
+  },
+  "tailnetAuthOpenFailed": "Failed to open login URL: {message}",
+  "@tailnetAuthOpenFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "tailnetSelectPeer": "Select Tailnet Device",
+  "tailnetPeerRequired": "Select a Tailnet device",
+  "tailnetPeerPickerTitle": "Select Tailnet Device",
+  "tailnetNoPeers": "No Tailnet devices were detected for binding.",
+  "tailnetPeerLoadFailed": "Tailnet detection failed: {message}",
+  "@tailnetPeerLoadFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "tailnetPeerNoIp": "No Tailscale IP",
+  "tailnetPeerOnline": "Online",
+  "tailnetStarting": "Starting Tailnet...",
+  "tailscaleDetectPeers": "Detect Tailnet Devices",
+  "tailscalePeerPickerTitle": "Select Tailnet Device",
+  "tailscaleNoPeers": "No Tailnet devices were detected for binding.",
+  "tailscalePeerLoadFailed": "Tailnet detection failed: {message}",
+  "@tailscalePeerLoadFailed": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "tailscalePeerNoIp": "No Tailscale IP",
+  "tailscalePeerOnline": "Online",
   "selectOsType": "Select OS Type",
   "deleteServerTitle": "Delete Server",
   "deleteServerContent": "Are you sure you want to delete \"{name}\"? This cannot be undone.",
@@ -308,7 +357,41 @@
   "settingsAppearance": "Appearance & Language",
   "settingsAppearanceDesc": "Theme mode and display language",
   "settingsNetwork": "Network & Tunnels",
-  "settingsNetworkDesc": "Cloudflared / Tailscale",
+  "settingsNetworkDesc": "Embedded Tailnet proxy",
+  "tailnetSection": "Tailnet",
+  "tailnetRefreshStatus": "Refresh Tailnet status",
+  "tailnetPeers": "Tailnet Devices",
+  "tailnetPeerCount": "{count} devices",
+  "@tailnetPeerCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "tailnetUnavailable": "Tailnet Unavailable",
+  "tailnetClearState": "Clear login state",
+  "tailscaleSection": "Tailscale",
+  "tailscaleRefreshStatus": "Refresh Tailscale status",
+  "tailscaleStatus": "Local Service",
+  "tailscaleBackendState": "State: {state}",
+  "@tailscaleBackendState": {
+    "placeholders": {
+      "state": { "type": "String" }
+    }
+  },
+  "tailscalePeers": "Tailnet Devices",
+  "tailscalePeerCount": "{count} devices",
+  "@tailscalePeerCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "tailscaleUnavailable": "Tailscale Unavailable",
+  "tailscaleInstallHint": "Orbita does not bundle Tailscale. Install and sign in to Tailscale first. Detection result: {message}",
+  "@tailscaleInstallHint": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
   "settingsAbout": "About Orbita",
   "settingsAboutDesc": "Version info and update check",
   "aboutVersion": "Version {version}",
@@ -373,7 +456,7 @@
   "backupTestWebDav": "Test WebDAV Connection",
   "backupOperations": "Operations",
   "backupAuto": "Automatic Backup",
-  "backupAutoDesc": "Writes one encrypted backup to enabled targets at the configured time each day.",
+  "backupAutoDesc": "Writes an encrypted backup after servers, keys, groups, scripts, or snippets change.",
   "backupAutoTime": "Automatic Backup Time",
   "backupAutoTimeDesc": "Back up once daily at {time}",
   "@backupAutoTimeDesc": {
