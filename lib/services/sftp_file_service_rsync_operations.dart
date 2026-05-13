@@ -72,17 +72,24 @@ extension SftpFileRsyncOperations on SftpFileService {
   }) {
     return _withSsh(targetServer, key: key, (ssh) async {
       final base = shellQuote(targetBase);
-      final output = await ssh.execute('''
+      final output = await ssh.executeStreaming('''
 set -e
+echo "Orbita: preparing target rsync key" >&2
+for tool in ssh ssh-keygen rsync; do
+  command -v "\$tool" >/dev/null 2>&1 || {
+    echo "Orbita: target server is missing required command: \$tool" >&2
+    exit 127
+  }
+done
 rm -rf -- $base
 mkdir -p -- $base
 chmod 700 -- $base
 ssh-keygen -q -t ed25519 -N '' -f $base/id_ed25519
 cat $base/id_ed25519.pub
 printf '\\n__ORBITA_CMD_OK__'
-''');
+''', onOutput: (_) {});
       if (!output.contains('__ORBITA_CMD_OK__')) {
-        throw SftpFileException.commandFailed(output);
+        throw _commandFailed('Target rsync key setup', output);
       }
       final publicKey = output
           .replaceAll('__ORBITA_CMD_OK__', '')
@@ -91,7 +98,7 @@ printf '\\n__ORBITA_CMD_OK__'
           .last
           .trim();
       if (publicKey.isEmpty) {
-        throw SftpFileException.commandFailed(output);
+        throw _commandFailed('Target rsync public key read', output);
       }
       return publicKey;
     });
@@ -117,6 +124,11 @@ printf '\\n__ORBITA_CMD_OK__'
       ].join(',');
       final authorizedEntry = '$keyOptions $publicKey $marker';
       await _executeChecked(ssh, '''
+echo "Orbita: installing source read-only rsync key" >&2
+command -v rsync >/dev/null 2>&1 || {
+  echo "Orbita: source server is missing required command: rsync" >&2
+  exit 127
+}
 rm -rf -- $base
 mkdir -p -- $base
 chmod 700 -- $base
@@ -141,7 +153,7 @@ grep -v ' $marker\$' "\$HOME/.ssh/authorized_keys" > "\$tmp" || true
 cat "\$tmp" > "\$HOME/.ssh/authorized_keys"
 rm -f -- "\$tmp"
 printf '%s\\n' ${shellQuote(authorizedEntry)} >> "\$HOME/.ssh/authorized_keys"
-''');
+''', stage: 'Source read-only rsync key install');
     });
   }
 
@@ -175,6 +187,9 @@ printf '%s\\n' ${shellQuote(authorizedEntry)} >> "\$HOME/.ssh/authorized_keys"
       final output = await ssh.executeStreaming(
         '''
 set -e
+echo "Orbita: starting target rsync pull" >&2
+parent=\$(dirname -- ${shellQuote(tempPath)})
+mkdir -p -- "\$parent"
 rm -f -- ${shellQuote(tempPath)}
 rsync -a --protect-args --partial --inplace --info=progress2 \\
   -e ${shellQuote(sshCommand)} -- ${shellQuote(source)} ${shellQuote(tempPath)}
@@ -187,7 +202,7 @@ printf '\\n__ORBITA_CMD_OK__'
         },
       );
       if (!output.contains('__ORBITA_CMD_OK__')) {
-        throw SftpFileException.commandFailed(output);
+        throw _commandFailed('Target rsync pull', output);
       }
     });
   }

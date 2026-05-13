@@ -45,11 +45,7 @@ class SshService implements SshClientSession {
     Duration timeout = const Duration(seconds: 10),
     Duration keepAliveInterval = const Duration(seconds: 30),
   }) async {
-    final socket = await SSHSocket.connect(
-      host,
-      port,
-      timeout: timeout,
-    );
+    final socket = await SSHSocket.connect(host, port, timeout: timeout);
 
     final client = key != null
         ? SSHClient(
@@ -130,16 +126,28 @@ class SshService implements SshClientSession {
     final session = await _client.execute(command);
     final output = StringBuffer();
     Timer? stopTimer;
-    final stdout = session.stdout.listen((bytes) {
-      final chunk = utf8.decode(bytes, allowMalformed: true);
-      output.write(chunk);
-      onOutput(chunk);
-    });
-    final stderr = session.stderr.listen((bytes) {
-      final chunk = utf8.decode(bytes, allowMalformed: true);
-      output.write(chunk);
-      onOutput(chunk);
-    });
+    final stdoutDone = Completer<void>();
+    final stderrDone = Completer<void>();
+    final stdout = session.stdout.listen(
+      (bytes) {
+        final chunk = utf8.decode(bytes, allowMalformed: true);
+        output.write(chunk);
+        onOutput(chunk);
+      },
+      onDone: () {
+        if (!stdoutDone.isCompleted) stdoutDone.complete();
+      },
+    );
+    final stderr = session.stderr.listen(
+      (bytes) {
+        final chunk = utf8.decode(bytes, allowMalformed: true);
+        output.write(chunk);
+        onOutput(chunk);
+      },
+      onDone: () {
+        if (!stderrDone.isCompleted) stderrDone.complete();
+      },
+    );
     try {
       if (shouldStop != null) {
         stopTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
@@ -149,11 +157,12 @@ class SshService implements SshClientSession {
         });
       }
       await session.done;
+      await Future.wait([stdoutDone.future, stderrDone.future]);
       return output.toString();
     } finally {
       stopTimer?.cancel();
-      await stdout.cancel();
-      await stderr.cancel();
+      if (!stdoutDone.isCompleted) await stdout.cancel();
+      if (!stderrDone.isCompleted) await stderr.cancel();
       session.close();
     }
   }

@@ -25,8 +25,61 @@ const _keyMetricRefreshInterval = 'metric_refresh_interval_seconds';
 const _keyMetricSshConnectTimeout = 'metric_ssh_connect_timeout_seconds';
 const _keyMetricKeepAliveInterval = 'metric_keep_alive_interval_seconds';
 const _keyMetricAutoReconnect = 'metric_auto_reconnect';
+const _keyTransferTool = 'transfer_tool';
+const _keyTransferDuplicateAction = 'transfer_duplicate_action';
+const _keyTransferDownloadDirectory = 'transfer_download_directory';
+const _keyTransferAskDownloadLocation = 'transfer_ask_download_location';
 
 enum TerminalFontFamily { jetbrainsMono, system, monospace, custom }
+
+enum TransferToolPreference { auto, rsync, localRelay }
+
+enum TransferDuplicateAction { ask, overwrite, keepBoth, cancel }
+
+class TransferSettings {
+  final TransferToolPreference toolPreference;
+  final TransferDuplicateAction duplicateAction;
+  final String downloadDirectory;
+  final bool askDownloadLocation;
+
+  const TransferSettings({
+    this.toolPreference = TransferToolPreference.auto,
+    this.duplicateAction = TransferDuplicateAction.ask,
+    this.downloadDirectory = '',
+    this.askDownloadLocation = false,
+  });
+
+  TransferSettings copyWith({
+    TransferToolPreference? toolPreference,
+    TransferDuplicateAction? duplicateAction,
+    String? downloadDirectory,
+    bool? askDownloadLocation,
+  }) {
+    return TransferSettings(
+      toolPreference: toolPreference ?? this.toolPreference,
+      duplicateAction: duplicateAction ?? this.duplicateAction,
+      downloadDirectory: downloadDirectory ?? this.downloadDirectory,
+      askDownloadLocation: askDownloadLocation ?? this.askDownloadLocation,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is TransferSettings &&
+        other.toolPreference == toolPreference &&
+        other.duplicateAction == duplicateAction &&
+        other.downloadDirectory == downloadDirectory &&
+        other.askDownloadLocation == askDownloadLocation;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    toolPreference,
+    duplicateAction,
+    downloadDirectory,
+    askDownloadLocation,
+  );
+}
 
 class TerminalAppearance {
   final TerminalFontFamily fontFamily;
@@ -103,10 +156,8 @@ class MetricSettings {
   });
 
   Duration get refreshInterval => Duration(seconds: refreshIntervalSeconds);
-  Duration get sshConnectTimeout =>
-      Duration(seconds: sshConnectTimeoutSeconds);
-  Duration get keepAliveInterval =>
-      Duration(seconds: keepAliveIntervalSeconds);
+  Duration get sshConnectTimeout => Duration(seconds: sshConnectTimeoutSeconds);
+  Duration get keepAliveInterval => Duration(seconds: keepAliveIntervalSeconds);
 
   MetricSettings copyWith({
     int? refreshIntervalSeconds,
@@ -263,6 +314,59 @@ class TerminalAppearanceNotifier extends Notifier<TerminalAppearance> {
     await prefs.setInt(
       _keyTerminalBackgroundColor,
       appearance.backgroundColor.toARGB32(),
+    );
+  }
+}
+
+// -- Transfer Settings --
+
+final transferSettingsProvider =
+    NotifierProvider<TransferSettingsNotifier, TransferSettings>(
+      TransferSettingsNotifier.new,
+    );
+
+class TransferSettingsNotifier extends Notifier<TransferSettings> {
+  static const _default = TransferSettings();
+
+  @override
+  TransferSettings build() {
+    final prefs = ref.read(sharedPrefsProvider);
+    return TransferSettings(
+      toolPreference: TransferToolPreference.values.firstWhere(
+        (value) => value.name == prefs.getString(_keyTransferTool),
+        orElse: () => _default.toolPreference,
+      ),
+      duplicateAction: TransferDuplicateAction.values.firstWhere(
+        (value) => value.name == prefs.getString(_keyTransferDuplicateAction),
+        orElse: () => _default.duplicateAction,
+      ),
+      downloadDirectory:
+          prefs.getString(_keyTransferDownloadDirectory) ??
+          _default.downloadDirectory,
+      askDownloadLocation:
+          prefs.getBool(_keyTransferAskDownloadLocation) ??
+          _default.askDownloadLocation,
+    );
+  }
+
+  Future<void> set(TransferSettings settings) async {
+    final normalized = settings.copyWith(
+      downloadDirectory: settings.downloadDirectory.trim(),
+    );
+    state = normalized;
+    final prefs = ref.read(sharedPrefsProvider);
+    await prefs.setString(_keyTransferTool, normalized.toolPreference.name);
+    await prefs.setString(
+      _keyTransferDuplicateAction,
+      normalized.duplicateAction.name,
+    );
+    await prefs.setString(
+      _keyTransferDownloadDirectory,
+      normalized.downloadDirectory,
+    );
+    await prefs.setBool(
+      _keyTransferAskDownloadLocation,
+      normalized.askDownloadLocation,
     );
   }
 }

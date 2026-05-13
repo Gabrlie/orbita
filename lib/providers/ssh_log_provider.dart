@@ -42,9 +42,15 @@ class SshLogger {
       });
 
   SshLogger.fromWidget(WidgetRef ref, String serverId)
-    : _add = ((entry) {
-        ref.read(_sshLogStoreProvider.notifier).add(serverId, entry);
-      });
+    : _add = _addFromWidget(ref, serverId);
+
+  static void Function(SshLogEntry entry) _addFromWidget(
+    WidgetRef ref,
+    String serverId,
+  ) {
+    final notifier = ref.read(_sshLogStoreProvider.notifier);
+    return (entry) => notifier.add(serverId, entry);
+  }
 
   void add(SshLogEntry entry) {
     _add(entry);

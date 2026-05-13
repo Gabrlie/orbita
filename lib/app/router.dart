@@ -21,6 +21,7 @@ import '../pages/settings/appearance/appearance_page.dart';
 import '../pages/settings/security/security_page.dart';
 import '../pages/settings/metrics/metric_settings_page.dart';
 import '../pages/settings/network_settings_page.dart';
+import '../pages/settings/transfer_settings_page.dart';
 import '../pages/settings/keys/key_list_page.dart';
 import '../pages/settings/keys/key_import_page.dart';
 import '../pages/settings/keys/key_generate_page.dart';
@@ -189,6 +190,10 @@ final router = GoRouter(
                 GoRoute(
                   path: 'network',
                   builder: (context, state) => const NetworkSettingsPage(),
+                ),
+                GoRoute(
+                  path: 'transfers',
+                  builder: (context, state) => const TransferSettingsPage(),
                 ),
                 GoRoute(
                   path: 'security',

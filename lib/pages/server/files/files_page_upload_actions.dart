@@ -18,10 +18,8 @@ extension _FilesPageUploadActions on _FilesPageState {
     );
     if (!exists) return (name: targetName, overwrite: overwrite);
     if (!mounted) return null;
-    final choice = await _FilesPageConflictDialog(
-      this,
-    )._showConflictAction(name);
-    if (!mounted || choice == null || choice == _FileConflictAction.cancel) {
+    final choice = await _resolveUploadConflictAction(name);
+    if (!mounted || choice == _FileConflictAction.cancel) {
       return null;
     }
     if (choice == _FileConflictAction.overwrite) {
@@ -38,6 +36,23 @@ extension _FilesPageUploadActions on _FilesPageState {
       ));
     }
     return (name: targetName, overwrite: overwrite);
+  }
+
+  Future<_FileConflictAction> _resolveUploadConflictAction(String name) async {
+    final action = ref.read(transferSettingsProvider).duplicateAction;
+    switch (action) {
+      case TransferDuplicateAction.overwrite:
+        return _FileConflictAction.overwrite;
+      case TransferDuplicateAction.keepBoth:
+        return _FileConflictAction.keepBoth;
+      case TransferDuplicateAction.cancel:
+        return _FileConflictAction.cancel;
+      case TransferDuplicateAction.ask:
+        final choice = await _FilesPageConflictDialog(
+          this,
+        )._showConflictAction(name);
+        return choice ?? _FileConflictAction.cancel;
+    }
   }
 
   Future<void> _uploadFiles(Server server) async {

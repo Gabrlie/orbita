@@ -83,20 +83,49 @@ extension FileTransferControllerHelpers on FileTransferController {
     } catch (_) {}
   }
 
+  Future<String> _createLocalRelayPath(String taskId, String fileName) async {
+    final directory = Directory(
+      '${(await getTemporaryDirectory()).path}${Platform.pathSeparator}'
+      'orbita-transfer',
+    );
+    await directory.create(recursive: true);
+    return '${directory.path}${Platform.pathSeparator}'
+        '.orbita-relay-$taskId-${_safeFileName(fileName)}';
+  }
+
   Future<String> _sha256(String path) async {
     final digest = await crypto_hash.sha256.bind(File(path).openRead()).first;
     return digest.toString();
   }
 
-  Future<String> _createLocalPath(String serverName, String fileName) async {
-    final base = await _downloadRootDirectory();
-    final directory = Directory(
-      '${base.path}${Platform.pathSeparator}Orbite'
-      '${Platform.pathSeparator}${_safeFileName(serverName)}',
-    );
+  Future<String?> _createLocalPath(
+    String serverName,
+    String fileName,
+    TransferSettings settings,
+  ) async {
+    final configured = settings.downloadDirectory.trim();
+    final directory = configured.isEmpty
+        ? Directory(
+            '${(await _downloadRootDirectory()).path}'
+            '${Platform.pathSeparator}Orbite'
+            '${Platform.pathSeparator}${_safeFileName(serverName)}',
+          )
+        : Directory(configured);
     await directory.create(recursive: true);
     final safeName = _safeFileName(fileName);
     var candidate = File('${directory.path}${Platform.pathSeparator}$safeName');
+    if (await candidate.exists()) {
+      switch (settings.duplicateAction) {
+        case TransferDuplicateAction.overwrite:
+          await _deleteLocalFile(candidate.path);
+          return candidate.path;
+        case TransferDuplicateAction.cancel:
+          return null;
+        case TransferDuplicateAction.ask:
+        case TransferDuplicateAction.keepBoth:
+          break;
+      }
+    }
     var index = 1;
     while (await candidate.exists()) {
       candidate = File(

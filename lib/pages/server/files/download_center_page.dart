@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:orbita/l10n/app_localizations.dart';
@@ -22,15 +23,46 @@ class TransferCenterPage extends ConsumerStatefulWidget {
 
 class _TransferCenterPageState extends ConsumerState<TransferCenterPage> {
   var _filter = _TransferFilter.all;
+  final _promptedFallbackTaskIds = <String>{};
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    ref.listen<List<FileTransferTask>>(fileTransferProvider, (previous, next) {
+      for (final task in next) {
+        if (task.direction == FileTransferDirection.server &&
+            task.phase != FileTransferPhase.failed) {
+          _promptedFallbackTaskIds.remove(task.id);
+        }
+        final wasFailed =
+            previous?.where((item) => item.id == task.id).firstOrNull?.phase ==
+            FileTransferPhase.failed;
+        if (_shouldPromptLocalRelay(task) && !wasFailed) {
+          _scheduleLocalRelayPrompt(task);
+          break;
+        }
+      }
+    });
     final tasks = ref.watch(fileTransferProvider);
+    for (final task in tasks) {
+      if (_shouldPromptLocalRelay(task)) {
+        _scheduleLocalRelayPrompt(task);
+        break;
+      }
+    }
     final visible = tasks.where(_matchesFilter).toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.fileTransferCenter)),
+      appBar: AppBar(
+        title: Text(l10n.fileTransferCenter),
+        actions: [
+          IconButton(
+            tooltip: l10n.transferSettingsTitle,
+            icon: const Icon(Ionicons.settings_outline),
+            onPressed: () => context.push('/settings/transfers'),
+          ),
+        ],
+      ),
       body: tasks.isEmpty
           ? EmptyState(
               icon: Ionicons.swap_vertical_outline,
@@ -94,6 +126,56 @@ class _TransferCenterPageState extends ConsumerState<TransferCenterPage> {
       _TransferFilter.server => task.direction == FileTransferDirection.server,
     };
   }
+
+  bool _shouldPromptLocalRelay(FileTransferTask task) {
+    return task.direction == FileTransferDirection.server &&
+        task.phase == FileTransferPhase.failed &&
+        !_promptedFallbackTaskIds.contains(task.id);
+  }
+
+  void _scheduleLocalRelayPrompt(FileTransferTask task) {
+    _promptedFallbackTaskIds.add(task.id);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _confirmLocalRelayFallback(task);
+      }
+    });
+  }
+
+  Future<void> _confirmLocalRelayFallback(FileTransferTask task) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l10n.fileServerTransferFallbackTitle,
+      content: l10n.fileServerTransferFallbackContent,
+      confirmLabel: l10n.fileServerTransferFallbackConfirm,
+    );
+    if (!confirmed || !mounted) return;
+    final latest = ref
+        .read(fileTransferProvider)
+        .where((item) => item.id == task.id)
+        .firstOrNull;
+    if (latest == null || latest.direction != FileTransferDirection.server) {
+      return;
+    }
+    final targetServer = ref.read(serverByIdProvider(latest.serverId));
+    final sourceServerId = latest.sourceServerId;
+    if (targetServer == null || sourceServerId == null) return;
+    final sourceServer = ref.read(serverByIdProvider(sourceServerId));
+    if (sourceServer == null) return;
+    final keys = ref.read(keyListProvider.future);
+    final targetKey = await resolveServerKey(targetServer, keys);
+    final sourceKey = await resolveServerKey(sourceServer, keys);
+    await ref
+        .read(fileTransferProvider.notifier)
+        .fallbackServerTransferViaLocal(
+          task: latest,
+          sourceServer: sourceServer,
+          sourceKey: sourceKey,
+          targetServer: targetServer,
+          targetKey: targetKey,
+        );
+  }
 }
 
 class _TransferTile extends ConsumerWidget {
@@ -135,6 +217,16 @@ class _TransferTile extends ConsumerWidget {
                 '${formatBytes(task.transferredBytes)} / '
                 '${formatBytes(task.totalBytes)}',
               ),
+              if (task.phase == FileTransferPhase.failed &&
+                  task.error != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  task.error!,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: colorScheme.error),
+                ),
+              ],
               Text(
                 task.direction == FileTransferDirection.download
                     ? task.remotePath
@@ -183,7 +275,7 @@ class _TransferTile extends ConsumerWidget {
       FileTransferPhase.downloading => l10n.fileDownloading,
       FileTransferPhase.paused => l10n.fileDownloadPaused,
       FileTransferPhase.completed => l10n.fileDownloadCompleted,
-      FileTransferPhase.failed => task.error ?? l10n.fileDownloadFailed,
+      FileTransferPhase.failed => l10n.fileDownloadFailed,
       FileTransferPhase.canceled => l10n.fileDownloadCanceled,
     };
   }
@@ -194,12 +286,12 @@ class _TransferTile extends ConsumerWidget {
       await OpenFilex.open(task.localPath);
       return;
     }
-    if (task.direction == FileTransferDirection.server) return;
-    if (task.isActive) {
+    if (task.direction != FileTransferDirection.server && task.isActive) {
       await ref.read(fileTransferProvider.notifier).pause(task.id);
       return;
     }
-    if (task.phase == FileTransferPhase.paused ||
+    if ((task.direction != FileTransferDirection.server &&
+            task.phase == FileTransferPhase.paused) ||
         task.phase == FileTransferPhase.failed) {
       await _resume(ref);
     }
@@ -219,9 +311,9 @@ class _TransferTile extends ConsumerWidget {
         PopupMenuItem(
           value: _TransferAction.resume,
           enabled:
-              task.direction != FileTransferDirection.server &&
-              (task.phase == FileTransferPhase.paused ||
-                  task.phase == FileTransferPhase.failed),
+              (task.direction != FileTransferDirection.server &&
+                  task.phase == FileTransferPhase.paused) ||
+              task.phase == FileTransferPhase.failed,
           child: Text(AppLocalizations.of(context)!.fileResume),
         ),
         PopupMenuItem(
@@ -252,6 +344,25 @@ class _TransferTile extends ConsumerWidget {
   Future<void> _resume(WidgetRef ref) async {
     final server = ref.read(serverByIdProvider(task.serverId));
     if (server == null) return;
+    if (task.direction == FileTransferDirection.server) {
+      final sourceServerId = task.sourceServerId;
+      if (sourceServerId == null) return;
+      final sourceServer = ref.read(serverByIdProvider(sourceServerId));
+      if (sourceServer == null) return;
+      final keys = ref.read(keyListProvider.future);
+      final targetKey = await resolveServerKey(server, keys);
+      final sourceKey = await resolveServerKey(sourceServer, keys);
+      await ref
+          .read(fileTransferProvider.notifier)
+          .resumeServerTransfer(
+            task: task,
+            sourceServer: sourceServer,
+            sourceKey: sourceKey,
+            targetServer: server,
+            targetKey: targetKey,
+          );
+      return;
+    }
     final key = await resolveServerKey(
       server,
       ref.read(keyListProvider.future),

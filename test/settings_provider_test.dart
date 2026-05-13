@@ -153,6 +153,35 @@ void main() {
     expect(prefs.getBool('metric_auto_reconnect'), isFalse);
   });
 
+  test('transfer settings default and persist changes', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    expect(container.read(transferSettingsProvider), const TransferSettings());
+
+    const settings = TransferSettings(
+      toolPreference: TransferToolPreference.localRelay,
+      duplicateAction: TransferDuplicateAction.overwrite,
+      downloadDirectory: 'D:/Downloads/Orbita',
+      askDownloadLocation: true,
+    );
+
+    await container.read(transferSettingsProvider.notifier).set(settings);
+
+    expect(container.read(transferSettingsProvider), settings);
+    expect(prefs.getString('transfer_tool'), 'localRelay');
+    expect(prefs.getString('transfer_duplicate_action'), 'overwrite');
+    expect(
+      prefs.getString('transfer_download_directory'),
+      'D:/Downloads/Orbita',
+    );
+    expect(prefs.getBool('transfer_ask_download_location'), isTrue);
+  });
+
   test('user scripts persist through shared preferences', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();

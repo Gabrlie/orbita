@@ -60,6 +60,12 @@ class SettingsPage extends ConsumerWidget {
                     onTap: () => _open(context, '/settings/snippets'),
                   ),
                   _SettingsItem(
+                    icon: Ionicons.swap_horizontal_outline,
+                    title: l10n.settingsTransfer,
+                    subtitle: l10n.settingsTransferDesc,
+                    onTap: () => _open(context, '/settings/transfers'),
+                  ),
+                  _SettingsItem(
                     icon: Ionicons.git_network_outline,
                     title: l10n.settingsNetwork,
                     subtitle: l10n.settingsNetworkDesc,

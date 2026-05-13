@@ -30,6 +30,11 @@ extension _FilesPageTransferActions on _FilesPageState {
       remoteDirectory: target.path,
     );
     if (resolved == null || !mounted) return;
+    final useLocalRelay = await _shouldUseLocalRelay(
+      sourceServer,
+      target.server,
+    );
+    if (useLocalRelay == null) return;
     final sourceKey = await _resolveKey(sourceServer);
     final targetKey = await _resolveKey(target.server);
     await ref
@@ -42,11 +47,96 @@ extension _FilesPageTransferActions on _FilesPageState {
           entry: entry,
           targetPath: joinRemotePath(target.path, resolved.name),
           overwrite: resolved.overwrite,
+          useLocalRelay: useLocalRelay,
         );
     if (!mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(l10n.fileTransferAdded)));
+  }
+
+  Future<bool?> _shouldUseLocalRelay(
+    Server sourceServer,
+    Server targetServer,
+  ) async {
+    final settings = ref.read(transferSettingsProvider);
+    switch (settings.toolPreference) {
+      case TransferToolPreference.localRelay:
+        return true;
+      case TransferToolPreference.rsync:
+        return await _ensureServerTransferTools(sourceServer, targetServer)
+            ? false
+            : null;
+      case TransferToolPreference.auto:
+        final ready = await _hasServerTransferTools(sourceServer, targetServer);
+        return !ready;
+    }
+  }
+
+  Future<bool> _hasServerTransferTools(
+    Server sourceServer,
+    Server targetServer,
+  ) async {
+    return await _hasTransferTools(targetServer, const [
+          'ssh',
+          'ssh-keygen',
+          'rsync',
+        ]) &&
+        mounted &&
+        await _hasTransferTools(sourceServer, const ['rsync']);
+  }
+
+  Future<bool> _hasTransferTools(Server server, List<String> tools) async {
+    final service = ref.read(sftpFileServiceProvider);
+    final key = await _resolveKey(server);
+    final missing = await service.missingTools(server, tools: tools, key: key);
+    return missing.isEmpty;
+  }
+
+  Future<bool> _ensureServerTransferTools(
+    Server sourceServer,
+    Server targetServer,
+  ) async {
+    if (!await _ensureTransferTools(targetServer, const [
+      'ssh',
+      'ssh-keygen',
+      'rsync',
+    ])) {
+      return false;
+    }
+    if (!mounted) return false;
+    return _ensureTransferTools(sourceServer, const ['rsync']);
+  }
+
+  Future<bool> _ensureTransferTools(Server server, List<String> tools) async {
+    final l10n = AppLocalizations.of(context)!;
+    final service = ref.read(sftpFileServiceProvider);
+    final key = await _resolveKey(server);
+    final missing = await service.missingTools(server, tools: tools, key: key);
+    if (missing.isEmpty) return true;
+    if (!mounted) return false;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l10n.fileMissingToolsTitle,
+      content:
+          '${server.name}: ${l10n.fileMissingToolsContent(missing.join(', '))}',
+      confirmLabel: l10n.fileInstallTools,
+    );
+    if (!confirmed || !mounted) return false;
+    final success = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => FileToolInstallDialog(
+        tools: missing,
+        onInstall: (onOutput) => service.installToolsWithOutput(
+          server,
+          tools: missing,
+          key: key,
+          onOutput: onOutput,
+        ),
+      ),
+    );
+    return success ?? false;
   }
 
   Future<FileTransferTarget?> _pickTarget() {

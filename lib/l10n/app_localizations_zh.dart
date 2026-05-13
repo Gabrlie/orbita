@@ -582,6 +582,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSnippetsDesc => '常用命令快捷收藏';
 
   @override
+  String get settingsTransfer => '传输';
+
+  @override
+  String get settingsTransferDesc => '工具、同名处理与下载位置';
+
+  @override
   String get scriptsTitle => '脚本';
 
   @override
@@ -1778,6 +1784,76 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fileResume => '继续';
+
+  @override
+  String get fileServerTransferFallbackTitle => '回退到本地中转？';
+
+  @override
+  String get fileServerTransferFallbackContent =>
+      '服务器直传失败。是否通过本机临时文件中转继续传输？传输完成后会自动清理临时文件。';
+
+  @override
+  String get fileServerTransferFallbackConfirm => '本地中转';
+
+  @override
+  String get transferSettingsTitle => '传输设置';
+
+  @override
+  String get transferToolSection => '传输工具';
+
+  @override
+  String get transferDefaultTool => '默认工具';
+
+  @override
+  String get transferToolAuto => '自动';
+
+  @override
+  String get transferToolAutoDesc => '优先使用 rsync，不可用时使用本地中转';
+
+  @override
+  String get transferToolRsync => 'rsync';
+
+  @override
+  String get transferToolRsyncDesc => '目标服务器使用短期只读密钥从源服务器拉取';
+
+  @override
+  String get transferToolLocalRelay => '本地中转';
+
+  @override
+  String get transferToolLocalRelayDesc => '先下载到本机临时文件，再上传到目标服务器';
+
+  @override
+  String get transferDuplicateSection => '同名文件';
+
+  @override
+  String get transferDuplicateAction => '默认操作';
+
+  @override
+  String get transferDuplicateAsk => '每次询问';
+
+  @override
+  String get transferDownloadSection => '下载';
+
+  @override
+  String get transferDownloadDirectory => '下载目录';
+
+  @override
+  String get transferDownloadDefaultDirectory => '系统下载目录 / Orbite / 服务器名';
+
+  @override
+  String get transferDownloadChooseDirectory => '选择目录';
+
+  @override
+  String get transferDownloadClearDirectory => '使用默认';
+
+  @override
+  String get transferAskDownloadLocation => '每次下载询问保存位置';
+
+  @override
+  String get transferAskDownloadLocationDesc => '创建下载任务前显示原生保存对话框';
+
+  @override
+  String get transferDownloadSaveAs => '保存下载为';
 
   @override
   String get fileDeleteLocalTitle => '删除本地文件';

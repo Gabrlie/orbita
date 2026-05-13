@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart' as crypto_hash;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orbita/models/file_download_task.dart';
 import 'package:orbita/models/file_transfer_task.dart';
@@ -50,11 +51,16 @@ class FileTransferController extends Notifier<List<FileTransferTask>> {
     return legacy;
   }
 
-  Future<void> addDownload(
+  Future<bool> addDownload(
     Server server,
     SshKey? key,
-    RemoteFileEntry entry,
-  ) async {
+    RemoteFileEntry entry, {
+    String? localPath,
+  }) async {
+    final settings = ref.read(transferSettingsProvider);
+    final targetPath =
+        localPath ?? await _createLocalPath(server.name, entry.name, settings);
+    if (targetPath == null) return false;
     final task = FileTransferTask(
       id: const Uuid().v4(),
       serverId: server.id,
@@ -63,13 +69,14 @@ class FileTransferController extends Notifier<List<FileTransferTask>> {
       sourceType: FileTransferSourceType.file,
       name: entry.name,
       remotePath: entry.path,
-      localPath: await _createLocalPath(server.name, entry.name),
+      localPath: targetPath,
       totalBytes: entry.size,
       transferredBytes: 0,
       phase: FileTransferPhase.queued,
       createdAt: DateTime.now(),
     );
     await _addAndRun(task, server, key);
+    return true;
   }
 
   Future<void> addFileUpload(
@@ -207,7 +214,14 @@ class FileTransferController extends Notifier<List<FileTransferTask>> {
           : control.pause
           ? FileTransferPhase.paused
           : FileTransferPhase.failed;
-      _update(task.id, phase: phase, error: control.pause ? null : '$error');
+      if (phase == FileTransferPhase.failed) {
+        _logTransferFailure(task, error);
+      }
+      _update(
+        task.id,
+        phase: phase,
+        error: control.pause ? null : _errorMessage(error),
+      );
       if (control.cancel) {
         final latest = _taskByIdOrNull(task.id) ?? task;
         await _cleanupUploadTaskRemote(latest, server, key);
@@ -271,6 +285,29 @@ class FileTransferController extends Notifier<List<FileTransferTask>> {
   Future<void> _save() async {
     final prefs = ref.read(sharedPrefsProvider);
     await prefs.setString(_storageKey, encodeTransferTasks(state));
+  }
+
+  String _errorMessage(Object error) {
+    if (error is SftpFileException) {
+      final details = error.details?.trim();
+      if (details != null && details.isNotEmpty) {
+        return details.length > 1200
+            ? '${details.substring(0, 1200)}...'
+            : details;
+      }
+    }
+    return '$error';
+  }
+
+  void _logTransferFailure(FileTransferTask task, Object error) {
+    final source = task.direction == FileTransferDirection.download
+        ? task.remotePath
+        : task.sourceRemotePath ?? task.localPath;
+    debugPrint(
+      'Orbita transfer failed: id=${task.id} '
+      'direction=${task.direction.name} source=$source '
+      'target=${task.remotePath} error=${_errorMessage(error)}',
+    );
   }
 }
 

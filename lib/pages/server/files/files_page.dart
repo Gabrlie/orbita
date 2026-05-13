@@ -25,9 +25,11 @@ import 'package:orbita/providers/server_monitor_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/sftp_file_provider.dart';
 import 'package:orbita/providers/ssh_log_provider.dart';
+import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/services/remote_file_command_builder.dart';
 import 'package:orbita/services/sftp_file_service.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'files_page_actions.dart';
 part 'files_page_archive_actions.dart';

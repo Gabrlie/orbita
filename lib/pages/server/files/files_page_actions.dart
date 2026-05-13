@@ -153,6 +153,10 @@ extension _FilesPageActions on _FilesPageState {
       remoteDirectory: _currentPath,
     );
     if (resolved == null || !mounted) return false;
+    final useLocalRelay = await _FilesPageTransferActions(
+      this,
+    )._shouldUseLocalRelay(pending.sourceServer, targetServer);
+    if (useLocalRelay == null) return false;
     final sourceKey = await _resolveKey(pending.sourceServer);
     final targetKey = await _resolveKey(targetServer);
     await ref
@@ -165,6 +169,7 @@ extension _FilesPageActions on _FilesPageState {
           entry: pending.entry,
           targetPath: joinRemotePath(_currentPath, resolved.name),
           overwrite: resolved.overwrite,
+          useLocalRelay: useLocalRelay,
         );
     if (!mounted) return false;
     ScaffoldMessenger.of(
@@ -217,8 +222,8 @@ extension _FilesPageActions on _FilesPageState {
       }
       final choice = await _FilesPageConflictDialog(
         this,
-      )._showConflictAction(entry.name);
-      if (!mounted || choice == null || choice == _FileConflictAction.cancel) {
+      )._resolveConflictAction(entry.name);
+      if (!mounted || choice == _FileConflictAction.cancel) {
         return false;
       }
       return _applyPendingActionWithConflict(

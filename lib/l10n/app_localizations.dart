@@ -1184,6 +1184,18 @@ abstract class AppLocalizations {
   /// **'常用命令快捷收藏'**
   String get settingsSnippetsDesc;
 
+  /// No description provided for @settingsTransfer.
+  ///
+  /// In zh, this message translates to:
+  /// **'传输'**
+  String get settingsTransfer;
+
+  /// No description provided for @settingsTransferDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'工具、同名处理与下载位置'**
+  String get settingsTransferDesc;
+
   /// No description provided for @scriptsTitle.
   ///
   /// In zh, this message translates to:
@@ -3433,6 +3445,144 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'继续'**
   String get fileResume;
+
+  /// No description provided for @fileServerTransferFallbackTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'回退到本地中转？'**
+  String get fileServerTransferFallbackTitle;
+
+  /// No description provided for @fileServerTransferFallbackContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器直传失败。是否通过本机临时文件中转继续传输？传输完成后会自动清理临时文件。'**
+  String get fileServerTransferFallbackContent;
+
+  /// No description provided for @fileServerTransferFallbackConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'本地中转'**
+  String get fileServerTransferFallbackConfirm;
+
+  /// No description provided for @transferSettingsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'传输设置'**
+  String get transferSettingsTitle;
+
+  /// No description provided for @transferToolSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'传输工具'**
+  String get transferToolSection;
+
+  /// No description provided for @transferDefaultTool.
+  ///
+  /// In zh, this message translates to:
+  /// **'默认工具'**
+  String get transferDefaultTool;
+
+  /// No description provided for @transferToolAuto.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动'**
+  String get transferToolAuto;
+
+  /// No description provided for @transferToolAutoDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'优先使用 rsync，不可用时使用本地中转'**
+  String get transferToolAutoDesc;
+
+  /// No description provided for @transferToolRsync.
+  ///
+  /// In zh, this message translates to:
+  /// **'rsync'**
+  String get transferToolRsync;
+
+  /// No description provided for @transferToolRsyncDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'目标服务器使用短期只读密钥从源服务器拉取'**
+  String get transferToolRsyncDesc;
+
+  /// No description provided for @transferToolLocalRelay.
+  ///
+  /// In zh, this message translates to:
+  /// **'本地中转'**
+  String get transferToolLocalRelay;
+
+  /// No description provided for @transferToolLocalRelayDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'先下载到本机临时文件，再上传到目标服务器'**
+  String get transferToolLocalRelayDesc;
+
+  /// No description provided for @transferDuplicateSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'同名文件'**
+  String get transferDuplicateSection;
+
+  /// No description provided for @transferDuplicateAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'默认操作'**
+  String get transferDuplicateAction;
+
+  /// No description provided for @transferDuplicateAsk.
+  ///
+  /// In zh, this message translates to:
+  /// **'每次询问'**
+  String get transferDuplicateAsk;
+
+  /// No description provided for @transferDownloadSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载'**
+  String get transferDownloadSection;
+
+  /// No description provided for @transferDownloadDirectory.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载目录'**
+  String get transferDownloadDirectory;
+
+  /// No description provided for @transferDownloadDefaultDirectory.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统下载目录 / Orbite / 服务器名'**
+  String get transferDownloadDefaultDirectory;
+
+  /// No description provided for @transferDownloadChooseDirectory.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择目录'**
+  String get transferDownloadChooseDirectory;
+
+  /// No description provided for @transferDownloadClearDirectory.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用默认'**
+  String get transferDownloadClearDirectory;
+
+  /// No description provided for @transferAskDownloadLocation.
+  ///
+  /// In zh, this message translates to:
+  /// **'每次下载询问保存位置'**
+  String get transferAskDownloadLocation;
+
+  /// No description provided for @transferAskDownloadLocationDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建下载任务前显示原生保存对话框'**
+  String get transferAskDownloadLocationDesc;
+
+  /// No description provided for @transferDownloadSaveAs.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存下载为'**
+  String get transferDownloadSaveAs;
 
   /// No description provided for @fileDeleteLocalTitle.
   ///

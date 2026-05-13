@@ -584,6 +584,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsSnippetsDesc => 'Quick-access command bookmarks';
 
   @override
+  String get settingsTransfer => 'Transfers';
+
+  @override
+  String get settingsTransferDesc =>
+      'Tools, conflict handling, and download location';
+
+  @override
   String get scriptsTitle => 'Scripts';
 
   @override
@@ -1813,6 +1820,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fileResume => 'Resume';
+
+  @override
+  String get fileServerTransferFallbackTitle => 'Use local relay?';
+
+  @override
+  String get fileServerTransferFallbackContent =>
+      'Direct server transfer failed. Continue through a temporary local file? Orbita will clean temporary files after the transfer.';
+
+  @override
+  String get fileServerTransferFallbackConfirm => 'Use local relay';
+
+  @override
+  String get transferSettingsTitle => 'Transfer Settings';
+
+  @override
+  String get transferToolSection => 'Transfer Tool';
+
+  @override
+  String get transferDefaultTool => 'Default Tool';
+
+  @override
+  String get transferToolAuto => 'Auto';
+
+  @override
+  String get transferToolAutoDesc =>
+      'Prefer rsync when available, otherwise use local relay';
+
+  @override
+  String get transferToolRsync => 'rsync';
+
+  @override
+  String get transferToolRsyncDesc =>
+      'Target server pulls from the source with a temporary read-only key';
+
+  @override
+  String get transferToolLocalRelay => 'Local Relay';
+
+  @override
+  String get transferToolLocalRelayDesc =>
+      'Download to this device first, then upload to the target server';
+
+  @override
+  String get transferDuplicateSection => 'Same-name Files';
+
+  @override
+  String get transferDuplicateAction => 'Default Action';
+
+  @override
+  String get transferDuplicateAsk => 'Ask every time';
+
+  @override
+  String get transferDownloadSection => 'Downloads';
+
+  @override
+  String get transferDownloadDirectory => 'Download Directory';
+
+  @override
+  String get transferDownloadDefaultDirectory =>
+      'System Downloads / Orbite / server name';
+
+  @override
+  String get transferDownloadChooseDirectory => 'Choose Directory';
+
+  @override
+  String get transferDownloadClearDirectory => 'Use Default';
+
+  @override
+  String get transferAskDownloadLocation => 'Ask where to save each download';
+
+  @override
+  String get transferAskDownloadLocationDesc =>
+      'Show the native save dialog before creating a download task';
+
+  @override
+  String get transferDownloadSaveAs => 'Save Download As';
 
   @override
   String get fileDeleteLocalTitle => 'Delete Local File';

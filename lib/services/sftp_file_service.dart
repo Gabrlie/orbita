@@ -184,13 +184,27 @@ class SftpFileService {
     }
   }
 
-  Future<void> _executeChecked(SshClientSession ssh, String command) async {
-    final output = await ssh.execute(
+  Future<void> _executeChecked(
+    SshClientSession ssh,
+    String command, {
+    String stage = 'Remote command',
+  }) async {
+    final output = await ssh.executeStreaming(
       'set -e\n$command\nprintf "\\n__ORBITA_CMD_OK__"',
+      onOutput: (_) {},
     );
     if (!output.contains('__ORBITA_CMD_OK__')) {
-      throw SftpFileException.commandFailed(output);
+      throw _commandFailed(stage, output);
     }
+  }
+
+  SftpFileException _commandFailed(String stage, String output) {
+    final details = output.trim();
+    return SftpFileException.commandFailed(
+      details.isEmpty
+          ? '$stage failed without output'
+          : '$stage failed:\n$details',
+    );
   }
 
   Future<List<RemoteFileEntry>> _listDirectoryWithClient(
