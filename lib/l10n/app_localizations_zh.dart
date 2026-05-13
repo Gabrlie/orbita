@@ -1628,10 +1628,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fileDownload => '下载';
 
   @override
+  String get fileUpload => '上传';
+
+  @override
+  String get fileUploadFile => '上传文件';
+
+  @override
+  String get fileUploadDirectory => '上传目录';
+
+  @override
   String get fileDownloadCenter => '下载中心';
 
   @override
+  String get fileTransferCenter => '传输';
+
+  @override
   String get fileNoDownloads => '暂无下载记录';
+
+  @override
+  String get fileNoTransfers => '暂无传输记录';
+
+  @override
+  String get fileActiveTransfers => '进行中';
 
   @override
   String fileCopyPending(String name) {
@@ -1642,6 +1660,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String fileMovePending(String name) {
     return '移动：$name';
   }
+
+  @override
+  String get fileMoveAcrossServersUnsupported =>
+      '服务器间传输使用只读临时授权，不能删除源文件。请使用复制完成互传。';
 
   @override
   String get fileOverwriteTitle => '覆盖已有项目';
@@ -1707,6 +1729,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fileDownloadAdded => '已添加到下载中心';
 
   @override
+  String get fileTransferAdded => '已添加到传输';
+
+  @override
+  String get fileUploadAdded => '已添加到传输';
+
+  @override
   String get fileDownloadDirectoryUnsupported => '当前版本暂不支持直接下载文件夹，请先压缩后下载。';
 
   @override
@@ -1714,6 +1742,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fileDownloading => '下载中';
+
+  @override
+  String get fileUploading => '上传中';
+
+  @override
+  String get fileTransferQueued => '等待中';
+
+  @override
+  String get fileTransferCompressing => '压缩中';
+
+  @override
+  String get fileTransferVerifying => '校验中';
+
+  @override
+  String get fileTransferExtracting => '解压中';
+
+  @override
+  String get fileTransferCleaning => '清理中';
 
   @override
   String get fileDownloadPaused => '已暂停';

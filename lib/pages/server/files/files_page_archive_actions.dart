@@ -96,10 +96,12 @@ extension _FilesPageArchiveActions on _FilesPageState {
       return;
     }
     final key = await _resolveKey(server);
-    await ref.read(fileDownloadProvider.notifier).add(server, key, entry);
+    await ref
+        .read(fileTransferProvider.notifier)
+        .addDownload(server, key, entry);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.fileDownloadAdded)),
+      SnackBar(content: Text(AppLocalizations.of(context)!.fileTransferAdded)),
     );
   }
 

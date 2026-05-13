@@ -118,6 +118,7 @@ fi
 String _packageNameForTool(String tool) {
   return switch (tool) {
     '7z' => 'p7zip-full',
+    'sha256sum' => 'coreutils',
     _ => tool,
   };
 }

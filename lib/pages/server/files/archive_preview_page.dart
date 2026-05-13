@@ -61,7 +61,7 @@ class _ArchivePreviewPageState extends ConsumerState<ArchivePreviewPage> {
               title: l10n.fileArchivePreviewEmpty,
             );
           }
-          final entries = _entriesForPath(paths, _currentPath);
+          final entries = archivePreviewEntriesForPath(paths, _currentPath);
           final parent = createParentRemoteEntry(_currentPath);
           final visible = parent == null ? entries : [parent, ...entries];
           return Column(
@@ -114,17 +114,21 @@ class _ArchivePreviewPageState extends ConsumerState<ArchivePreviewPage> {
     final output = await ref
         .read(sftpFileServiceProvider)
         .previewArchive(server, entry: widget.entry, key: key);
-    return _parseArchivePreviewPaths(output);
+    return parseArchivePreviewPaths(output);
   }
 }
 
-List<RemoteFileEntry> _entriesForPath(List<String> paths, String currentPath) {
+List<RemoteFileEntry> archivePreviewEntriesForPath(
+  List<String> paths,
+  String currentPath,
+) {
   final current = normalizeRemotePath(currentPath);
   final entries = <String, RemoteFileEntry>{};
   for (final path in paths) {
-    final item = _normalizeArchiveItemPath(path);
+    final directoryMarker = path.trim().replaceAll('\\', '/').endsWith('/');
+    final item = normalizeArchivePreviewItemPath(path);
     if (item.isEmpty) continue;
-    final segments = item.split('/');
+    final segments = item.split('/').where((part) => part.isNotEmpty).toList();
     final currentSegments = current == '/'
         ? const <String>[]
         : current.substring(1).split('/');
@@ -138,8 +142,9 @@ List<RemoteFileEntry> _entriesForPath(List<String> paths, String currentPath) {
     }
     if (!matches) continue;
     final name = segments[currentSegments.length];
+    if (name.trim().isEmpty) continue;
     final isDirectory =
-        segments.length > currentSegments.length + 1 || item.endsWith('/');
+        segments.length > currentSegments.length + 1 || directoryMarker;
     final entryPath = current == '/' ? '/$name' : '$current/$name';
     entries[entryPath] = RemoteFileEntry(
       name: name,
@@ -155,43 +160,54 @@ List<RemoteFileEntry> _entriesForPath(List<String> paths, String currentPath) {
   return sorted;
 }
 
-List<String> _parseArchivePreviewPaths(String output) {
+List<String> parseArchivePreviewPaths(String output) {
   return output
       .split('\n')
-      .map(_archivePathFromPreviewLine)
+      .map(archivePathFromPreviewLine)
       .where((path) => path.isNotEmpty)
       .toSet()
       .toList();
 }
 
-String _archivePathFromPreviewLine(String line) {
-  final trimmed = line.trimRight();
+String archivePathFromPreviewLine(String line) {
+  final trimmed = line.trim();
   if (trimmed.trim().isEmpty ||
       trimmed.startsWith('Archive:') ||
-      trimmed.startsWith('Length ') ||
-      trimmed.startsWith('Date ') ||
+      trimmed.startsWith('Length') ||
+      trimmed.startsWith('Date') ||
+      trimmed.startsWith('Path =') ||
+      trimmed.startsWith('Physical Size =') ||
+      trimmed.startsWith('Scanning the drive') ||
+      RegExp(r'^[-\s]+$').hasMatch(trimmed) ||
       trimmed.startsWith('----') ||
+      trimmed.startsWith('----------------') ||
+      RegExp(r'^\d+\s+files?,').hasMatch(trimmed) ||
       trimmed.endsWith(' files')) {
     return '';
   }
   final unzip = RegExp(
     r'^\s*\d+\s+\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}\s+(.+)$',
   ).firstMatch(trimmed);
-  if (unzip != null) return _normalizeArchiveItemPath(unzip.group(1)!);
+  if (unzip != null) return normalizeArchivePreviewItemPath(unzip.group(1)!);
   final sevenZip = RegExp(
     r'^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+\S+\s+\d+\s+\d+\s+(.+)$',
   ).firstMatch(trimmed);
-  if (sevenZip != null) return _normalizeArchiveItemPath(sevenZip.group(1)!);
-  return _normalizeArchiveItemPath(trimmed);
+  if (sevenZip != null) {
+    return normalizeArchivePreviewItemPath(sevenZip.group(1)!);
+  }
+  return normalizeArchivePreviewItemPath(trimmed);
 }
 
-String _normalizeArchiveItemPath(String path) {
+String normalizeArchivePreviewItemPath(String path) {
   var value = path.trim().replaceAll('\\', '/');
   while (value.startsWith('./')) {
     value = value.substring(2);
   }
   while (value.startsWith('/')) {
     value = value.substring(1);
+  }
+  while (value.endsWith('/')) {
+    value = value.substring(0, value.length - 1);
   }
   return value;
 }

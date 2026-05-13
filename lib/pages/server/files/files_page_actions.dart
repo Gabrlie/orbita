@@ -1,6 +1,13 @@
 part of 'files_page.dart';
 
-enum _FilesMenuAction { refresh, newFile, newFolder, root }
+enum _FilesMenuAction {
+  uploadFile,
+  uploadDirectory,
+  refresh,
+  newFile,
+  newFolder,
+  root,
+}
 
 enum FilePendingAction { copy, move }
 
@@ -9,6 +16,10 @@ enum _FileConflictAction { overwrite, keepBoth, cancel }
 extension _FilesPageActions on _FilesPageState {
   void _handleMoreAction(Server server, _FilesMenuAction action) {
     switch (action) {
+      case _FilesMenuAction.uploadFile:
+        _FilesPageUploadActions(this)._uploadFiles(server);
+      case _FilesMenuAction.uploadDirectory:
+        _FilesPageUploadActions(this)._uploadDirectory(server);
       case _FilesMenuAction.refresh:
         _loadDirectory(_currentPath);
       case _FilesMenuAction.newFile:
@@ -57,13 +68,14 @@ extension _FilesPageActions on _FilesPageState {
       context,
       title: entry.name,
       isArchive: isExtractableArchiveFileName(entry.name),
+      canTransferToTab: widget.transferTargets.isNotEmpty,
     );
     if (action == null || !mounted) return;
     switch (action) {
       case FileEntryAction.copy:
-        _setPending(entry, FilePendingAction.copy);
+        _setPending(server, entry, FilePendingAction.copy);
       case FileEntryAction.move:
-        _setPending(entry, FilePendingAction.move);
+        _setPending(server, entry, FilePendingAction.move);
       case FileEntryAction.delete:
         await _deleteEntry(server, entry);
       case FileEntryAction.rename:
@@ -80,27 +92,85 @@ extension _FilesPageActions on _FilesPageState {
         _FilesPageArchiveActions(this)._showProperties(entry);
       case FileEntryAction.download:
         await _FilesPageArchiveActions(this)._downloadEntry(server, entry);
+      case FileEntryAction.transferToTab:
+        await _FilesPageTransferActions(this)._transferEntry(server, entry);
     }
   }
 
-  void _setPending(RemoteFileEntry entry, FilePendingAction action) {
-    _setPendingAction(entry, action);
+  void _setPending(
+    Server sourceServer,
+    RemoteFileEntry entry,
+    FilePendingAction action,
+  ) {
+    _setPendingAction(sourceServer, entry, action);
   }
 
   Future<void> _applyPendingAction(Server server) async {
-    final entry = _pendingEntry;
-    final action = _pendingAction;
-    if (entry == null || action == null) return;
+    final pending = widget.pendingTransfer;
+    if (pending == null) return;
+
+    if (pending.sourceServer.id != server.id) {
+      final completed = await _applyCrossServerPending(server, pending);
+      if (completed && mounted) _clearPendingAction();
+      return;
+    }
 
     final completed = await _applyPendingActionWithConflict(
       server,
-      entry,
-      action,
+      pending.entry,
+      pending.action,
       overwrite: false,
       keepBoth: false,
     );
     if (!completed || !mounted) return;
     _clearPendingAction();
+  }
+
+  Future<bool> _applyCrossServerPending(
+    Server targetServer,
+    FilePendingTransfer pending,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    if (pending.action == FilePendingAction.move) {
+      showInfoDialog(
+        context,
+        title: l10n.fileMove,
+        content: l10n.fileMoveAcrossServersUnsupported,
+      );
+      return false;
+    }
+    if (pending.entry.isDirectory) {
+      showInfoDialog(
+        context,
+        title: l10n.fileOpenUnsupportedTitle,
+        content: l10n.fileDownloadDirectoryUnsupported,
+      );
+      return false;
+    }
+    final resolved = await _FilesPageUploadActions(this)._resolveUploadTarget(
+      targetServer,
+      pending.entry.name,
+      remoteDirectory: _currentPath,
+    );
+    if (resolved == null || !mounted) return false;
+    final sourceKey = await _resolveKey(pending.sourceServer);
+    final targetKey = await _resolveKey(targetServer);
+    await ref
+        .read(fileTransferProvider.notifier)
+        .addServerTransfer(
+          sourceServer: pending.sourceServer,
+          sourceKey: sourceKey,
+          targetServer: targetServer,
+          targetKey: targetKey,
+          entry: pending.entry,
+          targetPath: joinRemotePath(_currentPath, resolved.name),
+          overwrite: resolved.overwrite,
+        );
+    if (!mounted) return false;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.fileTransferAdded)));
+    return true;
   }
 
   Future<bool> _applyPendingActionWithConflict(

@@ -23,8 +23,7 @@ extension _FilesPageWidgets on _FilesPageState {
           ),
         if (_error != null) _errorBanner(context),
         Expanded(child: _buildList(context, l10n, server)),
-        if (_pendingEntry != null && _pendingAction != null)
-          _pendingToolbar(l10n, server),
+        if (widget.pendingTransfer != null) _pendingToolbar(l10n, server),
       ],
     );
   }
@@ -78,7 +77,8 @@ extension _FilesPageWidgets on _FilesPageState {
   }
 
   Widget _pendingToolbar(AppLocalizations l10n, Server server) {
-    final action = _pendingAction!;
+    final pending = widget.pendingTransfer!;
+    final action = pending.action;
     return Material(
       elevation: 8,
       color: Theme.of(context).colorScheme.surface,
@@ -91,8 +91,8 @@ extension _FilesPageWidgets on _FilesPageState {
               Expanded(
                 child: Text(
                   action == FilePendingAction.copy
-                      ? l10n.fileCopyPending(_pendingEntry!.name)
-                      : l10n.fileMovePending(_pendingEntry!.name),
+                      ? l10n.fileCopyPending(pending.entry.name)
+                      : l10n.fileMovePending(pending.entry.name),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -216,6 +216,15 @@ extension _FilesPageWidgets on _FilesPageState {
       },
       itemBuilder: (context) => [
         PopupMenuItem(
+          value: _FilesMenuAction.uploadFile,
+          child: Text(AppLocalizations.of(context)!.fileUploadFile),
+        ),
+        PopupMenuItem(
+          value: _FilesMenuAction.uploadDirectory,
+          child: Text(AppLocalizations.of(context)!.fileUploadDirectory),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
           value: _FilesMenuAction.refresh,
           child: Text(AppLocalizations.of(context)!.commonRefresh),
         ),
@@ -237,11 +246,11 @@ extension _FilesPageWidgets on _FilesPageState {
 
   Widget _downloadButton() {
     return IconButton(
-      tooltip: AppLocalizations.of(context)!.fileDownloadCenter,
-      icon: const Icon(Ionicons.download_outline),
+      tooltip: AppLocalizations.of(context)!.fileTransferCenter,
+      icon: const Icon(Ionicons.swap_vertical_outline),
       onPressed: () => Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (context) => const DownloadCenterPage(),
+          builder: (context) => const TransferCenterPage(),
         ),
       ),
     );

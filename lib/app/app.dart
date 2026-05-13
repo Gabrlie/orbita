@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/app_security.dart';
 import 'package:orbita/pages/lock/lock_page.dart';
+import 'package:orbita/providers/app_lifecycle_provider.dart';
 import 'package:orbita/providers/backup_sync_provider.dart';
 import 'package:orbita/providers/security_provider.dart';
 import 'package:orbita/providers/settings_provider.dart';
@@ -47,6 +48,7 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    ref.read(appLifecycleProvider.notifier).update(state);
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       final security = ref.read(appSecurityProvider).value;

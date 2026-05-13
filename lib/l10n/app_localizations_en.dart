@@ -1661,10 +1661,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fileDownload => 'Download';
 
   @override
+  String get fileUpload => 'Upload';
+
+  @override
+  String get fileUploadFile => 'Upload Files';
+
+  @override
+  String get fileUploadDirectory => 'Upload Folder';
+
+  @override
   String get fileDownloadCenter => 'Download Center';
 
   @override
+  String get fileTransferCenter => 'Transfers';
+
+  @override
   String get fileNoDownloads => 'No downloads yet';
+
+  @override
+  String get fileNoTransfers => 'No transfers yet';
+
+  @override
+  String get fileActiveTransfers => 'Active';
 
   @override
   String fileCopyPending(String name) {
@@ -1675,6 +1693,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String fileMovePending(String name) {
     return 'Move: $name';
   }
+
+  @override
+  String get fileMoveAcrossServersUnsupported =>
+      'Server-to-server transfer uses read-only temporary access, so the source file cannot be deleted. Use copy to transfer it.';
 
   @override
   String get fileOverwriteTitle => 'Overwrite Existing Item';
@@ -1741,6 +1763,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fileDownloadAdded => 'Added to Download Center';
 
   @override
+  String get fileTransferAdded => 'Added to Transfers';
+
+  @override
+  String get fileUploadAdded => 'Added to Transfers';
+
+  @override
   String get fileDownloadDirectoryUnsupported =>
       'Folder download is not supported yet. Compress it first, then download.';
 
@@ -1749,6 +1777,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fileDownloading => 'Downloading';
+
+  @override
+  String get fileUploading => 'Uploading';
+
+  @override
+  String get fileTransferQueued => 'Queued';
+
+  @override
+  String get fileTransferCompressing => 'Compressing';
+
+  @override
+  String get fileTransferVerifying => 'Verifying';
+
+  @override
+  String get fileTransferExtracting => 'Extracting';
+
+  @override
+  String get fileTransferCleaning => 'Cleaning';
 
   @override
   String get fileDownloadPaused => 'Paused';

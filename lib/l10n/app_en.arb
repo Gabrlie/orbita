@@ -751,8 +751,14 @@
   "fileCompress": "Compress",
   "fileExtract": "Extract",
   "fileDownload": "Download",
+  "fileUpload": "Upload",
+  "fileUploadFile": "Upload Files",
+  "fileUploadDirectory": "Upload Folder",
   "fileDownloadCenter": "Download Center",
+  "fileTransferCenter": "Transfers",
   "fileNoDownloads": "No downloads yet",
+  "fileNoTransfers": "No transfers yet",
+  "fileActiveTransfers": "Active",
   "fileCopyPending": "Copy: {name}",
   "@fileCopyPending": {
     "placeholders": {
@@ -765,6 +771,7 @@
       "name": { "type": "String" }
     }
   },
+  "fileMoveAcrossServersUnsupported": "Server-to-server transfer uses read-only temporary access, so the source file cannot be deleted. Use copy to transfer it.",
   "fileOverwriteTitle": "Overwrite Existing Item",
   "fileOverwriteContent": "\"{name}\" already exists in this directory. Overwrite it?",
   "@fileOverwriteContent": {
@@ -799,9 +806,17 @@
   "fileArchivePreviewEmpty": "Archive is empty",
   "fileArchivePreviewFailed": "Archive preview failed",
   "fileDownloadAdded": "Added to Download Center",
+  "fileTransferAdded": "Added to Transfers",
+  "fileUploadAdded": "Added to Transfers",
   "fileDownloadDirectoryUnsupported": "Folder download is not supported yet. Compress it first, then download.",
   "fileDownloadQueued": "Queued",
   "fileDownloading": "Downloading",
+  "fileUploading": "Uploading",
+  "fileTransferQueued": "Queued",
+  "fileTransferCompressing": "Compressing",
+  "fileTransferVerifying": "Verifying",
+  "fileTransferExtracting": "Extracting",
+  "fileTransferCleaning": "Cleaning",
   "fileDownloadPaused": "Paused",
   "fileDownloadCompleted": "Completed",
   "fileDownloadFailed": "Download failed",

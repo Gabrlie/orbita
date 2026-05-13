@@ -11,6 +11,8 @@ import 'package:orbita/services/ssh_service.dart';
 import 'package:orbita/services/remote_file_command_builder.dart';
 
 part 'sftp_file_service_operations.dart';
+part 'sftp_file_service_transfer_operations.dart';
+part 'sftp_file_service_rsync_operations.dart';
 part 'sftp_file_service_archive_operations.dart';
 part 'sftp_file_service_sftp_helpers.dart';
 
@@ -261,6 +263,8 @@ class SftpFileException implements Exception {
       SftpFileException('commandFailed', details);
   factory SftpFileException.downloadStopped() =>
       const SftpFileException('downloadStopped');
+  factory SftpFileException.transferStopped() =>
+      const SftpFileException('transferStopped');
   factory SftpFileException.targetExists() =>
       const SftpFileException('targetExists');
 

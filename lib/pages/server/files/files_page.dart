@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/models/file_transfer_task.dart';
 import 'package:orbita/models/remote_file_entry.dart';
 import 'package:orbita/models/server.dart';
 import 'package:orbita/models/ssh_key.dart';
@@ -15,7 +19,7 @@ import 'package:orbita/pages/server/files/file_name_dialog.dart';
 import 'package:orbita/pages/server/files/file_path_bar.dart';
 import 'package:orbita/pages/server/files/file_text_editor_page.dart';
 import 'package:orbita/pages/server/files/file_tool_install_dialog.dart';
-import 'package:orbita/providers/file_download_provider.dart';
+import 'package:orbita/providers/file_transfer_provider.dart';
 import 'package:orbita/providers/key_provider.dart';
 import 'package:orbita/providers/server_monitor_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
@@ -28,41 +32,92 @@ import 'package:orbita/widgets/common.dart';
 part 'files_page_actions.dart';
 part 'files_page_archive_actions.dart';
 part 'files_page_conflict_dialog.dart';
+part 'files_page_transfer_actions.dart';
+part 'files_page_upload_actions.dart';
 part 'files_page_widgets.dart';
+
+class FileTransferTarget {
+  final String tabId;
+  final Server server;
+  final String path;
+
+  const FileTransferTarget({
+    required this.tabId,
+    required this.server,
+    required this.path,
+  });
+}
+
+class FilePendingTransfer {
+  final String sourceTabId;
+  final Server sourceServer;
+  final RemoteFileEntry entry;
+  final FilePendingAction action;
+
+  const FilePendingTransfer({
+    required this.sourceTabId,
+    required this.sourceServer,
+    required this.entry,
+    required this.action,
+  });
+}
 
 class FilesPage extends ConsumerStatefulWidget {
   final String serverId;
   final bool showAppBar;
+  final String initialPath;
+  final ValueChanged<String>? onPathChanged;
+  final List<FileTransferTarget> transferTargets;
+  final FilePendingTransfer? pendingTransfer;
+  final void Function(
+    Server sourceServer,
+    RemoteFileEntry entry,
+    FilePendingAction action,
+  )?
+  onPendingTransferChanged;
+  final VoidCallback? onPendingTransferCleared;
 
-  const FilesPage({super.key, required this.serverId, this.showAppBar = true});
+  const FilesPage({
+    super.key,
+    required this.serverId,
+    this.showAppBar = true,
+    this.initialPath = '/',
+    this.onPathChanged,
+    this.transferTargets = const [],
+    this.pendingTransfer,
+    this.onPendingTransferChanged,
+    this.onPendingTransferCleared,
+  });
 
   @override
   ConsumerState<FilesPage> createState() => _FilesPageState();
 }
 
 class _FilesPageState extends ConsumerState<FilesPage> {
-  var _currentPath = '/';
+  late var _currentPath = normalizeRemotePath(widget.initialPath);
   var _entries = <RemoteFileEntry>[];
   var _isLoading = true;
   var _isMutating = false;
   var _loadRequestId = 0;
-  RemoteFileEntry? _pendingEntry;
-  FilePendingAction? _pendingAction;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDirectory('/'));
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _loadDirectory(_currentPath),
+    );
   }
 
   @override
   void didUpdateWidget(covariant FilesPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.serverId != widget.serverId) {
-      _currentPath = '/';
+      _currentPath = normalizeRemotePath(widget.initialPath);
       _entries = [];
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadDirectory('/'));
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _loadDirectory(_currentPath),
+      );
     }
   }
 
@@ -70,6 +125,11 @@ class _FilesPageState extends ConsumerState<FilesPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final server = ref.watch(serverByIdProvider(widget.serverId));
+    ref.listen<List<FileTransferTask>>(fileTransferProvider, (previous, next) {
+      if (_shouldRefreshAfterTransfer(previous ?? const [], next)) {
+        _loadDirectory(_currentPath);
+      }
+    });
     final content = _buildContent(context, l10n, server);
 
     final page = widget.showAppBar
@@ -101,18 +161,16 @@ class _FilesPageState extends ConsumerState<FilesPage> {
     );
   }
 
-  void _setPendingAction(RemoteFileEntry entry, FilePendingAction action) {
-    setState(() {
-      _pendingEntry = entry;
-      _pendingAction = action;
-    });
+  void _setPendingAction(
+    Server sourceServer,
+    RemoteFileEntry entry,
+    FilePendingAction action,
+  ) {
+    widget.onPendingTransferChanged?.call(sourceServer, entry, action);
   }
 
   void _clearPendingAction() {
-    setState(() {
-      _pendingEntry = null;
-      _pendingAction = null;
-    });
+    widget.onPendingTransferCleared?.call();
   }
 
   Future<void> _loadDirectory(String path) async {
@@ -142,6 +200,7 @@ class _FilesPageState extends ConsumerState<FilesPage> {
         _entries = entries;
         _isLoading = false;
       });
+      widget.onPathChanged?.call(normalizedPath);
     } catch (error) {
       log.error('SFTP list failed', '$error');
       if (!mounted || requestId != _loadRequestId) return;
@@ -221,5 +280,24 @@ class _FilesPageState extends ConsumerState<FilesPage> {
 
   Future<SshKey?> _resolveKey(Server server) {
     return resolveServerKey(server, ref.read(keyListProvider.future));
+  }
+
+  bool _shouldRefreshAfterTransfer(
+    List<FileTransferTask> previous,
+    List<FileTransferTask> next,
+  ) {
+    final previousCompleted = previous
+        .where((task) => task.phase == FileTransferPhase.completed)
+        .map((task) => task.id)
+        .toSet();
+    return next.any(
+      (task) =>
+          task.serverId == widget.serverId &&
+          (task.direction == FileTransferDirection.upload ||
+              task.direction == FileTransferDirection.server) &&
+          task.phase == FileTransferPhase.completed &&
+          !previousCompleted.contains(task.id) &&
+          parentRemotePath(task.remotePath) == _currentPath,
+    );
   }
 }

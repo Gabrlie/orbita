@@ -39,7 +39,7 @@ dependencies:
   dynamic_color: ^1.8.1
   shared_preferences: ^2.5.3
   simple_icons: ^14.6.0
-  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage: ^10.2.0
   uuid: ^4.5.1
   dartssh2: ^2.9.5
   pinenacl: ^0.6.0
@@ -58,7 +58,8 @@ dependencies:
   package_info_plus: ^9.0.0
   device_info_plus: ^11.5.0
   local_auth: ^3.0.0
-  file_picker: ^10.3.7
+  file_picker: ^11.0.2
+  archive: ^4.0.9
   webdav_client: ^1.2.2
   xml: ^6.6.1
 

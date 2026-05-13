@@ -751,8 +751,14 @@
   "fileCompress": "压缩",
   "fileExtract": "解压",
   "fileDownload": "下载",
+  "fileUpload": "上传",
+  "fileUploadFile": "上传文件",
+  "fileUploadDirectory": "上传目录",
   "fileDownloadCenter": "下载中心",
+  "fileTransferCenter": "传输",
   "fileNoDownloads": "暂无下载记录",
+  "fileNoTransfers": "暂无传输记录",
+  "fileActiveTransfers": "进行中",
   "fileCopyPending": "复制：{name}",
   "@fileCopyPending": {
     "placeholders": {
@@ -765,6 +771,7 @@
       "name": { "type": "String" }
     }
   },
+  "fileMoveAcrossServersUnsupported": "服务器间传输使用只读临时授权，不能删除源文件。请使用复制完成互传。",
   "fileOverwriteTitle": "覆盖已有项目",
   "fileOverwriteContent": "当前目录已存在「{name}」，是否覆盖？",
   "@fileOverwriteContent": {
@@ -799,9 +806,17 @@
   "fileArchivePreviewEmpty": "压缩包为空",
   "fileArchivePreviewFailed": "压缩包预览失败",
   "fileDownloadAdded": "已添加到下载中心",
+  "fileTransferAdded": "已添加到传输",
+  "fileUploadAdded": "已添加到传输",
   "fileDownloadDirectoryUnsupported": "当前版本暂不支持直接下载文件夹，请先压缩后下载。",
   "fileDownloadQueued": "等待中",
   "fileDownloading": "下载中",
+  "fileUploading": "上传中",
+  "fileTransferQueued": "等待中",
+  "fileTransferCompressing": "压缩中",
+  "fileTransferVerifying": "校验中",
+  "fileTransferExtracting": "解压中",
+  "fileTransferCleaning": "清理中",
   "fileDownloadPaused": "已暂停",
   "fileDownloadCompleted": "已完成",
   "fileDownloadFailed": "下载失败",

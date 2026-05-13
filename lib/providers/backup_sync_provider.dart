@@ -61,7 +61,7 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
   }
 
   Future<void> pickLocalFolder() async {
-    final path = await FilePicker.platform.getDirectoryPath();
+    final path = await FilePicker.getDirectoryPath();
     if (path == null) return;
     await _save((settings) {
       return settings.copyWith(localEnabled: true, localFolder: path);

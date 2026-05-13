@@ -16,20 +16,30 @@ class ResponsiveScaffold extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ResponsiveScaffold> createState() =>
-      _ResponsiveScaffoldState();
+  ConsumerState<ResponsiveScaffold> createState() => _ResponsiveScaffoldState();
 }
 
 class _ResponsiveScaffoldState extends ConsumerState<ResponsiveScaffold> {
+  static const _settingsBranchIndex = 4;
+
   var _railExpanded = true;
 
   void _onNavigate(int index) {
     final current = widget.navigationShell.currentIndex;
-    if (index != current) {
-      _resetBranch(current);
-      _resetBranch(index);
+    final touchesSettings =
+        current == _settingsBranchIndex || index == _settingsBranchIndex;
+    if (index != current && touchesSettings) {
+      if (current == _settingsBranchIndex) {
+        _resetBranch(current);
+      }
+      if (index == _settingsBranchIndex) {
+        _resetBranch(index);
+      }
     }
-    widget.navigationShell.goBranch(index, initialLocation: true);
+    widget.navigationShell.goBranch(
+      index,
+      initialLocation: index == _settingsBranchIndex,
+    );
   }
 
   void _resetBranch(int index) {

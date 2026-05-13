@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orbita/models/server.dart';
 import 'package:orbita/models/server_status.dart';
 import 'package:orbita/models/ssh_key.dart';
+import 'package:orbita/providers/app_lifecycle_provider.dart';
 import 'package:orbita/providers/key_provider.dart';
 import 'package:orbita/providers/ssh_connection_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
@@ -25,6 +26,7 @@ final serverStatusProvider = StreamProvider.autoDispose
       }
 
       final log = SshLogger(ref, serverId);
+      final lifecycle = ref.read(appLifecycleProvider.notifier);
       SshConnectionLease? lease;
       ref.onDispose(() {
         lease?.release();
@@ -67,8 +69,13 @@ final serverStatusProvider = StreamProvider.autoDispose
         reconnectDelay = const Duration(seconds: 2);
 
         RawNetIoSnapshot? prevSnapshot;
+        var suppressDisconnect = false;
         while (!ssh.isClosed) {
+          await lifecycle.waitUntilResumed();
           try {
+            if (lifecycle.isResumeRecoveryWindow) {
+              await ssh.execute('true');
+            }
             final output = await ssh.execute(monitorCommand);
             log.command('status', output);
             final status = parseMonitorOutput(output, prevSnapshot);
@@ -79,13 +86,14 @@ final serverStatusProvider = StreamProvider.autoDispose
             ref
                 .read(sshConnectionManagerProvider)
                 .markUnhealthy(server.id, ssh);
-            yield null;
+            suppressDisconnect = lifecycle.isResumeRecoveryWindow;
+            if (!suppressDisconnect) yield null;
             break;
           }
-          await Future.delayed(settings.refreshInterval);
+          await _delayWhileResumed(settings.refreshInterval, lifecycle);
         }
 
-        if (ssh.isClosed) {
+        if (ssh.isClosed && !suppressDisconnect) {
           log.error('Connection lost');
           yield null;
         }
@@ -93,7 +101,9 @@ final serverStatusProvider = StreamProvider.autoDispose
         lease.release();
         lease = null;
         if (!settings.autoReconnect) return;
-        await Future.delayed(reconnectDelay);
+        if (!suppressDisconnect) {
+          await Future.delayed(reconnectDelay);
+        }
         reconnectDelay = _nextReconnectDelay(reconnectDelay);
       }
     });
@@ -127,6 +137,22 @@ bool _isAuthenticationFailure(Object error) {
   final message = error.toString();
   return message.contains('SSHAuthFailError') ||
       message.contains('All authentication methods failed');
+}
+
+Future<void> _delayWhileResumed(
+  Duration duration,
+  AppLifecycleController lifecycle,
+) async {
+  final deadline = DateTime.now().add(duration);
+  while (DateTime.now().isBefore(deadline)) {
+    await lifecycle.waitUntilResumed();
+    final remaining = deadline.difference(DateTime.now());
+    if (remaining <= Duration.zero) return;
+    final slice = remaining > const Duration(milliseconds: 500)
+        ? const Duration(milliseconds: 500)
+        : remaining;
+    await Future.delayed(slice);
+  }
 }
 
 Future<SshKey?> resolveServerKey(

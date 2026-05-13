@@ -11,12 +11,14 @@ enum FileEntryAction {
   archive,
   properties,
   download,
+  transferToTab,
 }
 
 Future<FileEntryAction?> showFileEntryActionsDialog(
   BuildContext context, {
   required String title,
   required bool isArchive,
+  required bool canTransferToTab,
 }) {
   return showDialog<FileEntryAction>(
     context: context,
@@ -55,10 +57,10 @@ Future<FileEntryAction?> showFileEntryActionsDialog(
                             destructive: true,
                           ),
                           _DialogAction(
-                            FileEntryAction.tools,
-                            Ionicons.construct_outline,
-                            l10n.fileTools,
-                            enabled: false,
+                            FileEntryAction.transferToTab,
+                            Ionicons.swap_horizontal_outline,
+                            l10n.fileTransferCenter,
+                            enabled: canTransferToTab,
                           ),
                           _DialogAction(
                             FileEntryAction.properties,

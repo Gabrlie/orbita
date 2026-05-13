@@ -3152,17 +3152,53 @@ abstract class AppLocalizations {
   /// **'下载'**
   String get fileDownload;
 
+  /// No description provided for @fileUpload.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传'**
+  String get fileUpload;
+
+  /// No description provided for @fileUploadFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传文件'**
+  String get fileUploadFile;
+
+  /// No description provided for @fileUploadDirectory.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传目录'**
+  String get fileUploadDirectory;
+
   /// No description provided for @fileDownloadCenter.
   ///
   /// In zh, this message translates to:
   /// **'下载中心'**
   String get fileDownloadCenter;
 
+  /// No description provided for @fileTransferCenter.
+  ///
+  /// In zh, this message translates to:
+  /// **'传输'**
+  String get fileTransferCenter;
+
   /// No description provided for @fileNoDownloads.
   ///
   /// In zh, this message translates to:
   /// **'暂无下载记录'**
   String get fileNoDownloads;
+
+  /// No description provided for @fileNoTransfers.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无传输记录'**
+  String get fileNoTransfers;
+
+  /// No description provided for @fileActiveTransfers.
+  ///
+  /// In zh, this message translates to:
+  /// **'进行中'**
+  String get fileActiveTransfers;
 
   /// No description provided for @fileCopyPending.
   ///
@@ -3175,6 +3211,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'移动：{name}'**
   String fileMovePending(String name);
+
+  /// No description provided for @fileMoveAcrossServersUnsupported.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器间传输使用只读临时授权，不能删除源文件。请使用复制完成互传。'**
+  String get fileMoveAcrossServersUnsupported;
 
   /// No description provided for @fileOverwriteTitle.
   ///
@@ -3290,6 +3332,18 @@ abstract class AppLocalizations {
   /// **'已添加到下载中心'**
   String get fileDownloadAdded;
 
+  /// No description provided for @fileTransferAdded.
+  ///
+  /// In zh, this message translates to:
+  /// **'已添加到传输'**
+  String get fileTransferAdded;
+
+  /// No description provided for @fileUploadAdded.
+  ///
+  /// In zh, this message translates to:
+  /// **'已添加到传输'**
+  String get fileUploadAdded;
+
   /// No description provided for @fileDownloadDirectoryUnsupported.
   ///
   /// In zh, this message translates to:
@@ -3307,6 +3361,42 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'下载中'**
   String get fileDownloading;
+
+  /// No description provided for @fileUploading.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传中'**
+  String get fileUploading;
+
+  /// No description provided for @fileTransferQueued.
+  ///
+  /// In zh, this message translates to:
+  /// **'等待中'**
+  String get fileTransferQueued;
+
+  /// No description provided for @fileTransferCompressing.
+  ///
+  /// In zh, this message translates to:
+  /// **'压缩中'**
+  String get fileTransferCompressing;
+
+  /// No description provided for @fileTransferVerifying.
+  ///
+  /// In zh, this message translates to:
+  /// **'校验中'**
+  String get fileTransferVerifying;
+
+  /// No description provided for @fileTransferExtracting.
+  ///
+  /// In zh, this message translates to:
+  /// **'解压中'**
+  String get fileTransferExtracting;
+
+  /// No description provided for @fileTransferCleaning.
+  ///
+  /// In zh, this message translates to:
+  /// **'清理中'**
+  String get fileTransferCleaning;
 
   /// No description provided for @fileDownloadPaused.
   ///
