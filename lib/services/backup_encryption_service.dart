@@ -94,4 +94,19 @@ class BackupEncryptionService {
     );
     return Map<String, Object?>.from(jsonDecode(utf8.decode(plainText)) as Map);
   }
+
+  Map<String, Object?> decryptWithSecret(
+    String envelope,
+    BackupAutoSecret secret,
+  ) {
+    final decoded = jsonDecode(envelope) as Map<String, dynamic>;
+    final data = decoded['data'] as Map<String, dynamic>;
+    final plainText = crypto.decryptAesGcm(
+      key: crypto.decodeBytes(secret.dataKey),
+      nonce: crypto.decodeBytes(data['nonce'] as String),
+      cipherText: crypto.decodeBytes(data['cipherText'] as String),
+      associatedData: utf8.encode(SecurityCryptoService.backupContext),
+    );
+    return Map<String, Object?>.from(jsonDecode(utf8.decode(plainText)) as Map);
+  }
 }

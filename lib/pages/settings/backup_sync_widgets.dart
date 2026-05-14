@@ -134,81 +134,46 @@ class BackupSelectDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final formatter = MaterialLocalizations.of(context);
     return AlertDialog(
       title: Text(title),
       content: SizedBox(
         width: double.maxFinite,
-        child: ListView.separated(
-          shrinkWrap: true,
-          itemCount: entries.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final entry = entries[index];
-            final icon = entry.location == BackupLocation.local
-                ? Ionicons.folder_outline
-                : Ionicons.cloud_outline;
-            final date = formatter.formatFullDate(entry.modifiedAt);
-            final time = formatter.formatTimeOfDay(
-              TimeOfDay.fromDateTime(entry.modifiedAt),
-            );
-            return ListTile(
-              leading: Icon(icon),
-              title: Text(entry.name),
-              subtitle: Text('$date $time'),
-              onTap: () => Navigator.of(context).pop(entry),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class BackupRetentionDialog extends StatefulWidget {
-  final int initialValue;
-
-  const BackupRetentionDialog({super.key, required this.initialValue});
-
-  @override
-  State<BackupRetentionDialog> createState() => _BackupRetentionDialogState();
-}
-
-class _BackupRetentionDialogState extends State<BackupRetentionDialog> {
-  late final _controller = TextEditingController(
-    text: widget.initialValue.toString(),
-  );
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(l10n.backupRetentionTitle),
-      content: TextField(
-        controller: _controller,
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-          labelText: l10n.backupRetentionCount,
-          helperText: l10n.backupRetentionHelp,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.backupRestoreOverwriteNotice),
+            const SizedBox(height: 12),
+            ListView.separated(
+              shrinkWrap: true,
+              itemCount: entries.length,
+              separatorBuilder: (_, _) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final entry = entries[index];
+                final icon = entry.location == BackupLocation.local
+                    ? Ionicons.folder_outline
+                    : Ionicons.cloud_outline;
+                final date = formatter.formatFullDate(entry.modifiedAt);
+                final time = formatter.formatTimeOfDay(
+                  TimeOfDay.fromDateTime(entry.modifiedAt),
+                );
+                return ListTile(
+                  leading: Icon(icon),
+                  title: Text(entry.name),
+                  subtitle: Text('$date $time'),
+                  onTap: () => Navigator.of(context).pop(entry),
+                );
+              },
+            ),
+          ],
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.commonCancel),
-        ),
-        FilledButton(
-          onPressed: () {
-            final count = int.tryParse(_controller.text) ?? widget.initialValue;
-            Navigator.of(context).pop(count);
-          },
-          child: Text(l10n.commonSave),
         ),
       ],
     );

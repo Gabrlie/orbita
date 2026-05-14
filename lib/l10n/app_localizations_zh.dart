@@ -920,7 +920,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityUnlockSection => '解锁方式';
 
   @override
-  String get securityBiometricDesc => '仅用于解锁应用，备份恢复仍需输入应用密码。';
+  String get securityBiometricDesc => '仅用于解锁应用；恢复会先尝试本机备份密钥，其它设备备份可能需要应用密码。';
 
   @override
   String get securityLockPolicy => '锁定策略';
@@ -1011,7 +1011,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get backupPasswordRequired => '使用已保存的应用密码密钥加密';
+  String get backupPasswordRequired => '使用本设备已保存的备份密钥加密';
 
   @override
   String get backupManual => '手动备份';
@@ -1062,6 +1062,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupSelectBackup => '选择要恢复的备份';
 
   @override
+  String get backupRestoreOverwriteNotice =>
+      '恢复会覆盖本地服务器、密钥、分组、脚本和片段；也可以导入其它设备的备份。';
+
+  @override
+  String get backupRestorePasswordPrompt => '输入备份密码';
+
+  @override
   String get backupInvalidPassword => '密码不正确，无法恢复备份';
 
   @override
@@ -1072,7 +1079,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String backupRetentionDesc(int count) {
-    return '每个目标保留最近 $count 份备份';
+    return '每个目标最多保留本设备最近 $count 份备份；不会清理其它设备备份';
   }
 
   @override

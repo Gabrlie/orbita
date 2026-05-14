@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/models/app_theme_seed.dart';
 
 class AppTheme {
@@ -40,6 +42,36 @@ class AppTheme {
 
   static ThemeData themeFromScheme(ColorScheme colorScheme) =>
       _buildTheme(colorScheme);
+
+  static FThemeData resolveForuiTheme(ColorScheme colorScheme) {
+    final base = colorScheme.brightness == Brightness.dark
+        ? FThemes.blue.dark.touch
+        : FThemes.blue.light.touch;
+    final colors = base.colors.copyWith(
+      brightness: colorScheme.brightness,
+      systemOverlayStyle: colorScheme.brightness == Brightness.dark
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark,
+      background: colorScheme.surface,
+      foreground: colorScheme.onSurface,
+      primary: colorScheme.primary,
+      primaryForeground: colorScheme.onPrimary,
+      secondary: colorScheme.secondaryContainer,
+      secondaryForeground: colorScheme.onSecondaryContainer,
+      muted: colorScheme.surfaceContainerHighest,
+      mutedForeground: colorScheme.onSurfaceVariant,
+      destructive: colorScheme.error,
+      destructiveForeground: colorScheme.onError,
+      error: colorScheme.error,
+      errorForeground: colorScheme.onError,
+      card: colorScheme.surfaceContainerLow,
+      border: colorScheme.outlineVariant,
+    );
+    return base.copyWith(
+      debugLabel: 'Orbita ${colorScheme.brightness.name}',
+      colors: colors,
+    );
+  }
 
   static ThemeData _buildTheme(ColorScheme colorScheme) {
     return ThemeData(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
@@ -26,7 +27,6 @@ class ServerNetworkSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -35,32 +35,37 @@ class ServerNetworkSection extends ConsumerWidget {
           title: l10n.serverNetworkSection,
           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
         ),
-        Text(l10n.serverConnectionMode, style: theme.textTheme.titleSmall),
-        const SizedBox(height: 8),
-        SegmentedButton<ServerConnectionMode>(
-          segments: [
-            ButtonSegment(
+        FSelectTileGroup<ServerConnectionMode>(
+          label: Text(l10n.serverConnectionMode),
+          control: FMultiValueControl.managedRadio(
+            initial: connectionMode,
+            onChange: (selection) {
+              if (selection.isEmpty) return;
+              onConnectionModeChanged(selection.first);
+            },
+          ),
+          children: [
+            FSelectTile.suffix(
               value: ServerConnectionMode.direct,
-              label: Text(l10n.connectionModeDirect),
+              prefix: const Icon(Ionicons.server_outline),
+              title: Text(l10n.connectionModeDirect),
             ),
-            ButtonSegment(
+            FSelectTile.suffix(
               value: ServerConnectionMode.tailscale,
-              label: Text(l10n.connectionModeTailscale),
+              prefix: const Icon(Ionicons.git_network_outline),
+              title: Text(l10n.connectionModeTailscale),
             ),
           ],
-          selected: {connectionMode},
-          onSelectionChanged: (selection) {
-            onConnectionModeChanged(selection.first);
-          },
         ),
         if (connectionMode == ServerConnectionMode.tailscale) ...[
           const SizedBox(height: 12),
           _TailnetStatusTile(onLogin: () => _showAuthUrl(context, ref)),
           const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: () => _pickPeer(context, ref),
-            icon: const Icon(Ionicons.git_network_outline),
-            label: Align(
+          FButton(
+            variant: FButtonVariant.outline,
+            onPress: () => _pickPeer(context, ref),
+            prefix: const Icon(Ionicons.git_network_outline),
+            child: Align(
               alignment: Alignment.centerLeft,
               child: Text(_selectedPeerLabel(l10n)),
             ),
@@ -91,17 +96,21 @@ class ServerNetworkSection extends ConsumerWidget {
         );
         return;
       }
-      final peer = await showModalBottomSheet<TailnetPeer>(
+      final peer = await showFSheet<TailnetPeer>(
         context: context,
-        showDragHandle: true,
+        side: FLayout.btt,
+        mainAxisMaxRatio: null,
+        useSafeArea: true,
         builder: (context) => _TailnetPeerSheet(peers: peers),
       );
       if (peer == null) return;
       onPeerChanged(peer);
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.tailnetPeerLoadFailed(error.toString()))),
+      await showInfoDialog(
+        context,
+        title: l10n.tailnetPeerPickerTitle,
+        content: l10n.tailnetPeerLoadFailed(error.toString()),
       );
     }
   }
@@ -112,8 +121,10 @@ class ServerNetworkSection extends ConsumerWidget {
       await ref.read(embeddedTailnetServiceProvider).openAuthUrl();
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.tailnetAuthOpenFailed(error.toString()))),
+      await showInfoDialog(
+        context,
+        title: l10n.tailnetEmbeddedService,
+        content: l10n.tailnetAuthOpenFailed(error.toString()),
       );
     }
   }
@@ -129,12 +140,10 @@ class _TailnetStatusTile extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final status = ref.watch(tailnetStatusProvider);
-    return Material(
-      color: tonalItemColor(context),
-      borderRadius: BorderRadius.circular(12),
+    return FCard.raw(
       child: status.when(
-        data: (value) => ListTile(
-          leading: Icon(
+        data: (value) => FItem(
+          prefix: Icon(
             value.isRunning
                 ? Ionicons.checkmark_circle_outline
                 : Ionicons.log_in_outline,
@@ -148,13 +157,22 @@ class _TailnetStatusTile extends ConsumerWidget {
                 ? l10n.tailnetBackendState(value.backendState)
                 : value.error,
           ),
-          trailing: value.needsLogin
-              ? TextButton(onPressed: onLogin, child: Text(l10n.tailnetLogin))
+          suffix: value.needsLogin
+              ? FButton(
+                  size: FButtonSizeVariant.sm,
+                  variant: FButtonVariant.outline,
+                  mainAxisSize: MainAxisSize.min,
+                  onPress: onLogin,
+                  child: Text(l10n.tailnetLogin),
+                )
               : null,
         ),
-        loading: () => const LinearProgressIndicator(),
-        error: (error, stackTrace) => ListTile(
-          leading: Icon(
+        loading: () => const Padding(
+          padding: EdgeInsets.all(16),
+          child: FProgress(),
+        ),
+        error: (error, stackTrace) => FItem(
+          prefix: Icon(
             Ionicons.alert_circle_outline,
             color: theme.colorScheme.error,
           ),
@@ -175,39 +193,37 @@ class _TailnetPeerSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    return SafeArea(
-      child: ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-            child: Text(
-              l10n.tailnetPeerPickerTitle,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+    return ListView(
+      shrinkWrap: true,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+          child: Text(
+            l10n.tailnetPeerPickerTitle,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
             ),
           ),
-          for (final peer in peers)
-            ListTile(
-              leading: Icon(
-                peer.online
-                    ? Ionicons.radio_button_on_outline
-                    : Ionicons.radio_button_off_outline,
-              ),
-              title: Text(peer.displayName),
-              subtitle: Text(
-                [
-                  if (peer.hostName.isNotEmpty) peer.hostName,
-                  peer.tailscaleIps.firstOrNull ?? l10n.tailnetPeerNoIp,
-                  peer.online ? l10n.tailnetPeerOnline : l10n.offline,
-                ].join(' · '),
-              ),
-              onTap: () => Navigator.of(context).pop(peer),
+        ),
+        for (final peer in peers)
+          FItem(
+            prefix: Icon(
+              peer.online
+                  ? Ionicons.radio_button_on_outline
+                  : Ionicons.radio_button_off_outline,
             ),
-        ],
-      ),
+            title: Text(peer.displayName),
+            subtitle: Text(
+              [
+                if (peer.hostName.isNotEmpty) peer.hostName,
+                peer.tailscaleIps.firstOrNull ?? l10n.tailnetPeerNoIp,
+                peer.online ? l10n.tailnetPeerOnline : l10n.offline,
+              ].join(' · '),
+            ),
+            onPress: () => Navigator.of(context).pop(peer),
+          ),
+      ],
     );
   }
 }

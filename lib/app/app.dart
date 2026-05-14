@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/app_security.dart';
 import 'package:orbita/pages/lock/lock_page.dart';
@@ -92,6 +93,8 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
           seed: themeSeed,
           dynamicScheme: darkDynamic?.harmonized(),
         );
+        final lightForuiTheme = AppTheme.resolveForuiTheme(lightScheme);
+        final darkForuiTheme = AppTheme.resolveForuiTheme(darkScheme);
 
         return MaterialApp.router(
           title: 'Orbita',
@@ -101,6 +104,7 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
           locale: locale,
           localizationsDelegates: const [
             AppLocalizations.delegate,
+            FLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
@@ -116,11 +120,19 @@ class _OrbitaAppState extends ConsumerState<OrbitaApp>
             final locked = security.hasPassword && !security.isUnlocked;
             if (locked) return const LockPage();
             ref.watch(backupSyncProvider);
-            return Listener(
-              behavior: HitTestBehavior.translucent,
-              onPointerDown: (_) => _markActivity(),
-              onPointerMove: (_) => _markActivity(),
-              child: UpdatePromptGate(child: child ?? const SizedBox.shrink()),
+            final foruiTheme = Theme.of(context).brightness == Brightness.dark
+                ? darkForuiTheme
+                : lightForuiTheme;
+            return FTheme(
+              data: foruiTheme,
+              child: Listener(
+                behavior: HitTestBehavior.translucent,
+                onPointerDown: (_) => _markActivity(),
+                onPointerMove: (_) => _markActivity(),
+                child: UpdatePromptGate(
+                  child: child ?? const SizedBox.shrink(),
+                ),
+              ),
             );
           },
         );

@@ -933,7 +933,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get securityBiometricDesc =>
-      'Only unlocks the app. Backup restore still requires the app password.';
+      'Only unlocks the app. Restore first tries the local backup key; different-device backups may require the app password.';
 
   @override
   String get securityLockPolicy => 'Lock Policy';
@@ -1026,7 +1026,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupPasswordRequired =>
-      'Encrypted with the saved app-password key';
+      'Encrypted with this device\'s saved backup key';
 
   @override
   String get backupManual => 'Manual Backup';
@@ -1080,6 +1080,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupSelectBackup => 'Select a backup to restore';
 
   @override
+  String get backupRestoreOverwriteNotice =>
+      'Restoring will overwrite local servers, keys, groups, scripts, and snippets. Backups from other devices can be imported.';
+
+  @override
+  String get backupRestorePasswordPrompt => 'Enter backup password';
+
+  @override
   String get backupInvalidPassword =>
       'Incorrect password. Backup restore was not started.';
 
@@ -1092,7 +1099,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String backupRetentionDesc(int count) {
-    return 'Keep the latest $count backups in each target';
+    return 'Keep up to the latest $count backups from this device in each target; other devices are not pruned';
   }
 
   @override

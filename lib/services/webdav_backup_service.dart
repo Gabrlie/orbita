@@ -154,6 +154,7 @@ class WebDavBackupService {
     required String username,
     required String password,
     required int retentionCount,
+    String? deviceName,
   }) async {
     final stale = _fileService.entriesToDelete(
       await listBackups(
@@ -163,6 +164,7 @@ class WebDavBackupService {
         password: password,
       ),
       retentionCount,
+      deviceName: deviceName,
     );
     for (final entry in stale) {
       await delete(

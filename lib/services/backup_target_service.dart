@@ -47,15 +47,20 @@ class BackupTargetService {
     BackupSettings settings,
     String envelope,
     String fileName,
-    String webDavPassword,
-  ) async {
+    String webDavPassword, {
+    required String deviceName,
+  }) async {
     if (settings.localEnabled && settings.localFolder.isNotEmpty) {
       await fileService.write(
         folder: settings.localFolder,
         fileName: fileName,
         content: envelope,
       );
-      await fileService.prune(settings.localFolder, settings.retentionCount);
+      await fileService.prune(
+        settings.localFolder,
+        BackupFileService.currentDeviceRetentionCount,
+        deviceName: deviceName,
+      );
     }
     if (settings.webdavEnabled && settings.webdavUrl.isNotEmpty) {
       await webDavService.uploadBackup(
@@ -71,7 +76,8 @@ class BackupTargetService {
         remoteFolder: settings.webdavRemoteFolder,
         username: settings.webdavUsername,
         password: webDavPassword,
-        retentionCount: settings.retentionCount,
+        retentionCount: BackupFileService.currentDeviceRetentionCount,
+        deviceName: deviceName,
       );
     }
   }

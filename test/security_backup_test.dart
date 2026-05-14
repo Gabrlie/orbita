@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:orbita/models/backup_models.dart';
+import 'package:orbita/services/app_security_service.dart';
 import 'package:orbita/services/backup_encryption_service.dart';
 import 'package:orbita/services/backup_file_service.dart';
 import 'package:orbita/services/backup_settings_store.dart';
@@ -61,44 +63,84 @@ void main() {
       result.envelope,
       'app-pass',
     );
+    final silentRestored = service.decryptWithSecret(
+      result.envelope,
+      result.secret,
+    );
 
     expect(restored['schema'], 1);
     expect(restored['servers'], isA<List>());
+    expect(silentRestored['schema'], 1);
     await expectLater(
       service.decryptWithPassword(result.envelope, 'bad-pass'),
       throwsA(isA<Object>()),
     );
   });
 
+  test('verified app password is cached for silent backup restore', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final service = AppSecurityService(cryptoService: crypto);
+    await service.setPassword('app-pass');
+
+    final freshService = AppSecurityService(cryptoService: crypto);
+    expect(freshService.sessionPassword, isNull);
+    expect(await freshService.verifyPassword('bad-pass'), isNull);
+    expect(freshService.sessionPassword, isNull);
+    expect(await freshService.verifyPassword('app-pass'), isNotNull);
+    expect(freshService.sessionPassword, 'app-pass');
+  });
+
   test(
-    'backup filenames are timestamped and retention keeps newest entries',
+    'backup filenames include device name and retention is device-scoped',
     () {
       const service = BackupFileService();
       final first = BackupEntry(
         location: BackupLocation.local,
-        name: 'orbita-backup-20260507-010000.json',
+        name: 'orbita-backup-my-phone-20260507-010000.json',
         path: 'a',
         modifiedAt: DateTime(2026, 5, 7, 1),
       );
       final second = BackupEntry(
         location: BackupLocation.local,
-        name: 'orbita-backup-20260507-020000.json',
+        name: 'orbita-backup-my-phone-20260507-020000.json',
         path: 'b',
         modifiedAt: DateTime(2026, 5, 7, 2),
       );
       final third = BackupEntry(
         location: BackupLocation.local,
-        name: 'orbita-backup-20260507-030000.json',
+        name: 'orbita-backup-my-phone-20260507-030000.json',
         path: 'c',
         modifiedAt: DateTime(2026, 5, 7, 3),
       );
+      final otherDevice = BackupEntry(
+        location: BackupLocation.local,
+        name: 'orbita-backup-tablet-20260507-000000.json',
+        path: 'd',
+        modifiedAt: DateTime(2026, 5, 7),
+      );
 
       expect(
-        service.createFileName(DateTime(2026, 5, 7, 9, 8, 6)),
-        'orbita-backup-20260507-090806.json',
+        service.createFileName(
+          now: DateTime(2026, 5, 7, 9, 8, 6),
+          deviceName: 'My Phone',
+        ),
+        'orbita-backup-my-phone-20260507-090806.json',
       );
       expect(service.isBackupName(BackupFileService.legacyName), isTrue);
-      expect(service.entriesToDelete([first, third, second], 2), [first]);
+      expect(
+        service.deviceNameFromFileName(
+          'orbita-backup-my-phone-20260507-090806.json',
+        ),
+        'my-phone',
+      );
+      expect(
+        service.entriesToDelete(
+          [first, otherDevice, third, second],
+          2,
+          deviceName: 'My Phone',
+        ),
+        [first],
+      );
     },
   );
 

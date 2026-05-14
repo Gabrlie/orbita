@@ -14,6 +14,7 @@ class AppSecurityService {
   final FlutterSecureStorage _storage;
   final LocalAuthentication _localAuth;
   final SecurityCryptoService crypto;
+  String? _sessionPassword;
   late final BackupEncryptionService _backupEncryption;
 
   AppSecurityService({
@@ -25,6 +26,8 @@ class AppSecurityService {
        crypto = cryptoService ?? const SecurityCryptoService() {
     _backupEncryption = BackupEncryptionService(crypto: crypto);
   }
+
+  String? get sessionPassword => _sessionPassword;
 
   Future<bool> hasPassword() async {
     final salt = await _storage.read(key: _saltKey);
@@ -38,12 +41,14 @@ class AppSecurityService {
     await _storage.write(key: _saltKey, value: crypto.encodeBytes(salt));
     await _storage.write(key: _verifierKey, value: crypto.verifierForKey(key));
     await refreshAutoBackupSecret(password);
+    _sessionPassword = password;
   }
 
   Future<void> clearPassword() async {
     await _storage.delete(key: _saltKey);
     await _storage.delete(key: _verifierKey);
     await clearAutoBackupKey();
+    _sessionPassword = null;
   }
 
   Future<Uint8List?> verifyPassword(String password) async {
@@ -52,7 +57,9 @@ class AppSecurityService {
     if (saltText == null || storedVerifier == null) return null;
     final salt = crypto.decodeBytes(saltText);
     final key = await crypto.derivePasswordKey(password, salt);
-    return crypto.verifierForKey(key) == storedVerifier ? key : null;
+    if (crypto.verifierForKey(key) != storedVerifier) return null;
+    _sessionPassword = password;
+    return key;
   }
 
   Future<bool> canUseBiometrics() async {

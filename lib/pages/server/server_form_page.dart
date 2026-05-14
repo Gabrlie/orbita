@@ -1,14 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:uuid/uuid.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
 import 'package:orbita/models/tailnet_models.dart';
+import 'package:orbita/pages/server/server_form_fields.dart';
 import 'package:orbita/pages/server/server_key_picker.dart';
 import 'package:orbita/pages/server/server_network_section.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 import 'package:orbita/widgets/os_icon.dart';
 
 class ServerFormPage extends ConsumerStatefulWidget {
@@ -76,27 +82,26 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: compactPageAppBar(
-        context,
-        title: _isEdit ? l10n.editServer : l10n.addServer,
-        fallbackLocation: widget.returnPath,
-        actions: [TextButton(onPressed: _save, child: Text(l10n.commonSave))],
-      ),
-      body: TonalListBackground(
+    return OrbitaForuiPage(
+      title: _isEdit ? l10n.editServer : l10n.addServer,
+      fallbackLocation: widget.returnPath,
+      actions: [
+        FHeaderAction(
+          semanticsLabel: l10n.commonSave,
+          icon: const Icon(Ionicons.checkmark_outline),
+          onPress: _save,
+        ),
+      ],
+      child: TonalListBackground(
         child: Form(
           key: _formKey,
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              TextFormField(
-                controller: _name,
-                decoration: InputDecoration(
-                  labelText: l10n.serverName,
-                  border: const OutlineInputBorder(),
-                ),
+              FTextFormField(
+                control: FTextFieldControl.managed(controller: _name),
+                label: Text(l10n.serverName),
                 validator: (v) => v == null || v.trim().isEmpty
                     ? l10n.validationRequired
                     : null,
@@ -113,91 +118,59 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
               ),
               const SizedBox(height: 16),
               if (_connectionMode == ServerConnectionMode.direct)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: TextFormField(
-                        controller: _host,
-                        decoration: InputDecoration(
-                          labelText: l10n.serverHost,
-                          border: const OutlineInputBorder(),
-                        ),
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) {
-                            return l10n.validationRequired;
-                          }
-                          if (v.contains(' ')) {
-                            return l10n.validationInvalidHost;
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(child: _PortField(controller: _port)),
-                  ],
+                ServerDirectEndpointFields(
+                  hostController: _host,
+                  portController: _port,
                 )
               else
-                _PortField(controller: _port),
+                ServerPortField(controller: _port),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _username,
-                decoration: InputDecoration(
-                  labelText: l10n.serverUsername,
-                  border: const OutlineInputBorder(),
-                ),
+              FTextFormField(
+                control: FTextFieldControl.managed(controller: _username),
+                label: Text(l10n.serverUsername),
                 validator: (v) => v == null || v.trim().isEmpty
                     ? l10n.validationRequired
                     : null,
               ),
               const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  l10n.serverAuthType,
-                  style: theme.textTheme.titleSmall,
+              FSelectTileGroup<AuthType>(
+                label: Text(l10n.serverAuthType),
+                control: FMultiValueControl.managedRadio(
+                  initial: _authType,
+                  onChange: (selection) {
+                    if (selection.isEmpty) return;
+                    setState(() => _authType = selection.first);
+                  },
                 ),
-              ),
-              SegmentedButton<AuthType>(
-                segments: [
-                  ButtonSegment(
+                children: [
+                  FSelectTile.suffix(
                     value: AuthType.password,
-                    label: Text(l10n.authPassword),
+                    prefix: const Icon(Ionicons.lock_closed_outline),
+                    title: Text(l10n.authPassword),
                   ),
-                  ButtonSegment(
+                  FSelectTile.suffix(
                     value: AuthType.key,
-                    label: Text(l10n.authPrivateKey),
+                    prefix: const Icon(Ionicons.key_outline),
+                    title: Text(l10n.authPrivateKey),
                   ),
                 ],
-                selected: {_authType},
-                onSelectionChanged: (s) => setState(() => _authType = s.first),
               ),
               const SizedBox(height: 16),
               if (_authType == AuthType.password)
-                TextFormField(
-                  controller: _password,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: l10n.authPassword,
-                    border: const OutlineInputBorder(),
-                  ),
+                FTextFormField.password(
+                  control: FTextFieldControl.managed(controller: _password),
+                  label: Text(l10n.authPassword),
                 )
               else
                 ServerKeyPicker(
                   selectedKeyId: _selectedKeyId,
                   onSelected: (id) => setState(() => _selectedKeyId = id),
                 ),
-
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _tags,
-                decoration: InputDecoration(
-                  labelText: l10n.serverTags,
-                  hintText: l10n.serverTagsHint,
-                  border: const OutlineInputBorder(),
-                ),
+              FTextFormField(
+                control: FTextFieldControl.managed(controller: _tags),
+                label: Text(l10n.serverTags),
+                hint: l10n.serverTagsHint,
               ),
             ],
           ),
@@ -219,9 +192,13 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
         (_tailscaleDnsName == null || _tailscaleDnsName!.trim().isEmpty) &&
         (_tailscalePeerName == null || _tailscalePeerName!.trim().isEmpty) &&
         (_tailscalePeerId == null || _tailscalePeerId!.trim().isEmpty)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.tailnetPeerRequired)));
+      unawaited(
+        showInfoDialog(
+          context,
+          title: l10n.tailnetPeerPickerTitle,
+          content: l10n.tailnetPeerRequired,
+        ),
+      );
       return;
     }
 
@@ -269,31 +246,5 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
       _tailscalePeerName = peer?.hostName;
       _tailscaleDnsName = peer?.dnsNameWithoutTrailingDot;
     });
-  }
-}
-
-class _PortField extends StatelessWidget {
-  final TextEditingController controller;
-
-  const _PortField({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: l10n.serverPort,
-        border: const OutlineInputBorder(),
-      ),
-      keyboardType: TextInputType.number,
-      validator: (v) {
-        final p = int.tryParse(v ?? '');
-        if (p == null || p < 1 || p > 65535) {
-          return l10n.validationInvalidPort;
-        }
-        return null;
-      },
-    );
   }
 }

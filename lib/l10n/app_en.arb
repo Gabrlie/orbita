@@ -426,7 +426,7 @@
   "securityChangePassword": "Change App Password",
   "securityRemovePassword": "Remove App Password",
   "securityUnlockSection": "Unlock Method",
-  "securityBiometricDesc": "Only unlocks the app. Backup restore still requires the app password.",
+  "securityBiometricDesc": "Only unlocks the app. Restore first tries the local backup key; different-device backups may require the app password.",
   "securityLockPolicy": "Lock Policy",
   "securityLockNever": "Never Lock",
   "securityLockOnExit": "Lock When Leaving App",
@@ -466,7 +466,7 @@
       "time": { "type": "String" }
     }
   },
-  "backupPasswordRequired": "Encrypted with the saved app-password key",
+  "backupPasswordRequired": "Encrypted with this device's saved backup key",
   "backupManual": "Manual Backup",
   "backupRestoreLocal": "Restore from Local File",
   "backupRestoreWebDav": "Restore from WebDAV",
@@ -496,10 +496,12 @@
   "backupNoTarget": "Enable a local folder or WebDAV backup target first",
   "backupNoBackups": "No restorable backups were found in this target",
   "backupSelectBackup": "Select a backup to restore",
+  "backupRestoreOverwriteNotice": "Restoring will overwrite local servers, keys, groups, scripts, and snippets. Backups from other devices can be imported.",
+  "backupRestorePasswordPrompt": "Enter backup password",
   "backupInvalidPassword": "Incorrect password. Backup restore was not started.",
   "backupInvalidSnapshot": "This backup file is invalid or corrupted.",
   "backupRetentionCount": "Backup Retention",
-  "backupRetentionDesc": "Keep the latest {count} backups in each target",
+  "backupRetentionDesc": "Keep up to the latest {count} backups from this device in each target; other devices are not pruned",
   "@backupRetentionDesc": {
     "placeholders": {
       "count": { "type": "int" }

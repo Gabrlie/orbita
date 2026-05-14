@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:orbita/models/backup_models.dart';
+import 'package:orbita/providers/backup_sync_dependencies.dart';
 import 'package:orbita/providers/command_snippet_provider.dart';
 import 'package:orbita/providers/key_provider.dart';
 import 'package:orbita/providers/remote_script_provider.dart';
@@ -12,42 +12,10 @@ import 'package:orbita/providers/security_provider.dart';
 import 'package:orbita/providers/server_group_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/settings_provider.dart';
-import 'package:orbita/services/backup_encryption_service.dart';
-import 'package:orbita/services/backup_file_service.dart';
 import 'package:orbita/services/backup_settings_store.dart';
 import 'package:orbita/services/backup_snapshot_service.dart';
-import 'package:orbita/services/backup_target_service.dart';
-import 'package:orbita/services/webdav_backup_service.dart';
 
-const _secureWebDavPassword = 'backup_webdav_password';
-
-final backupEncryptionServiceProvider = Provider<BackupEncryptionService>(
-  (ref) => const BackupEncryptionService(),
-);
-
-final backupFileServiceProvider = Provider<BackupFileService>(
-  (ref) => const BackupFileService(),
-);
-
-final webDavBackupServiceProvider = Provider<WebDavBackupService>(
-  (ref) => WebDavBackupService(),
-);
-
-final backupTargetServiceProvider = Provider<BackupTargetService>((ref) {
-  return BackupTargetService(
-    fileService: ref.read(backupFileServiceProvider),
-    webDavService: ref.read(webDavBackupServiceProvider),
-  );
-});
-
-final secureStorageProvider = Provider<FlutterSecureStorage>(
-  (ref) => const FlutterSecureStorage(),
-);
-
-final backupSyncProvider =
-    AsyncNotifierProvider<BackupSyncNotifier, BackupSettings>(
-      BackupSyncNotifier.new,
-    );
+final backupSyncProvider = AsyncNotifierProvider<BackupSyncNotifier, BackupSettings>(BackupSyncNotifier.new);
 
 class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
   Timer? _autoTimer;
@@ -56,21 +24,17 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
   Future<BackupSettings> build() async {
     ref.onDispose(() => _autoTimer?.cancel());
     _listenForBackupDataChanges();
-    final settings = BackupSettingsStore(ref.read(sharedPrefsProvider)).read();
-    return settings;
+    return BackupSettingsStore(ref.read(sharedPrefsProvider)).read();
   }
 
   Future<void> pickLocalFolder() async {
     final path = await FilePicker.getDirectoryPath();
     if (path == null) return;
-    await _save((settings) {
-      return settings.copyWith(localEnabled: true, localFolder: path);
-    });
+    await _save((settings) => settings.copyWith(localEnabled: true, localFolder: path));
   }
 
-  Future<void> setLocalEnabled(bool enabled) async {
-    await _save((settings) => settings.copyWith(localEnabled: enabled));
-  }
+  Future<void> setLocalEnabled(bool enabled) =>
+      _save((settings) => settings.copyWith(localEnabled: enabled));
 
   Future<void> setWebDavConfig({
     required String url,
@@ -81,7 +45,7 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     if (password.isNotEmpty) {
       await ref
           .read(secureStorageProvider)
-          .write(key: _secureWebDavPassword, value: password);
+          .write(key: backupSecureWebDavPasswordKey, value: password);
     }
     await _save((settings) {
       return settings.copyWith(
@@ -95,17 +59,8 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     });
   }
 
-  Future<void> setWebDavEnabled(bool enabled) async {
-    await _save((settings) => settings.copyWith(webdavEnabled: enabled));
-  }
-
-  Future<void> setRetentionCount(int count) async {
-    await _save(
-      (settings) => settings.copyWith(
-        retentionCount: BackupSettingsStore.normalizeRetention(count),
-      ),
-    );
-  }
+  Future<void> setWebDavEnabled(bool enabled) =>
+      _save((settings) => settings.copyWith(webdavEnabled: enabled));
 
   Future<void> setAutoBackupTime(int minutes) async {
     await _save(
@@ -141,13 +96,14 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
 
   Future<void> manualBackup() async {
     await _requireTarget();
+    final deviceName = await _backupDeviceName();
     final envelope = ref
         .read(backupEncryptionServiceProvider)
         .encryptWithSecret(
-          await buildBackupSnapshot(ref),
+          await buildBackupSnapshot(ref, deviceName: deviceName),
           await _storedAutoSecret(),
         );
-    await _writeTargets(envelope);
+    await _writeTargets(envelope, deviceName: deviceName);
   }
 
   Future<List<BackupEntry>> listLocalBackups() async {
@@ -166,7 +122,31 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     final envelope = await ref
         .read(backupTargetServiceProvider)
         .read(entry, await future, await _webDavPassword());
-    await _restoreEnvelope(envelope, password);
+    await ref
+        .read(backupRestoreServiceProvider)
+        .restoreWithPassword(ref, envelope, password);
+    await ref.read(appSecurityServiceProvider).verifyPassword(password);
+  }
+
+  Future<bool> restoreBackupSilently(BackupEntry entry) async {
+    final envelope = await ref
+        .read(backupTargetServiceProvider)
+        .read(entry, await future, await _webDavPassword());
+    final secret = await _storedAutoSecretOrNull();
+    if (secret != null) {
+      final restored = await ref
+          .read(backupRestoreServiceProvider)
+          .tryRestoreWithSecret(ref, envelope, secret);
+      if (restored) return true;
+    }
+    final password = ref.read(appSecurityServiceProvider).sessionPassword;
+    if (password != null && password.isNotEmpty) {
+      final restored = await ref
+          .read(backupRestoreServiceProvider)
+          .tryRestoreWithPassword(ref, envelope, password);
+      if (restored) return true;
+    }
+    return false;
   }
 
   Future<void> _runAutoBackup() async {
@@ -174,43 +154,39 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     if (!settings.autoBackupEnabled || !_hasTarget(settings)) return;
     final secret = await _storedAutoSecretOrNull();
     if (secret == null) return;
+    final deviceName = await _backupDeviceName();
     final envelope = ref
         .read(backupEncryptionServiceProvider)
-        .encryptWithSecret(await buildBackupSnapshot(ref), secret);
-    await _writeTargets(envelope, silent: true);
+        .encryptWithSecret(
+          await buildBackupSnapshot(ref, deviceName: deviceName),
+          secret,
+        );
+    await _writeTargets(envelope, silent: true, deviceName: deviceName);
   }
 
-  Future<void> _restoreEnvelope(String envelope, String password) async {
-    late final Map<String, Object?> snapshot;
-    try {
-      snapshot = await ref
-          .read(backupEncryptionServiceProvider)
-          .decryptWithPassword(envelope, password);
-    } on FormatException {
-      throw const BackupException(BackupException.invalidSnapshot);
-    } catch (_) {
-      throw const BackupException(BackupException.invalidPassword);
-    }
-    try {
-      await restoreBackupSnapshot(ref, snapshot);
-    } on BackupException {
-      rethrow;
-    } catch (_) {
-      throw const BackupException(BackupException.invalidSnapshot);
-    }
-  }
-
-  Future<void> _writeTargets(String envelope, {bool silent = false}) async {
+  Future<void> _writeTargets(
+    String envelope, {
+    bool silent = false,
+    required String deviceName,
+  }) async {
     final settings = await future;
     if (!_hasTarget(settings)) {
       if (silent) return;
       throw const BackupException(BackupException.noTarget);
     }
-    final fileName = ref.read(backupFileServiceProvider).createFileName();
+    final fileName = ref
+        .read(backupFileServiceProvider)
+        .createFileName(deviceName: deviceName);
     try {
       await ref
           .read(backupTargetServiceProvider)
-          .write(settings, envelope, fileName, await _webDavPassword());
+          .write(
+            settings,
+            envelope,
+            fileName,
+            await _webDavPassword(),
+            deviceName: deviceName,
+          );
       await _save(
         (settings) => settings.copyWith(
           lastBackupAt: () => DateTime.now(),
@@ -223,11 +199,12 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     }
   }
 
+  Future<String> _backupDeviceName() =>
+      ref.read(deviceNameServiceProvider).backupDeviceName();
+
   Future<String> _webDavPassword() async {
-    return await ref
-            .read(secureStorageProvider)
-            .read(key: _secureWebDavPassword) ??
-        '';
+    final password = await ref.read(secureStorageProvider).read(key: backupSecureWebDavPasswordKey);
+    return password ?? '';
   }
 
   Future<BackupAutoSecret> _storedAutoSecret() async {
@@ -249,15 +226,12 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
   }
 
   Future<void> _requireTarget() async {
-    if (!_hasTarget(await future)) {
-      throw const BackupException(BackupException.noTarget);
-    }
+    if (!_hasTarget(await future)) throw const BackupException(BackupException.noTarget);
   }
 
-  bool _hasTarget(BackupSettings settings) {
-    return (settings.localEnabled && settings.localFolder.isNotEmpty) ||
-        (settings.webdavEnabled && settings.webdavUrl.isNotEmpty);
-  }
+  bool _hasTarget(BackupSettings settings) =>
+      (settings.localEnabled && settings.localFolder.isNotEmpty) ||
+      (settings.webdavEnabled && settings.webdavUrl.isNotEmpty);
 
   Future<void> _save(BackupSettings Function(BackupSettings) update) async {
     final current = await future;
@@ -284,8 +258,6 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
 
   void _scheduleAutoBackupSoon() {
     _autoTimer?.cancel();
-    _autoTimer = Timer(const Duration(seconds: 3), () {
-      unawaited(_runAutoBackup());
-    });
+    _autoTimer = Timer(const Duration(seconds: 3), () => unawaited(_runAutoBackup()));
   }
 }

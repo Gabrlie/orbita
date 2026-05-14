@@ -11,10 +11,15 @@ import 'package:orbita/providers/remote_script_provider.dart';
 import 'package:orbita/providers/server_group_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 
-Future<Map<String, Object?>> buildBackupSnapshot(Ref ref) async {
+Future<Map<String, Object?>> buildBackupSnapshot(
+  Ref ref, {
+  String? deviceName,
+}) async {
   return {
     'schema': 1,
     'createdAt': DateTime.now().toUtc().toIso8601String(),
+    if (deviceName != null && deviceName.trim().isNotEmpty)
+      'deviceName': deviceName.trim(),
     'servers': [
       for (final server in await ref.read(serverListProvider.future))
         server.toJson(),

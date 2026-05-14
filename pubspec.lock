@@ -161,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.9"
+  dart_style:
+    dependency: transitive
+    description:
+      name: dart_style
+      sha256: "29f7ecc274a86d32920b1d9cfc7502fa87220da41ec60b55f329559d5732e2b2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.7"
   dartssh2:
     dependency: "direct main"
     description:
@@ -365,6 +373,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  forui:
+    dependency: "direct main"
+    description:
+      name: forui
+      sha256: "099deb57d345aaafd73b4ee3dc150bfe032e1d583a898461183586cbb0153778"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.21.3"
+  forui_assets:
+    dependency: transitive
+    description:
+      name: forui_assets
+      sha256: f83517074a11f6458986dbb5d0a0b364cebf6861a4e143acb2d51e6626ecf813
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.21.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -613,6 +637,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.17.6"
+  nitrogen_types:
+    dependency: transitive
+    description:
+      name: nitrogen_types
+      sha256: "5d4ec453aea14e34607bc6021ff1381192e8fcd8541bf103638baa4d013e668f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.0+1"
   node_preamble:
     dependency: transitive
     description:
@@ -970,6 +1002,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  sugar:
+    dependency: transitive
+    description:
+      name: sugar
+      sha256: a0a97f1d3552a3ef4cbec7c6e62c7b52c151cd5c11e984e8311700a918f73dc5
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   super_clipboard:
     dependency: transitive
     description:
@@ -1164,4 +1204,4 @@ packages:
     version: "0.0.6"
 sdks:
   dart: ">=3.11.4 <4.0.0"
-  flutter: ">=3.38.4"
+  flutter: ">=3.41.0"

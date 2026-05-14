@@ -1817,7 +1817,7 @@ abstract class AppLocalizations {
   /// No description provided for @securityBiometricDesc.
   ///
   /// In zh, this message translates to:
-  /// **'仅用于解锁应用，备份恢复仍需输入应用密码。'**
+  /// **'仅用于解锁应用；恢复会先尝试本机备份密钥，其它设备备份可能需要应用密码。'**
   String get securityBiometricDesc;
 
   /// No description provided for @securityLockPolicy.
@@ -1991,7 +1991,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupPasswordRequired.
   ///
   /// In zh, this message translates to:
-  /// **'使用已保存的应用密码密钥加密'**
+  /// **'使用本设备已保存的备份密钥加密'**
   String get backupPasswordRequired;
 
   /// No description provided for @backupManual.
@@ -2078,6 +2078,18 @@ abstract class AppLocalizations {
   /// **'选择要恢复的备份'**
   String get backupSelectBackup;
 
+  /// No description provided for @backupRestoreOverwriteNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复会覆盖本地服务器、密钥、分组、脚本和片段；也可以导入其它设备的备份。'**
+  String get backupRestoreOverwriteNotice;
+
+  /// No description provided for @backupRestorePasswordPrompt.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入备份密码'**
+  String get backupRestorePasswordPrompt;
+
   /// No description provided for @backupInvalidPassword.
   ///
   /// In zh, this message translates to:
@@ -2099,7 +2111,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupRetentionDesc.
   ///
   /// In zh, this message translates to:
-  /// **'每个目标保留最近 {count} 份备份'**
+  /// **'每个目标最多保留本设备最近 {count} 份备份；不会清理其它设备备份'**
   String backupRetentionDesc(int count);
 
   /// No description provided for @backupRetentionTitle.

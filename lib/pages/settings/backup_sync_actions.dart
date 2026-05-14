@@ -25,25 +25,12 @@ class BackupSyncActions {
   }
 
   Future<void> restoreLocal(BuildContext context, WidgetRef ref) async {
-    final l10n = AppLocalizations.of(context)!;
     final entry = await _selectBackup(
       context,
       () => ref.read(backupSyncProvider.notifier).listLocalBackups(),
     );
     if (entry == null || !context.mounted) return;
-    final password = await _askPassword(context, l10n.backupRestoreLocal);
-    if (password == null || !context.mounted) return;
-    await run(
-      context,
-      () {
-        return ref
-            .read(backupSyncProvider.notifier)
-            .restoreBackup(entry, password);
-      },
-      successMessage: l10n.backupRestoreDone,
-      errorMessageBuilder: (error) =>
-          l10n.backupRestoreFailed(_messageFor(error, l10n)),
-    );
+    await _restoreSelected(context, ref, entry);
   }
 
   Future<void> restoreWebDav(
@@ -61,19 +48,7 @@ class BackupSyncActions {
       () => ref.read(backupSyncProvider.notifier).listWebDavBackups(),
     );
     if (entry == null || !context.mounted) return;
-    final password = await _askPassword(context, l10n.backupRestoreWebDav);
-    if (password == null || !context.mounted) return;
-    await run(
-      context,
-      () {
-        return ref
-            .read(backupSyncProvider.notifier)
-            .restoreBackup(entry, password);
-      },
-      successMessage: l10n.backupRestoreDone,
-      errorMessageBuilder: (error) =>
-          l10n.backupRestoreFailed(_messageFor(error, l10n)),
-    );
+    await _restoreSelected(context, ref, entry);
   }
 
   Future<void> setAuto(
@@ -89,22 +64,6 @@ class BackupSyncActions {
     }
     await run(context, () {
       return ref.read(backupSyncProvider.notifier).setAutoBackup(true);
-    });
-  }
-
-  Future<void> setRetention(
-    BuildContext context,
-    WidgetRef ref,
-    BackupSettings backup,
-  ) async {
-    final count = await showDialog<int>(
-      context: context,
-      builder: (context) =>
-          BackupRetentionDialog(initialValue: backup.retentionCount),
-    );
-    if (count == null || !context.mounted) return;
-    await run(context, () {
-      return ref.read(backupSyncProvider.notifier).setRetentionCount(count);
     });
   }
 
@@ -181,6 +140,45 @@ class BackupSyncActions {
     return showDialog<String>(
       context: context,
       builder: (context) => SinglePasswordDialog(title: title),
+    );
+  }
+
+  Future<void> _restoreSelected(
+    BuildContext context,
+    WidgetRef ref,
+    BackupEntry entry,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final restored = await ref
+          .read(backupSyncProvider.notifier)
+          .restoreBackupSilently(entry);
+      if (!context.mounted) return;
+      if (restored) {
+        _showMessage(context, l10n.backupRestoreDone);
+        return;
+      }
+    } catch (error) {
+      if (!context.mounted) return;
+      _showMessage(context, l10n.backupRestoreFailed(_messageFor(error, l10n)));
+      return;
+    }
+
+    final password = await _askPassword(
+      context,
+      l10n.backupRestorePasswordPrompt,
+    );
+    if (password == null || !context.mounted) return;
+    await run(
+      context,
+      () {
+        return ref
+            .read(backupSyncProvider.notifier)
+            .restoreBackup(entry, password);
+      },
+      successMessage: l10n.backupRestoreDone,
+      errorMessageBuilder: (error) =>
+          l10n.backupRestoreFailed(_messageFor(error, l10n)),
     );
   }
 

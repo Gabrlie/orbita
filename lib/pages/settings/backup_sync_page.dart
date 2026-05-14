@@ -6,6 +6,7 @@ import 'package:orbita/pages/settings/backup_sync_actions.dart';
 import 'package:orbita/pages/settings/backup_sync_widgets.dart';
 import 'package:orbita/providers/backup_sync_provider.dart';
 import 'package:orbita/providers/security_provider.dart';
+import 'package:orbita/services/backup_file_service.dart';
 import 'package:orbita/widgets/common.dart';
 
 class BackupSyncPage extends ConsumerWidget {
@@ -134,12 +135,11 @@ class BackupSyncPage extends ConsumerWidget {
                       leading: const Icon(Ionicons.layers_outline),
                       title: Text(l10n.backupRetentionCount),
                       subtitle: Text(
-                        l10n.backupRetentionDesc(backup.retentionCount),
+                        l10n.backupRetentionDesc(
+                          BackupFileService.currentDeviceRetentionCount,
+                        ),
                       ),
                       enabled: hasPassword,
-                      onTap: hasPassword
-                          ? () => actions.setRetention(context, ref, backup)
-                          : null,
                     ),
                     ListTile(
                       leading: const Icon(Ionicons.archive_outline),
