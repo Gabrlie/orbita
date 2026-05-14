@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/dart-3.11-0175C2?style=flat-square&logo=dart&logoColor=white" alt="Dart" />
   <img src="https://img.shields.io/badge/license-MIT-yellow?style=flat-square" alt="License" />
   <img src="https://img.shields.io/badge/platform-Android%20First-3DDC84?style=flat-square&logo=android&logoColor=white" alt="Platform" />
-  <img src="https://img.shields.io/badge/version-1.1.0%2B5-6C63FF?style=flat-square" alt="Version" />
+  <img src="https://img.shields.io/badge/version-1.1.1%2B6-6C63FF?style=flat-square" alt="Version" />
   <br />
   <a href="https://github.com/Gabrlie/orbita/releases/latest">
     <img src="https://img.shields.io/github/v/release/Gabrlie/orbita?style=flat-square&label=release&color=blue" alt="Release" />
@@ -28,7 +28,7 @@
 
 * **零 Agent，纯天然**：仅依赖 SSH/SFTP 和 Linux 原生命令，不在服务器上安装任何额外进程。
 * **本地优先，隐私至上**：所有凭据和配置仅存储在设备本地；备份支持 AES-256-GCM 端到端加密。
-* **Material You 设计**：基于 Material Design 3，支持动态取色与深色模式。
+* **Forui 优先设计**：基于 Forui 组件与动态取色桥接，支持深色模式。
 * **多平台支持**：保留 iOS / 桌面端构建能力，不过暂时只有 Android 版本支持。
 
 ## 核心功能
@@ -50,7 +50,7 @@
 | 层级 | 方案 |
 |---|---|
 | 框架 | Flutter 3.41 / Dart 3.11 |
-| UI | Material Design 3, dynamic_color |
+| UI | Forui-first components, dynamic_color |
 | 状态管理 | Riverpod 3.x |
 | 路由 | go_router |
 | SSH/SFTP | dartssh2 |
@@ -60,7 +60,7 @@
 | 网络隧道 | Tailscale tsnet, gomobile AAR |
 | 备份同步 | 本地文件夹 / WebDAV |
 | 国际化 | flutter_localizations, intl, ARB |
-| 更新分发 | GitHub Release API, ota_update |
+| 更新分发 | GitHub Release API, open_filex |
 
 ## 项目结构
 
@@ -132,7 +132,7 @@ orbita-{version}-android-{abi}.apk
 orbita-{version}-android-{abi}.apk.sha256
 ```
 
-示例：`orbita-1.1.0-android-arm64-v8a.apk`
+示例：`orbita-1.1.1-android-arm64-v8a.apk`
 
 ## 架构选型
 
