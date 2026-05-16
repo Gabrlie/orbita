@@ -6,6 +6,7 @@ import 'package:orbita/models/server.dart';
 import 'package:orbita/providers/server_group_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 import 'package:orbita/widgets/os_icon.dart';
 
 class ServerPickerList extends ConsumerWidget {
@@ -18,12 +19,27 @@ class ServerPickerList extends ConsumerWidget {
     Offset position,
   )?
   onLongPress;
+  final List<OrbitaMenuAction<String>> Function(
+    BuildContext context,
+    WidgetRef ref,
+    Server server,
+  )?
+  menuActionsBuilder;
+  final void Function(
+    BuildContext context,
+    WidgetRef ref,
+    Server server,
+    String value,
+  )?
+  onMenuSelected;
 
   const ServerPickerList({
     super.key,
     required this.emptyIcon,
     required this.onSelected,
     this.onLongPress,
+    this.menuActionsBuilder,
+    this.onMenuSelected,
   });
 
   @override
@@ -63,6 +79,15 @@ class ServerPickerList extends ConsumerWidget {
                   _ServerPickerTile(
                     server: server,
                     onTap: () => onSelected(server),
+                    menuActions: menuActionsBuilder?.call(
+                      context,
+                      ref,
+                      server,
+                    ),
+                    onMenuSelected: onMenuSelected == null
+                        ? null
+                        : (value) =>
+                              onMenuSelected!(context, ref, server, value),
                     onLongPress: onLongPress == null
                         ? null
                         : (position) =>
@@ -81,18 +106,22 @@ class _ServerPickerTile extends StatelessWidget {
   final Server server;
   final VoidCallback onTap;
   final ValueChanged<Offset>? onLongPress;
+  final List<OrbitaMenuAction<String>>? menuActions;
+  final ValueChanged<String>? onMenuSelected;
 
   const _ServerPickerTile({
     required this.server,
     required this.onTap,
     this.onLongPress,
+    this.menuActions,
+    this.onMenuSelected,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
+    final card = Card(
       elevation: 3,
       shadowColor: theme.colorScheme.shadow.withAlpha(32),
       surfaceTintColor: Colors.transparent,
@@ -100,49 +129,59 @@ class _ServerPickerTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       clipBehavior: Clip.antiAlias,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onLongPressStart: onLongPress == null
-            ? null
-            : (details) => onLongPress!(details.globalPosition),
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Row(
-              children: [
-                OsIcon(type: server.osType, size: 22),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        server.name,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: [
+              OsIcon(type: server.osType, size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      server.name,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        server.displayEndpoint,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      server.displayEndpoint,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Icon(
-                  Ionicons.chevron_forward,
-                  size: 20,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ],
-            ),
+              ),
+              Icon(
+                Ionicons.chevron_forward,
+                size: 20,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
           ),
         ),
       ),
+    );
+
+    if (menuActions != null && onMenuSelected != null) {
+      return OrbitaLongPressMenu<String>(
+        actions: menuActions!,
+        onSelected: onMenuSelected!,
+        child: card,
+      );
+    }
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onLongPressStart: onLongPress == null
+          ? null
+          : (details) => onLongPress!(details.globalPosition),
+      child: card,
     );
   }
 }

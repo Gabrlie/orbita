@@ -17,32 +17,31 @@ extension _FilesPageConflictDialog on _FilesPageState {
 
   Future<_FileConflictAction?> _showConflictAction(String name) async {
     final l10n = AppLocalizations.of(context)!;
-    return showDialog<_FileConflictAction>(
+    return showOrbitaDialog<_FileConflictAction>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          l10n.fileOverwriteTitle,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        content: Text(l10n.fileOverwriteContent(name)),
-        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      builder: (context, animation) => OrbitaDialog(
+        animation: animation,
+        title: l10n.fileOverwriteTitle,
         actions: [
-          TextButton(
-            onPressed: () =>
+          OrbitaDialogAction(
+            label: l10n.commonCancel,
+            variant: FButtonVariant.ghost,
+            onPress: () =>
                 Navigator.of(context).pop(_FileConflictAction.cancel),
-            child: Text(l10n.commonCancel),
           ),
-          TextButton(
-            onPressed: () =>
+          OrbitaDialogAction(
+            label: l10n.fileKeepBoth,
+            variant: FButtonVariant.outline,
+            onPress: () =>
                 Navigator.of(context).pop(_FileConflictAction.keepBoth),
-            child: Text(l10n.fileKeepBoth),
           ),
-          FilledButton(
-            onPressed: () =>
+          OrbitaDialogAction(
+            label: l10n.fileOverwrite,
+            onPress: () =>
                 Navigator.of(context).pop(_FileConflictAction.overwrite),
-            child: Text(l10n.fileOverwrite),
           ),
         ],
+        child: Text(l10n.fileOverwriteContent(name)),
       ),
     );
   }

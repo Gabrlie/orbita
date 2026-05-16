@@ -8,6 +8,7 @@ import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/providers/key_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 /// Import (paste) an existing private key, or edit an existing key.
 class KeyImportPage extends ConsumerStatefulWidget {
@@ -109,16 +110,20 @@ class _KeyImportPageState extends ConsumerState<KeyImportPage> {
                   ),
                 ),
               ),
-              SegmentedButton<SshKeyType>(
-                segments: const [
-                  ButtonSegment(
-                    value: SshKeyType.ed25519,
-                    label: Text('Ed25519'),
-                  ),
-                  ButtonSegment(value: SshKeyType.rsa, label: Text('RSA')),
-                ],
-                selected: {_keyType},
-                onSelectionChanged: (s) => setState(() => _keyType = s.first),
+              OrbitaSwipeableTabs<SshKeyType>(
+                value: _keyType,
+                values: SshKeyType.values,
+                labelBuilder: (type) => switch (type) {
+                  SshKeyType.ed25519 => 'Ed25519',
+                  SshKeyType.rsa => 'RSA',
+                },
+                iconBuilder: (type) => Icon(
+                  type == SshKeyType.rsa
+                      ? Ionicons.shield_checkmark_outline
+                      : Ionicons.key_outline,
+                  size: 18,
+                ),
+                onChanged: (type) => setState(() => _keyType = type),
               ),
               const SizedBox(height: 24),
               TextFormField(

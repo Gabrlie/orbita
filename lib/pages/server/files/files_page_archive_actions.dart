@@ -40,19 +40,45 @@ extension _FilesPageArchiveActions on _FilesPageState {
   }
 
   Future<void> _extractEntry(Server server, RemoteFileEntry entry) async {
-    final password = await showExtractPasswordDialog(context);
-    if (password == null) return;
     final tools = extractRequiredTools(entry.name);
     if (!await _ensureTools(server, tools)) return;
-    await _runMutation(
+    try {
+      await _runMutationWithEntries(
+        server,
+        (service, key) => service.extractAndList(
+          server,
+          entry: entry,
+          listPath: _currentPath,
+          key: key,
+        ),
+        rethrowErrors: true,
+      );
+      return;
+    } catch (error) {
+      if (!mounted || !_shouldPromptExtractPassword(entry, error)) return;
+    }
+
+    // ignore: use_build_context_synchronously
+    final password = await showExtractPasswordDialog(context);
+    if (password == null || !mounted) return;
+    await _runMutationWithEntries(
       server,
-      (service, key) => service.extract(
+      (service, key) => service.extractAndList(
         server,
         entry: entry,
-        password: password.isEmpty ? null : password,
+        listPath: _currentPath,
+        password: password.trim().isEmpty ? null : password,
         key: key,
       ),
     );
+  }
+
+  bool _shouldPromptExtractPassword(RemoteFileEntry entry, Object error) {
+    if (!entry.name.trim().toLowerCase().endsWith('.zip')) return false;
+    final message = error.toString().toLowerCase();
+    return message.contains('password') ||
+        message.contains('encrypted') ||
+        message.contains('incorrect');
   }
 
   Future<bool> _ensureTools(Server server, List<String> tools) async {
@@ -70,11 +96,12 @@ extension _FilesPageArchiveActions on _FilesPageState {
     );
     if (!confirmed) return false;
     if (!mounted) return false;
-    final success = await showDialog<bool>(
+    final success = await showOrbitaDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => FileToolInstallDialog(
+      builder: (context, animation) => FileToolInstallDialog(
         tools: missing,
+        animation: animation,
         onInstall: (onOutput) => service.installToolsWithOutput(
           server,
           tools: missing,

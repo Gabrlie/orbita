@@ -173,24 +173,28 @@ void main() {
     );
   });
 
-  test('backup settings persist daily auto backup time', () async {
+  test('backup settings persist daily auto backup time and retention', () async {
     SharedPreferences.setMockInitialValues({
       'backup_auto_time_minutes': 25 * 60,
+      'backup_retention_count': 150,
     });
     final prefs = await SharedPreferences.getInstance();
     final store = BackupSettingsStore(prefs);
 
     expect(store.read().autoBackupTimeMinutes, 1439);
+    expect(store.read().retentionCount, 100);
 
     await store.save(
       const BackupSettings(
         autoBackupEnabled: true,
         autoBackupTimeMinutes: 9 * 60 + 30,
+        retentionCount: 5,
       ),
     );
 
     final restored = store.read();
     expect(restored.autoBackupEnabled, isTrue);
     expect(restored.autoBackupTimeMinutes, 570);
+    expect(restored.retentionCount, 5);
   });
 }

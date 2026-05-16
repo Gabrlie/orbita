@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/backup_models.dart';
+import 'package:orbita/pages/settings/backup_sync_messages.dart';
+import 'package:orbita/pages/settings/backup_sync_time_picker.dart';
 import 'package:orbita/pages/settings/backup_sync_widgets.dart';
 import 'package:orbita/pages/settings/security/security_dialogs.dart';
 import 'package:orbita/providers/backup_sync_provider.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class BackupSyncActions {
   const BackupSyncActions();
@@ -16,7 +20,11 @@ class BackupSyncActions {
   ) async {
     final l10n = AppLocalizations.of(context)!;
     if (!_hasConfiguredTarget(backup)) {
-      _showMessage(context, l10n.backupNoTarget);
+      showBackupSyncMessage(
+        context,
+        l10n.backupNoTarget,
+        variant: FAlertVariant.destructive,
+      );
       return;
     }
     await run(context, () {
@@ -40,7 +48,11 @@ class BackupSyncActions {
   ) async {
     final l10n = AppLocalizations.of(context)!;
     if (!backup.webdavEnabled || backup.webdavUrl.isEmpty) {
-      _showMessage(context, l10n.backupWebDavUnset);
+      showBackupSyncMessage(
+        context,
+        l10n.backupWebDavUnset,
+        variant: FAlertVariant.destructive,
+      );
       return;
     }
     final entry = await _selectBackup(
@@ -76,7 +88,7 @@ class BackupSyncActions {
       hour: backup.autoBackupTimeMinutes ~/ 60,
       minute: backup.autoBackupTimeMinutes % 60,
     );
-    final picked = await showTimePicker(context: context, initialTime: current);
+    final picked = await pickBackupAutoTime(context, current);
     if (picked == null || !context.mounted) return;
     await run(context, () {
       return ref
@@ -90,12 +102,13 @@ class BackupSyncActions {
     WidgetRef ref,
     BackupSettings backup,
   ) async {
-    final result = await showDialog<WebDavConfig>(
+    final result = await showOrbitaDialog<WebDavConfig>(
       context: context,
-      builder: (context) => WebDavConfigDialog(
+      builder: (context, animation) => WebDavConfigDialog(
         url: backup.webdavUrl,
         username: backup.webdavUsername,
         remoteFolder: backup.webdavRemoteFolder,
+        animation: animation,
       ),
     );
     if (result == null || !context.mounted) return;
@@ -121,25 +134,34 @@ class BackupSyncActions {
     try {
       await action();
       if (!context.mounted) return;
-      _showMessage(context, successMessage ?? l10n.backupOperationDone);
+      showBackupSyncMessage(
+        context,
+        successMessage ?? l10n.backupOperationDone,
+      );
     } catch (error) {
       if (!context.mounted) return;
-      _showMessage(
+      showBackupSyncMessage(
         context,
-        errorMessageBuilder?.call(error) ?? _messageFor(error, l10n),
+        errorMessageBuilder?.call(error) ?? backupSyncMessageFor(error, l10n),
+        variant: FAlertVariant.destructive,
       );
     }
   }
 
   void showPasswordRequired(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    _showMessage(context, l10n.backupPasswordSetupRequired);
+    showBackupSyncMessage(
+      context,
+      l10n.backupPasswordSetupRequired,
+      variant: FAlertVariant.destructive,
+    );
   }
 
   Future<String?> _askPassword(BuildContext context, String title) {
-    return showDialog<String>(
+    return showOrbitaDialog<String>(
       context: context,
-      builder: (context) => SinglePasswordDialog(title: title),
+      builder: (context, animation) =>
+          SinglePasswordDialog(title: title, animation: animation),
     );
   }
 
@@ -155,12 +177,16 @@ class BackupSyncActions {
           .restoreBackupSilently(entry);
       if (!context.mounted) return;
       if (restored) {
-        _showMessage(context, l10n.backupRestoreDone);
+        showBackupSyncMessage(context, l10n.backupRestoreDone);
         return;
       }
     } catch (error) {
       if (!context.mounted) return;
-      _showMessage(context, l10n.backupRestoreFailed(_messageFor(error, l10n)));
+      showBackupSyncMessage(
+        context,
+        l10n.backupRestoreFailed(backupSyncMessageFor(error, l10n)),
+        variant: FAlertVariant.destructive,
+      );
       return;
     }
 
@@ -178,7 +204,7 @@ class BackupSyncActions {
       },
       successMessage: l10n.backupRestoreDone,
       errorMessageBuilder: (error) =>
-          l10n.backupRestoreFailed(_messageFor(error, l10n)),
+          l10n.backupRestoreFailed(backupSyncMessageFor(error, l10n)),
     );
   }
 
@@ -191,18 +217,29 @@ class BackupSyncActions {
       final entries = await load();
       if (!context.mounted) return null;
       if (entries.isEmpty) {
-        _showMessage(context, l10n.backupNoBackups);
+        showBackupSyncMessage(
+          context,
+          l10n.backupNoBackups,
+          variant: FAlertVariant.destructive,
+        );
         return null;
       }
-      return showDialog<BackupEntry>(
+      return showOrbitaDialog<BackupEntry>(
         context: context,
-        builder: (context) => BackupSelectDialog(
+        builder: (context, animation) => BackupSelectDialog(
           title: l10n.backupSelectBackup,
           entries: entries,
+          animation: animation,
         ),
       );
     } catch (error) {
-      if (context.mounted) _showMessage(context, _messageFor(error, l10n));
+      if (context.mounted) {
+        showBackupSyncMessage(
+          context,
+          backupSyncMessageFor(error, l10n),
+          variant: FAlertVariant.destructive,
+        );
+      }
       return null;
     }
   }
@@ -210,26 +247,5 @@ class BackupSyncActions {
   bool _hasConfiguredTarget(BackupSettings backup) {
     return (backup.localEnabled && backup.localFolder.isNotEmpty) ||
         (backup.webdavEnabled && backup.webdavUrl.isNotEmpty);
-  }
-
-  void _showMessage(BuildContext context, String message) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.clearSnackBars();
-    messenger.showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
-    );
-  }
-
-  String _messageFor(Object error, AppLocalizations l10n) {
-    if (error is BackupException) {
-      return switch (error.message) {
-        BackupException.invalidPassword => l10n.backupInvalidPassword,
-        BackupException.invalidSnapshot => l10n.backupInvalidSnapshot,
-        BackupException.noTarget => l10n.backupNoTarget,
-        BackupException.passwordRequired => l10n.backupPasswordSetupRequired,
-        _ => error.message,
-      };
-    }
-    return '$error';
   }
 }

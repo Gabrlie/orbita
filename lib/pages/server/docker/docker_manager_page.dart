@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
@@ -15,6 +16,7 @@ import 'package:orbita/providers/remote_script_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/services/docker_command_builder.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 import 'package:orbita/widgets/remote_script_output_dialog.dart';
 
 enum _DockerSection { overview, containers, compose, images, volumes }
@@ -134,15 +136,16 @@ class _DockerManagerPageState extends ConsumerState<DockerManagerPage> {
         .firstWhere((script) => script.id == 'install-docker');
     final key = await resolveRemoteScriptKey(ref, server);
     if (!mounted) return;
-    final success = await showDialog<bool>(
+    final success = await showOrbitaDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => RemoteScriptOutputDialog(
+      builder: (context, animation) => RemoteScriptOutputDialog(
         title: l10n.scriptRunningOn(script.name, server.name),
         successMessage: l10n.scriptRunSucceeded,
         failureMessage: l10n.scriptRunFailed,
         onRun: (onOutput) =>
             service.run(server, script: script, key: key, onOutput: onOutput),
+        animation: animation,
       ),
     );
     if (success == true) _refresh();
@@ -425,10 +428,11 @@ class _DockerContainerView extends ConsumerWidget {
             if (container.ports.isNotEmpty) container.ports,
             if (container.composeProject.isNotEmpty) container.composeProject,
           ],
-          trailing: PopupMenuButton<String>(
-            icon: const Icon(Ionicons.ellipsis_horizontal),
+          trailing: OrbitaIconMenuButton<String>(
+            icon: Ionicons.ellipsis_horizontal,
+            title: container.displayName,
             onSelected: (value) => _handleMenu(context, ref, container, value),
-            itemBuilder: (context) => [
+            actions: [
               if (container.isRunning)
                 _menuItem('stop', Ionicons.stop_outline, l10n.dockerStop)
               else
@@ -444,23 +448,20 @@ class _DockerContainerView extends ConsumerWidget {
                 Ionicons.document_text_outline,
                 l10n.dockerLogs,
               ),
-              PopupMenuItem<String>(
-                value: 'exec',
-                child: Row(
-                  children: [
-                    const Icon(Ionicons.terminal_outline, size: 20),
-                    const SizedBox(width: 12),
-                    Text(l10n.dockerExec),
-                  ],
-                ),
-              ),
+              _menuItem('exec', Ionicons.terminal_outline, l10n.dockerExec),
               _menuItem(
                 'details',
                 Ionicons.information_circle_outline,
                 l10n.dockerDetails,
               ),
               if (!container.isRunning)
-                _menuItem('remove', Ionicons.trash_outline, l10n.commonDelete),
+                _menuItem(
+                  'remove',
+                  Ionicons.trash_outline,
+                  l10n.commonDelete,
+                  destructive: true,
+                  dividerBefore: true,
+                ),
             ],
           ),
         );
@@ -556,17 +557,21 @@ class _DockerContainerView extends ConsumerWidget {
     DockerContainer container,
   ) async {
     final l10n = AppLocalizations.of(context)!;
-    final shell = await showDialog<String>(
+    final shell = await showOrbitaDialog<String>(
       context: context,
-      builder: (context) => SimpleDialog(
-        title: Text(l10n.dockerExecShell),
-        children: [
-          for (final shell in const ['bash', 'sh', 'ash'])
-            SimpleDialogOption(
-              onPressed: () => Navigator.of(context).pop(shell),
-              child: Text(shell),
-            ),
-        ],
+      builder: (context, animation) => OrbitaDialog(
+        animation: animation,
+        title: l10n.dockerExecShell,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final shell in const ['bash', 'sh', 'ash'])
+              FItem(
+                title: Text(shell),
+                onPress: () => Navigator.of(context).pop(shell),
+              ),
+          ],
+        ),
       ),
     );
     if (shell == null || !context.mounted) return;
@@ -623,10 +628,11 @@ class _DockerComposeView extends ConsumerWidget {
             if (project.containers.isNotEmpty)
               '${project.containers.length} ${l10n.dockerContainers}',
           ],
-          trailing: PopupMenuButton<String>(
-            icon: const Icon(Ionicons.ellipsis_horizontal),
+          trailing: OrbitaIconMenuButton<String>(
+            icon: Ionicons.ellipsis_horizontal,
+            title: project.name,
             onSelected: (value) => _handleMenu(context, ref, project, value),
-            itemBuilder: (context) => [
+            actions: [
               if (project.state != DockerComposeState.running)
                 _menuItem('start', Ionicons.play_outline, l10n.dockerStart),
               if (project.state != DockerComposeState.stopped)
@@ -643,7 +649,13 @@ class _DockerComposeView extends ConsumerWidget {
                 Ionicons.information_circle_outline,
                 l10n.dockerDetails,
               ),
-              _menuItem('delete', Ionicons.trash_outline, l10n.commonDelete),
+              _menuItem(
+                'delete',
+                Ionicons.trash_outline,
+                l10n.commonDelete,
+                destructive: true,
+                dividerBefore: true,
+              ),
             ],
           ),
         );
@@ -786,10 +798,11 @@ class _DockerImageView extends ConsumerWidget {
             if (image.containers.isNotEmpty)
               '${image.containers.length} ${l10n.dockerContainers}',
           ],
-          trailing: PopupMenuButton<String>(
-            icon: const Icon(Ionicons.ellipsis_horizontal),
+          trailing: OrbitaIconMenuButton<String>(
+            icon: Ionicons.ellipsis_horizontal,
+            title: image.reference,
             onSelected: (value) => _handleMenu(context, ref, image, value),
-            itemBuilder: (context) => [
+            actions: [
               _menuItem(
                 'pull',
                 Ionicons.cloud_download_outline,
@@ -800,7 +813,13 @@ class _DockerImageView extends ConsumerWidget {
                 Ionicons.information_circle_outline,
                 l10n.dockerDetails,
               ),
-              _menuItem('remove', Ionicons.trash_outline, l10n.commonDelete),
+              _menuItem(
+                'remove',
+                Ionicons.trash_outline,
+                l10n.commonDelete,
+                destructive: true,
+                dividerBefore: true,
+              ),
             ],
           ),
         );
@@ -925,16 +944,23 @@ class _DockerVolumeView extends ConsumerWidget {
             if (volume.containers.isNotEmpty)
               '${volume.containers.length} ${l10n.dockerContainers}',
           ],
-          trailing: PopupMenuButton<String>(
-            icon: const Icon(Ionicons.ellipsis_horizontal),
+          trailing: OrbitaIconMenuButton<String>(
+            icon: Ionicons.ellipsis_horizontal,
+            title: volume.name,
             onSelected: (value) => _handleMenu(context, ref, volume, value),
-            itemBuilder: (context) => [
+            actions: [
               _menuItem(
                 'details',
                 Ionicons.information_circle_outline,
                 l10n.dockerDetails,
               ),
-              _menuItem('remove', Ionicons.trash_outline, l10n.commonDelete),
+              _menuItem(
+                'remove',
+                Ionicons.trash_outline,
+                l10n.commonDelete,
+                destructive: true,
+                dividerBefore: true,
+              ),
             ],
           ),
         );
@@ -1197,12 +1223,19 @@ class _MetaChip extends StatelessWidget {
   }
 }
 
-PopupMenuItem<String> _menuItem(String value, IconData icon, String label) {
-  return PopupMenuItem(
+OrbitaMenuAction<String> _menuItem(
+  String value,
+  IconData icon,
+  String label, {
+  bool destructive = false,
+  bool dividerBefore = false,
+}) {
+  return OrbitaMenuAction(
     value: value,
-    child: Row(
-      children: [Icon(icon, size: 20), const SizedBox(width: 12), Text(label)],
-    ),
+    icon: icon,
+    label: label,
+    destructive: destructive,
+    dividerBefore: dividerBefore,
   );
 }
 
@@ -1240,29 +1273,31 @@ Future<void> _showOutputDialog(
   String title,
   String output,
 ) async {
-  await showDialog<void>(
+  await showOrbitaDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title),
-      content: SizedBox(
+    builder: (context, animation) => OrbitaDialog(
+      animation: animation,
+      title: title,
+      actions: [
+        OrbitaDialogAction(
+          label: AppLocalizations.of(context)!.dockerCopyOutput,
+          variant: FButtonVariant.outline,
+          onPress: () {
+            Clipboard.setData(ClipboardData(text: output));
+            Navigator.of(context).pop();
+          },
+        ),
+        OrbitaDialogAction(
+          label: AppLocalizations.of(context)!.commonOk,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+      ],
+      child: SizedBox(
         width: double.maxFinite,
         child: SingleChildScrollView(
           child: SelectableText(output.isEmpty ? '-' : output),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Clipboard.setData(ClipboardData(text: output));
-            Navigator.of(context).pop();
-          },
-          child: Text(AppLocalizations.of(context)!.dockerCopyOutput),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(AppLocalizations.of(context)!.commonOk),
-        ),
-      ],
     ),
   );
 }
@@ -1277,66 +1312,21 @@ Future<_ComposeDraft?> _showComposeDialog(BuildContext context) async {
   );
   var upAfterCreate = true;
   final formKey = GlobalKey<FormState>();
-  final result = await showDialog<_ComposeDraft>(
+  final result = await showOrbitaDialog<_ComposeDraft>(
     context: context,
-    builder: (context) => StatefulBuilder(
-      builder: (context, setState) => AlertDialog(
-        title: Text(l10n.dockerCreateCompose),
-        content: SizedBox(
-          width: 560,
-          child: Form(
-            key: formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      labelText: l10n.dockerProjectName,
-                    ),
-                    validator: (value) => value == null || value.trim().isEmpty
-                        ? l10n.validationRequired
-                        : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: directoryController,
-                    decoration: InputDecoration(
-                      labelText: l10n.dockerRemoteDirectory,
-                    ),
-                    validator: (value) => value == null || value.trim().isEmpty
-                        ? l10n.validationRequired
-                        : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: yamlController,
-                    decoration: InputDecoration(
-                      labelText: l10n.dockerComposeYaml,
-                    ),
-                    minLines: 8,
-                    maxLines: 14,
-                    style: const TextStyle(fontFamily: 'JetBrains Mono'),
-                  ),
-                  SwitchListTile(
-                    value: upAfterCreate,
-                    contentPadding: EdgeInsets.zero,
-                    onChanged: (value) => setState(() => upAfterCreate = value),
-                    title: Text(l10n.dockerDeployNow),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+    builder: (context, animation) => StatefulBuilder(
+      builder: (context, setState) => OrbitaDialog(
+        animation: animation,
+        title: l10n.dockerCreateCompose,
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.commonCancel),
+          OrbitaDialogAction(
+            label: l10n.commonCancel,
+            variant: FButtonVariant.outline,
+            onPress: () => Navigator.of(context).pop(),
           ),
-          FilledButton(
-            onPressed: () {
+          OrbitaDialogAction(
+            label: l10n.commonSave,
+            onPress: () {
               if (!formKey.currentState!.validate()) return;
               Navigator.of(context).pop(
                 _ComposeDraft(
@@ -1347,9 +1337,54 @@ Future<_ComposeDraft?> _showComposeDialog(BuildContext context) async {
                 ),
               );
             },
-            child: Text(l10n.commonSave),
           ),
         ],
+        child: SizedBox(
+          width: 560,
+          child: Form(
+            key: formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FTextFormField(
+                    control: FTextFieldControl.managed(
+                      controller: nameController,
+                    ),
+                    label: Text(l10n.dockerProjectName),
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? l10n.validationRequired
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+                  FTextFormField(
+                    control: FTextFieldControl.managed(
+                      controller: directoryController,
+                    ),
+                    label: Text(l10n.dockerRemoteDirectory),
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? l10n.validationRequired
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+                  FTextFormField.multiline(
+                    control: FTextFieldControl.managed(
+                      controller: yamlController,
+                    ),
+                    label: Text(l10n.dockerComposeYaml),
+                    minLines: 8,
+                    maxLines: 14,
+                  ),
+                  FSwitch(
+                    value: upAfterCreate,
+                    onChange: (value) => setState(() => upAfterCreate = value),
+                    label: Text(l10n.dockerDeployNow),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     ),
   );

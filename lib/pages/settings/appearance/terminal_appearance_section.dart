@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/pages/settings/appearance/terminal_color_picker_dialog.dart';
 import 'package:orbita/providers/settings_provider.dart';
-import 'package:orbita/widgets/common.dart';
-import 'package:orbita/widgets/orbita_select_field.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
+import 'package:orbita/widgets/settings_tiles.dart';
 
 class TerminalAppearanceSection extends ConsumerWidget {
   const TerminalAppearanceSection({super.key});
@@ -31,79 +32,62 @@ class TerminalAppearanceSection extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final appearance = ref.watch(terminalAppearanceProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return OrbitaSettingsTileGroup(
+      title: l10n.terminalAppearance,
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
       children: [
-        SectionHeader(
-          title: l10n.terminalAppearance,
-          padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
+        OrbitaSelectMenuTile<TerminalFontFamily>(
+          title: l10n.terminalFontFamily,
+          value: appearance.fontFamily,
+          options: TerminalFontFamily.values,
+          labelBuilder: (value) => switch (value) {
+            TerminalFontFamily.jetbrainsMono => l10n.terminalFontJetBrainsMono,
+            TerminalFontFamily.system => l10n.terminalFontSystem,
+            TerminalFontFamily.monospace => l10n.terminalFontMonospace,
+            TerminalFontFamily.custom => l10n.terminalFontCustom,
+          },
+          prefix: const Icon(Ionicons.code_slash_outline),
+          onChanged: (value) {
+            ref
+                .read(terminalAppearanceProvider.notifier)
+                .set(appearance.copyWith(fontFamily: value));
+          },
         ),
-        Material(
-          color: tonalItemColor(context),
-          borderRadius: BorderRadius.circular(14),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 260),
-                  child: _FontFamilyField(appearance: appearance),
-                ),
+        if (appearance.fontFamily == TerminalFontFamily.custom)
+          FTile.raw(
+            child: TextFormField(
+              initialValue: appearance.customFontFamily,
+              decoration: InputDecoration(
+                labelText: l10n.terminalCustomFontFamily,
+                prefixIcon: const Icon(Ionicons.text_outline),
               ),
-              if (appearance.fontFamily == TerminalFontFamily.custom) ...[
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 260),
-                    child: TextFormField(
-                      initialValue: appearance.customFontFamily,
-                      decoration: InputDecoration(
-                        labelText: l10n.terminalCustomFontFamily,
-                        prefixIcon: const Icon(Ionicons.text_outline),
-                      ),
-                      onChanged: (value) => _set(
-                        ref,
-                        appearance.copyWith(customFontFamily: value),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 16, 14, 4),
-                child: _FontSizeSlider(appearance: appearance),
+              onChanged: (value) => _set(
+                ref,
+                appearance.copyWith(customFontFamily: value),
               ),
-              const Divider(height: 20),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-                child: Column(
-                  children: [
-                    _TerminalColorRow(
-                      title: l10n.terminalForegroundColor,
-                      selected: appearance.foregroundColor,
-                      colors: _foregroundColors,
-                      onSelected: (color) => _set(
-                        ref,
-                        appearance.copyWith(foregroundColor: color),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    _TerminalColorRow(
-                      title: l10n.terminalBackgroundColor,
-                      selected: appearance.backgroundColor,
-                      colors: _backgroundColors,
-                      onSelected: (color) => _set(
-                        ref,
-                        appearance.copyWith(backgroundColor: color),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
+          ),
+        FTile.raw(child: _FontSizeSlider(appearance: appearance)),
+        FTile.raw(
+          child: _TerminalColorRow(
+            title: l10n.terminalForegroundColor,
+            selected: appearance.foregroundColor,
+            colors: _foregroundColors,
+            onSelected: (color) => _set(
+              ref,
+              appearance.copyWith(foregroundColor: color),
+            ),
+          ),
+        ),
+        FTile.raw(
+          child: _TerminalColorRow(
+            title: l10n.terminalBackgroundColor,
+            selected: appearance.backgroundColor,
+            colors: _backgroundColors,
+            onSelected: (color) => _set(
+              ref,
+              appearance.copyWith(backgroundColor: color),
+            ),
           ),
         ),
       ],
@@ -112,35 +96,6 @@ class TerminalAppearanceSection extends ConsumerWidget {
 
   void _set(WidgetRef ref, TerminalAppearance appearance) {
     ref.read(terminalAppearanceProvider.notifier).set(appearance);
-  }
-}
-
-class _FontFamilyField extends ConsumerWidget {
-  final TerminalAppearance appearance;
-
-  const _FontFamilyField({required this.appearance});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return OrbitaSelectField<TerminalFontFamily>(
-      label: l10n.terminalFontFamily,
-      value: appearance.fontFamily,
-      options: TerminalFontFamily.values,
-      leadingIcon: Ionicons.code_slash_outline,
-      labelBuilder: (value) => switch (value) {
-        TerminalFontFamily.jetbrainsMono => l10n.terminalFontJetBrainsMono,
-        TerminalFontFamily.system => l10n.terminalFontSystem,
-        TerminalFontFamily.monospace => l10n.terminalFontMonospace,
-        TerminalFontFamily.custom => l10n.terminalFontCustom,
-      },
-      onChanged: (value) {
-        ref
-            .read(terminalAppearanceProvider.notifier)
-            .set(appearance.copyWith(fontFamily: value));
-      },
-    );
   }
 }
 
@@ -177,19 +132,40 @@ class _FontSizeSlider extends ConsumerWidget {
             ),
           ],
         ),
-        Slider(
-          value: appearance.fontSize,
-          min: 8,
-          max: 24,
-          divisions: 16,
-          onChanged: (value) {
-            ref
-                .read(terminalAppearanceProvider.notifier)
-                .set(appearance.copyWith(fontSize: value.roundToDouble()));
-          },
+        const SizedBox(height: 10),
+        FSlider(
+          control: FSliderControl.liftedDiscrete(
+            value: FSliderValue(max: _positionForSize(appearance.fontSize)),
+            onChange: (value) {
+              final fontSize = _sizeForPosition(value.max).toDouble();
+              if (fontSize == appearance.fontSize) return;
+              ref
+                  .read(terminalAppearanceProvider.notifier)
+                  .set(appearance.copyWith(fontSize: fontSize));
+            },
+          ),
+          marks: [
+            for (var size = 8; size <= 24; size++)
+              FSliderMark(
+                value: (size - 8) / 16,
+                label: switch (size) {
+                  8 || 16 || 24 => Text('$size'),
+                  _ => null,
+                },
+              ),
+          ],
         ),
       ],
     );
+  }
+
+  static double _positionForSize(double size) {
+    return (((size.round().clamp(8, 24) - 8) / 16).clamp(0, 1))
+        .toDouble();
+  }
+
+  static int _sizeForPosition(double position) {
+    return (8 + position.clamp(0, 1) * 16).round().clamp(8, 24).toInt();
   }
 }
 
@@ -227,10 +203,12 @@ class _TerminalColorRow extends StatelessWidget {
               selected: !colors.contains(selected),
               icon: Ionicons.color_palette_outline,
               onTap: () async {
-                final color = await showDialog<Color>(
+                final color = await showOrbitaDialog<Color>(
                   context: context,
-                  builder: (context) =>
-                      TerminalColorPickerDialog(initialColor: selected),
+                  builder: (context, animation) => TerminalColorPickerDialog(
+                    initialColor: selected,
+                    animation: animation,
+                  ),
                 );
                 if (color != null) onSelected(color);
               },

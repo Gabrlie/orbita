@@ -3278,6 +3278,18 @@ abstract class AppLocalizations {
   /// **'使用密码'**
   String get fileUsePassword;
 
+  /// No description provided for @fileNoPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'不使用密码'**
+  String get fileNoPassword;
+
+  /// No description provided for @fileWithPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用密码'**
+  String get fileWithPassword;
+
   /// No description provided for @filePasswordWarning.
   ///
   /// In zh, this message translates to:

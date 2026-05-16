@@ -133,27 +133,28 @@ class _ServerFormPageState extends ConsumerState<ServerFormPage> {
                     : null,
               ),
               const SizedBox(height: 16),
-              FSelectTileGroup<AuthType>(
-                label: Text(l10n.serverAuthType),
-                control: FMultiValueControl.managedRadio(
-                  initial: _authType,
-                  onChange: (selection) {
-                    if (selection.isEmpty) return;
-                    setState(() => _authType = selection.first);
-                  },
+              Text(
+                l10n.serverAuthType,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
                 ),
-                children: [
-                  FSelectTile.suffix(
-                    value: AuthType.password,
-                    prefix: const Icon(Ionicons.lock_closed_outline),
-                    title: Text(l10n.authPassword),
-                  ),
-                  FSelectTile.suffix(
-                    value: AuthType.key,
-                    prefix: const Icon(Ionicons.key_outline),
-                    title: Text(l10n.authPrivateKey),
-                  ),
-                ],
+              ),
+              const SizedBox(height: 8),
+              OrbitaSwipeableTabs<AuthType>(
+                value: _authType,
+                values: AuthType.values,
+                labelBuilder: (type) => switch (type) {
+                  AuthType.password => l10n.authPassword,
+                  AuthType.key => l10n.authPrivateKey,
+                },
+                iconBuilder: (type) => Icon(
+                  switch (type) {
+                    AuthType.password => Ionicons.lock_closed_outline,
+                    AuthType.key => Ionicons.key_outline,
+                  },
+                  size: 18,
+                ),
+                onChanged: (type) => setState(() => _authType = type),
               ),
               const SizedBox(height: 16),
               if (_authType == AuthType.password)

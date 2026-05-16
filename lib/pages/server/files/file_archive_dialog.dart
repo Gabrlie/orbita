@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/remote_file_entry.dart';
-import 'package:orbita/widgets/orbita_select_field.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class CompressOptions {
   final ArchiveFormat format;
@@ -11,49 +12,34 @@ class CompressOptions {
 }
 
 Future<CompressOptions?> showCompressDialog(BuildContext context) {
-  return showDialog<CompressOptions>(
+  return showOrbitaDialog<CompressOptions>(
     context: context,
-    builder: (context) => const _CompressDialog(),
+    builder: (context, animation) => _CompressDialog(animation: animation),
   );
 }
 
 Future<String?> showExtractPasswordDialog(BuildContext context) async {
   final l10n = AppLocalizations.of(context)!;
   final controller = TextEditingController();
-  var usePassword = false;
-  final result = await showDialog<String>(
+  final result = await showOrbitaDialog<String>(
     context: context,
-    builder: (context) => StatefulBuilder(
-      builder: (context, setState) => AlertDialog(
-        title: Text(l10n.fileExtract),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(l10n.fileUsePassword),
-              value: usePassword,
-              onChanged: (value) => setState(() => usePassword = value),
-            ),
-            if (usePassword)
-              TextField(
-                controller: controller,
-                obscureText: true,
-                decoration: InputDecoration(labelText: l10n.password),
-              ),
-          ],
+    builder: (context, animation) => OrbitaDialog(
+      animation: animation,
+      title: l10n.fileExtract,
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.of(context).pop(usePassword ? controller.text : ''),
-            child: Text(l10n.commonConfirm),
-          ),
-        ],
+        OrbitaDialogAction(
+          label: l10n.fileExtract,
+          onPress: () => Navigator.of(context).pop(controller.text),
+        ),
+      ],
+      child: FTextField.password(
+        control: FTextFieldControl.managed(controller: controller),
+        label: Text(l10n.password),
       ),
     ),
   );
@@ -62,7 +48,9 @@ Future<String?> showExtractPasswordDialog(BuildContext context) async {
 }
 
 class _CompressDialog extends StatefulWidget {
-  const _CompressDialog();
+  final Animation<double> animation;
+
+  const _CompressDialog({required this.animation});
 
   @override
   State<_CompressDialog> createState() => _CompressDialogState();
@@ -82,13 +70,32 @@ class _CompressDialogState extends State<_CompressDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(l10n.fileCompress),
-      content: Column(
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: l10n.fileCompress,
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+        OrbitaDialogAction(
+          label: l10n.fileCompress,
+          onPress: () => Navigator.of(context).pop(
+            CompressOptions(
+              format: _format,
+              password: _format == ArchiveFormat.zip && _usePassword
+                  ? _passwordController.text
+                  : null,
+            ),
+          ),
+        ),
+      ],
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          OrbitaSelectField<ArchiveFormat>(
-            label: l10n.fileArchiveFormat,
+          OrbitaSelectMenuTile<ArchiveFormat>(
+            title: l10n.fileArchiveFormat,
             value: _format,
             options: ArchiveFormat.values,
             labelBuilder: archiveFormatLabel,
@@ -99,38 +106,29 @@ class _CompressDialogState extends State<_CompressDialog> {
               });
             },
           ),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(l10n.fileUsePassword),
-            subtitle: Text(l10n.filePasswordWarning),
-            value: _usePassword,
-            onChanged: _format == ArchiveFormat.zip
-                ? (value) => setState(() => _usePassword = value)
-                : null,
-          ),
-          if (_usePassword)
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(labelText: l10n.password),
+          const SizedBox(height: 12),
+          if (_format == ArchiveFormat.zip)
+            OrbitaSelectMenuTile<bool>(
+              title: l10n.fileUsePassword,
+              value: _usePassword,
+              options: const [false, true],
+              labelBuilder: (value) =>
+                  value ? l10n.fileWithPassword : l10n.fileNoPassword,
+              subtitle: l10n.filePasswordWarning,
+              onChanged: (value) => setState(() => _usePassword = value),
+            ),
+          if (_format == ArchiveFormat.zip && _usePassword)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: FTextField.password(
+                control: FTextFieldControl.managed(
+                  controller: _passwordController,
+                ),
+                label: Text(l10n.password),
+              ),
             ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(
-            CompressOptions(
-              format: _format,
-              password: _usePassword ? _passwordController.text : null,
-            ),
-          ),
-          child: Text(l10n.commonConfirm),
-        ),
-      ],
     );
   }
 }

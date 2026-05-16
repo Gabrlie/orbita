@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
@@ -29,6 +30,7 @@ import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/services/remote_file_command_builder.dart';
 import 'package:orbita/services/sftp_file_service.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'files_page_actions.dart';

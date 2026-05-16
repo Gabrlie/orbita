@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/command_snippet.dart';
 import 'package:orbita/providers/command_snippet_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class SnippetsPage extends ConsumerStatefulWidget {
   const SnippetsPage({super.key});
@@ -61,14 +63,11 @@ class _SnippetsPageState extends ConsumerState<SnippetsPage> {
                   : ListView.builder(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
                       itemCount: snippets.length,
-                      itemBuilder: (context, index) =>
-                          _SnippetTile(
-                            snippet: snippets[index],
-                            onEdit: () => _editSnippet(
-                              context,
-                              snippet: snippets[index],
-                            ),
-                          ),
+                      itemBuilder: (context, index) => _SnippetTile(
+                        snippet: snippets[index],
+                        onEdit: () =>
+                            _editSnippet(context, snippet: snippets[index]),
+                      ),
                     ),
             ),
           ],
@@ -85,9 +84,10 @@ class _SnippetsPageState extends ConsumerState<SnippetsPage> {
     BuildContext context, {
     CommandSnippet? snippet,
   }) async {
-    final result = await showDialog<_SnippetFormResult>(
+    final result = await showOrbitaDialog<_SnippetFormResult>(
       context: context,
-      builder: (context) => _SnippetEditorDialog(snippet: snippet),
+      builder: (context, animation) =>
+          _SnippetEditorDialog(snippet: snippet, animation: animation),
     );
     if (result == null) return;
     final notifier = ref.read(commandSnippetProvider.notifier);
@@ -151,8 +151,9 @@ class _SnippetTile extends ConsumerWidget {
 
 class _SnippetEditorDialog extends StatefulWidget {
   final CommandSnippet? snippet;
+  final Animation<double>? animation;
 
-  const _SnippetEditorDialog({this.snippet});
+  const _SnippetEditorDialog({this.snippet, this.animation});
 
   @override
   State<_SnippetEditorDialog> createState() => _SnippetEditorDialogState();
@@ -181,27 +182,31 @@ class _SnippetEditorDialogState extends State<_SnippetEditorDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final editing = widget.snippet != null;
-    return AlertDialog(
-      title: Text(
-        editing ? l10n.commandSnippetEdit : l10n.commandSnippetAdd,
-      ),
-      content: Form(
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: editing ? l10n.commandSnippetEdit : l10n.commandSnippetAdd,
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+        OrbitaDialogAction(label: l10n.commonSave, onPress: _submit),
+      ],
+      child: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextFormField(
-              controller: _name,
-              decoration: InputDecoration(labelText: l10n.commandSnippetName),
+            FTextFormField(
+              control: FTextFieldControl.managed(controller: _name),
+              label: Text(l10n.commandSnippetName),
               validator: _required,
             ),
             const SizedBox(height: 12),
-            TextFormField(
-              controller: _command,
-              decoration: InputDecoration(
-                labelText: l10n.commandSnippetCommand,
-                alignLabelWithHint: true,
-              ),
+            FTextFormField.multiline(
+              control: FTextFieldControl.managed(controller: _command),
+              label: Text(l10n.commandSnippetCommand),
               minLines: 3,
               maxLines: 6,
               validator: _required,
@@ -209,16 +214,6 @@ class _SnippetEditorDialogState extends State<_SnippetEditorDialog> {
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
-        ),
-        FilledButton(
-          onPressed: _submit,
-          child: Text(l10n.commonSave),
-        ),
-      ],
     );
   }
 
@@ -231,9 +226,9 @@ class _SnippetEditorDialogState extends State<_SnippetEditorDialog> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.of(context).pop(
-      _SnippetFormResult(_name.text.trim(), _command.text.trimRight()),
-    );
+    Navigator.of(
+      context,
+    ).pop(_SnippetFormResult(_name.text.trim(), _command.text.trimRight()));
   }
 }
 

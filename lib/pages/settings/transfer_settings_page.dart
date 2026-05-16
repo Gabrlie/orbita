@@ -1,10 +1,12 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/settings_tiles.dart';
 
 class TransferSettingsPage extends ConsumerWidget {
   const TransferSettingsPage({super.key});
@@ -25,13 +27,12 @@ class TransferSettingsPage extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           children: [
-            SectionHeader(
+            OrbitaSettingsTileGroup(
               title: l10n.transferToolSection,
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            ),
-            _SettingsPanel(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
               children: [
-                _ToolTile(
+                _toolTile(
+                  context,
                   value: TransferToolPreference.auto,
                   groupValue: settings.toolPreference,
                   title: l10n.transferToolAuto,
@@ -39,8 +40,8 @@ class TransferSettingsPage extends ConsumerWidget {
                   onChanged: (value) =>
                       notifier.set(settings.copyWith(toolPreference: value)),
                 ),
-                const Divider(height: 1, indent: 20, endIndent: 20),
-                _ToolTile(
+                _toolTile(
+                  context,
                   value: TransferToolPreference.rsync,
                   groupValue: settings.toolPreference,
                   title: l10n.transferToolRsync,
@@ -48,8 +49,8 @@ class TransferSettingsPage extends ConsumerWidget {
                   onChanged: (value) =>
                       notifier.set(settings.copyWith(toolPreference: value)),
                 ),
-                const Divider(height: 1, indent: 20, endIndent: 20),
-                _ToolTile(
+                _toolTile(
+                  context,
                   value: TransferToolPreference.localRelay,
                   groupValue: settings.toolPreference,
                   title: l10n.transferToolLocalRelay,
@@ -59,37 +60,35 @@ class TransferSettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            SectionHeader(
+            OrbitaSettingsTileGroup(
               title: l10n.transferDuplicateSection,
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            ),
-            _SettingsPanel(
               children: [
-                _DuplicateTile(
+                _duplicateTile(
+                  context,
                   value: TransferDuplicateAction.ask,
                   groupValue: settings.duplicateAction,
                   title: l10n.transferDuplicateAsk,
                   onChanged: (value) =>
                       notifier.set(settings.copyWith(duplicateAction: value)),
                 ),
-                const Divider(height: 1, indent: 20, endIndent: 20),
-                _DuplicateTile(
+                _duplicateTile(
+                  context,
                   value: TransferDuplicateAction.overwrite,
                   groupValue: settings.duplicateAction,
                   title: l10n.fileOverwrite,
                   onChanged: (value) =>
                       notifier.set(settings.copyWith(duplicateAction: value)),
                 ),
-                const Divider(height: 1, indent: 20, endIndent: 20),
-                _DuplicateTile(
+                _duplicateTile(
+                  context,
                   value: TransferDuplicateAction.keepBoth,
                   groupValue: settings.duplicateAction,
                   title: l10n.fileKeepBoth,
                   onChanged: (value) =>
                       notifier.set(settings.copyWith(duplicateAction: value)),
                 ),
-                const Divider(height: 1, indent: 20, endIndent: 20),
-                _DuplicateTile(
+                _duplicateTile(
+                  context,
                   value: TransferDuplicateAction.cancel,
                   groupValue: settings.duplicateAction,
                   title: l10n.commonCancel,
@@ -98,53 +97,49 @@ class TransferSettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            SectionHeader(
+            OrbitaSettingsTileGroup(
               title: l10n.transferDownloadSection,
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            ),
-            _SettingsPanel(
               children: [
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 4,
-                  ),
-                  leading: const Icon(Ionicons.folder_open_outline, size: 20),
-                  title: Text(l10n.transferDownloadDirectory),
-                  subtitle: Text(
-                    settings.downloadDirectory.isEmpty
-                        ? l10n.transferDownloadDefaultDirectory
-                        : settings.downloadDirectory,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: Wrap(
-                    spacing: 4,
+                orbitaSettingsTile(
+                  context,
+                  icon: Ionicons.folder_open_outline,
+                  title: l10n.transferDownloadDirectory,
+                  subtitle: settings.downloadDirectory.isEmpty
+                      ? l10n.transferDownloadDefaultDirectory
+                      : settings.downloadDirectory,
+                  suffix: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        tooltip: l10n.transferDownloadChooseDirectory,
-                        icon: const Icon(Ionicons.folder_outline),
-                        onPressed: () =>
-                            _chooseDirectory(context, settings, notifier),
+                      Tooltip(
+                        message: l10n.transferDownloadChooseDirectory,
+                        child: FButton.icon(
+                          size: FButtonSizeVariant.sm,
+                          onPress: () =>
+                              _chooseDirectory(context, settings, notifier),
+                          child: const Icon(Ionicons.folder_outline),
+                        ),
                       ),
-                      IconButton(
-                        tooltip: l10n.transferDownloadClearDirectory,
-                        icon: const Icon(Ionicons.close_outline),
-                        onPressed: settings.downloadDirectory.isEmpty
-                            ? null
-                            : () => notifier.set(
-                                settings.copyWith(downloadDirectory: ''),
-                              ),
+                      const SizedBox(width: 6),
+                      Tooltip(
+                        message: l10n.transferDownloadClearDirectory,
+                        child: FButton.icon(
+                          size: FButtonSizeVariant.sm,
+                          onPress: settings.downloadDirectory.isEmpty
+                              ? null
+                              : () => notifier.set(
+                                  settings.copyWith(downloadDirectory: ''),
+                                ),
+                          child: const Icon(Ionicons.close_outline),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const Divider(height: 1, indent: 20, endIndent: 20),
-                SwitchListTile(
-                  secondary: const Icon(Ionicons.download_outline, size: 20),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  title: Text(l10n.transferAskDownloadLocation),
-                  subtitle: Text(l10n.transferAskDownloadLocationDesc),
+                orbitaSettingsSwitchTile(
+                  context,
+                  icon: Ionicons.download_outline,
+                  title: l10n.transferAskDownloadLocation,
+                  subtitle: l10n.transferAskDownloadLocationDesc,
                   value: settings.askDownloadLocation,
                   onChanged: (value) => notifier.set(
                     settings.copyWith(askDownloadLocation: value),
@@ -176,75 +171,38 @@ class TransferSettingsPage extends ConsumerWidget {
   }
 }
 
-class _SettingsPanel extends StatelessWidget {
-  final List<Widget> children;
-
-  const _SettingsPanel({required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: tonalItemColor(context),
-      borderRadius: BorderRadius.circular(14),
-      clipBehavior: Clip.antiAlias,
-      child: Column(children: children),
-    );
-  }
+FTile _duplicateTile(
+  BuildContext context, {
+  required TransferDuplicateAction value,
+  required TransferDuplicateAction groupValue,
+  required String title,
+  required ValueChanged<TransferDuplicateAction> onChanged,
+}) {
+  return orbitaSettingsSelectableTile(
+    context,
+    icon: Ionicons.copy_outline,
+    title: title,
+    value: value,
+    groupValue: groupValue,
+    onChanged: onChanged,
+  );
 }
 
-class _DuplicateTile extends StatelessWidget {
-  final TransferDuplicateAction value;
-  final TransferDuplicateAction groupValue;
-  final String title;
-  final ValueChanged<TransferDuplicateAction> onChanged;
-
-  const _DuplicateTile({
-    required this.value,
-    required this.groupValue,
-    required this.title,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final selected = value == groupValue;
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-      leading: const Icon(Ionicons.copy_outline, size: 20),
-      title: Text(title),
-      selected: selected,
-      trailing: selected ? const Icon(Ionicons.checkmark_outline) : null,
-      onTap: () => onChanged(value),
-    );
-  }
-}
-
-class _ToolTile extends StatelessWidget {
-  final TransferToolPreference value;
-  final TransferToolPreference groupValue;
-  final String title;
-  final String subtitle;
-  final ValueChanged<TransferToolPreference> onChanged;
-
-  const _ToolTile({
-    required this.value,
-    required this.groupValue,
-    required this.title,
-    required this.subtitle,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final selected = value == groupValue;
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-      leading: const Icon(Ionicons.swap_horizontal_outline, size: 20),
-      title: Text(title),
-      subtitle: Text(subtitle),
-      selected: selected,
-      trailing: selected ? const Icon(Ionicons.checkmark_outline) : null,
-      onTap: () => onChanged(value),
-    );
-  }
+FTile _toolTile(
+  BuildContext context, {
+  required TransferToolPreference value,
+  required TransferToolPreference groupValue,
+  required String title,
+  required String subtitle,
+  required ValueChanged<TransferToolPreference> onChanged,
+}) {
+  return orbitaSettingsSelectableTile(
+    context,
+    icon: Ionicons.swap_horizontal_outline,
+    title: title,
+    subtitle: subtitle,
+    value: value,
+    groupValue: groupValue,
+    onChanged: onChanged,
+  );
 }

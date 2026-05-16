@@ -1,6 +1,6 @@
 enum RemoteFileKind { parent, directory, file, image, archive, symlink, other }
 
-enum ArchiveFormat { zip, tarGz, tarXz }
+enum ArchiveFormat { zip, tarGz, tarXz, sevenZip }
 
 class RemoteFileEntry {
   final String name;
@@ -199,6 +199,7 @@ String archiveExtension(ArchiveFormat format) {
     ArchiveFormat.zip => '.zip',
     ArchiveFormat.tarGz => '.tar.gz',
     ArchiveFormat.tarXz => '.tar.xz',
+    ArchiveFormat.sevenZip => '.7z',
   };
 }
 
@@ -207,6 +208,7 @@ String archiveFormatLabel(ArchiveFormat format) {
     ArchiveFormat.zip => 'zip',
     ArchiveFormat.tarGz => 'tar.gz',
     ArchiveFormat.tarXz => 'tar.xz',
+    ArchiveFormat.sevenZip => '7z',
   };
 }
 

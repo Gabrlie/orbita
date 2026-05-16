@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/tailnet_models.dart';
 import 'package:orbita/providers/tailnet_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/settings_tiles.dart';
 
 class NetworkSettingsPage extends ConsumerWidget {
   const NetworkSettingsPage({super.key});
@@ -31,15 +33,10 @@ class NetworkSettingsPage extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           children: [
-            SectionHeader(
-              title: l10n.tailnetSection,
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-            ),
             status.when(
               data: (value) => _TailnetStatusCard(status: value),
               loading: () => const LinearProgressIndicator(),
-              error: (error, stackTrace) =>
-                  _TailnetErrorCard(message: error.toString()),
+              error: (error, _) => _TailnetErrorCard(message: error.toString()),
             ),
           ],
         ),
@@ -56,73 +53,56 @@ class _TailnetStatusCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
-    return Material(
-      color: tonalItemColor(context),
-      borderRadius: BorderRadius.circular(14),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          ListTile(
-            leading: Icon(
-              status.isRunning
-                  ? Ionicons.checkmark_circle_outline
-                  : Ionicons.log_in_outline,
-              color: status.isRunning
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurfaceVariant,
-            ),
-            title: Text(l10n.tailnetEmbeddedService),
-            subtitle: Text(
-              status.error.isEmpty
-                  ? l10n.tailnetBackendState(status.backendState)
-                  : status.error,
-            ),
-            trailing: status.needsLogin
-                ? TextButton(
-                    onPressed: () => _showAuthUrl(context, ref),
-                    child: Text(l10n.tailnetLogin),
-                  )
-                : null,
+    return OrbitaSettingsTileGroup(
+      title: l10n.tailnetSection,
+      padding: EdgeInsets.zero,
+      children: [
+        orbitaSettingsTile(
+          context,
+          icon: status.isRunning
+              ? Ionicons.checkmark_circle_outline
+              : Ionicons.log_in_outline,
+          title: l10n.tailnetEmbeddedService,
+          subtitle: status.error.isEmpty
+              ? l10n.tailnetBackendState(status.backendState)
+              : status.error,
+          suffix: status.needsLogin
+              ? FButton(
+                  variant: FButtonVariant.secondary,
+                  size: FButtonSizeVariant.sm,
+                  mainAxisSize: MainAxisSize.min,
+                  onPress: () => _showAuthUrl(context, ref),
+                  child: Text(l10n.tailnetLogin),
+                )
+              : null,
+        ),
+        orbitaSettingsTile(
+          context,
+          icon: Ionicons.git_network_outline,
+          title: l10n.tailnetPeers,
+          subtitle: l10n.tailnetPeerCount(status.peers.length),
+        ),
+        for (final peer in status.peers.take(6))
+          orbitaSettingsTile(
+            context,
+            icon: peer.online
+                ? Ionicons.radio_button_on_outline
+                : Ionicons.radio_button_off_outline,
+            title: peer.displayName,
+            subtitle: peer.tailscaleIps.firstOrNull ?? l10n.tailnetPeerNoIp,
           ),
-          const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Ionicons.git_network_outline),
-            title: Text(l10n.tailnetPeers),
-            subtitle: Text(l10n.tailnetPeerCount(status.peers.length)),
-          ),
-          for (final peer in status.peers.take(6)) ...[
-            const Divider(height: 1, indent: 56),
-            ListTile(
-              dense: true,
-              leading: Icon(
-                peer.online
-                    ? Ionicons.radio_button_on_outline
-                    : Ionicons.radio_button_off_outline,
-                size: 18,
-              ),
-              title: Text(peer.displayName),
-              subtitle: Text(
-                peer.tailscaleIps.firstOrNull ?? l10n.tailnetPeerNoIp,
-              ),
-            ),
-          ],
-          const Divider(height: 1),
-          OverflowBar(
-            alignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () async {
-                  await ref.read(embeddedTailnetServiceProvider).clearState();
-                  ref.invalidate(tailnetStatusProvider);
-                },
-                child: Text(l10n.tailnetClearState),
-              ),
-            ],
-          ),
-        ],
-      ),
+        orbitaSettingsTile(
+          context,
+          icon: Ionicons.refresh_circle_outline,
+          title: l10n.tailnetClearState,
+          destructive: true,
+          onPress: () async {
+            await ref.read(embeddedTailnetServiceProvider).clearState();
+            ref.invalidate(tailnetStatusProvider);
+          },
+        ),
+      ],
     );
   }
 
@@ -147,18 +127,17 @@ class _TailnetErrorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    return Material(
-      color: tonalItemColor(context),
-      borderRadius: BorderRadius.circular(14),
-      child: ListTile(
-        leading: Icon(
-          Ionicons.alert_circle_outline,
-          color: theme.colorScheme.error,
+    return OrbitaSettingsTileGroup(
+      padding: EdgeInsets.zero,
+      children: [
+        orbitaSettingsTile(
+          context,
+          icon: Ionicons.alert_circle_outline,
+          title: l10n.tailnetUnavailable,
+          subtitle: message,
+          destructive: true,
         ),
-        title: Text(l10n.tailnetUnavailable),
-        subtitle: Text(message),
-      ),
+      ],
     );
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/providers/command_snippet_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class TerminalSnippetButton extends StatefulWidget {
   final double right;
@@ -70,25 +72,26 @@ class _TerminalSnippetButtonState extends State<TerminalSnippetButton> {
   }
 
   Future<void> _showSnippets(BuildContext context) async {
-    final command = await showModalBottomSheet<String>(
+    final command = await showOrbitaDialog<String>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (context) => const _TerminalSnippetSheet(),
+      builder: (context, animation) =>
+          _TerminalSnippetDialog(animation: animation),
     );
     if (command != null && mounted) widget.onSelected(command);
   }
 }
 
-class _TerminalSnippetSheet extends ConsumerStatefulWidget {
-  const _TerminalSnippetSheet();
+class _TerminalSnippetDialog extends ConsumerStatefulWidget {
+  final Animation<double> animation;
+
+  const _TerminalSnippetDialog({required this.animation});
 
   @override
-  ConsumerState<_TerminalSnippetSheet> createState() =>
-      _TerminalSnippetSheetState();
+  ConsumerState<_TerminalSnippetDialog> createState() =>
+      _TerminalSnippetDialogState();
 }
 
-class _TerminalSnippetSheetState extends ConsumerState<_TerminalSnippetSheet> {
+class _TerminalSnippetDialogState extends ConsumerState<_TerminalSnippetDialog> {
   final _search = TextEditingController();
   var _query = '';
 
@@ -106,58 +109,51 @@ class _TerminalSnippetSheetState extends ConsumerState<_TerminalSnippetSheet> {
       _query,
     );
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.viewInsetsOf(context).bottom,
-      ),
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: l10n.settingsSnippets,
+      constraints: const BoxConstraints(minWidth: 280, maxWidth: 560),
       child: SizedBox(
-        height: MediaQuery.sizeOf(context).height * 0.68,
-        child: TonalListBackground(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: TextField(
-                  controller: _search,
-                  decoration: InputDecoration(
-                    hintText: l10n.commandSnippetSearchHint,
-                    prefixIcon: const Icon(Ionicons.search_outline),
-                  ),
-                  onChanged: (value) => setState(() => _query = value),
-                ),
+        height: MediaQuery.sizeOf(context).height * 0.58,
+        width: double.maxFinite,
+        child: Column(
+          children: [
+            FTextField(
+              control: FTextFieldControl.managed(
+                controller: _search,
+                onChange: (value) => setState(() => _query = value.text),
               ),
-              Expanded(
-                child: snippets.isEmpty
-                    ? EmptyState(
-                        icon: Ionicons.flash_outline,
-                        title: l10n.commandSnippetEmpty,
-                        subtitle: l10n.settingsSnippetsDesc,
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                        itemCount: snippets.length,
-                        itemBuilder: (context, index) {
-                          final snippet = snippets[index];
-                          return Card(
-                            color: tonalItemColor(context),
-                            surfaceTintColor: Colors.transparent,
-                            child: ListTile(
-                              leading: const Icon(Ionicons.flash_outline),
-                              title: Text(snippet.name),
-                              subtitle: Text(
-                                snippet.command,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              onTap: () =>
-                                  Navigator.of(context).pop(snippet.command),
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ],
-          ),
+              hint: l10n.commandSnippetSearchHint,
+              prefixBuilder: (context, style, variants) =>
+                  const Icon(Ionicons.search_outline),
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: snippets.isEmpty
+                  ? EmptyState(
+                      icon: Ionicons.flash_outline,
+                      title: l10n.commandSnippetEmpty,
+                      subtitle: l10n.settingsSnippetsDesc,
+                    )
+                  : ListView.builder(
+                      itemCount: snippets.length,
+                      itemBuilder: (context, index) {
+                        final snippet = snippets[index];
+                        return FItem(
+                          prefix: const Icon(Ionicons.flash_outline),
+                          title: Text(snippet.name),
+                          subtitle: Text(
+                            snippet.command,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onPress: () =>
+                              Navigator.of(context).pop(snippet.command),
+                        );
+                      },
+                    ),
+            ),
+          ],
         ),
       ),
     );

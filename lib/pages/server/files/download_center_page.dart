@@ -11,6 +11,7 @@ import 'package:orbita/providers/server_monitor_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/utils/format_utils.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 part 'transfer_center_widgets.dart';
 
@@ -187,61 +188,66 @@ class _TransferTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Material(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
-        child: ListTile(
-          leading: Icon(_icon, color: colorScheme.primary),
-          title: Text(task.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  Chip(
-                    label: Text(_phaseText(l10n)),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                  Text(_serverText(l10n)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(value: task.progress),
-              const SizedBox(height: 4),
-              Text(
-                '${formatBytes(task.transferredBytes)} / '
-                '${formatBytes(task.totalBytes)}',
-              ),
-              if (task.phase == FileTransferPhase.failed &&
-                  task.error != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  task.error!,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: colorScheme.error),
+    final tile = Material(
+      color: colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(8),
+      child: ListTile(
+        leading: Icon(_icon, color: colorScheme.primary),
+        title: Text(task.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                Chip(
+                  label: Text(_phaseText(l10n)),
+                  visualDensity: VisualDensity.compact,
                 ),
+                Text(_serverText(l10n)),
               ],
+            ),
+            const SizedBox(height: 8),
+            LinearProgressIndicator(value: task.progress),
+            const SizedBox(height: 4),
+            Text(
+              '${formatBytes(task.transferredBytes)} / '
+              '${formatBytes(task.totalBytes)}',
+            ),
+            if (task.phase == FileTransferPhase.failed &&
+                task.error != null) ...[
+              const SizedBox(height: 4),
               Text(
-                task.direction == FileTransferDirection.download
-                    ? task.remotePath
-                    : task.direction == FileTransferDirection.server
-                    ? '${task.sourceRemotePath ?? ''} -> ${task.remotePath}'
-                    : task.localPath,
-                maxLines: 1,
+                task.error!,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: colorScheme.error),
               ),
             ],
-          ),
-          isThreeLine: true,
-          onTap: () => _handleTap(context, ref),
-          onLongPress: () => _showActions(context, ref),
+            Text(
+              task.direction == FileTransferDirection.download
+                  ? task.remotePath
+                  : task.direction == FileTransferDirection.server
+                  ? '${task.sourceRemotePath ?? ''} -> ${task.remotePath}'
+                  : task.localPath,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
+        isThreeLine: true,
+        onTap: () => _handleTap(context, ref),
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: OrbitaLongPressMenu<_TransferAction>(
+        actions: _actions(l10n),
+        onSelected: (choice) => _handleAction(ref, choice),
+        child: tile,
       ),
     );
   }
@@ -297,37 +303,42 @@ class _TransferTile extends ConsumerWidget {
     }
   }
 
-  Future<void> _showActions(BuildContext context, WidgetRef ref) async {
-    final choice = await showMenu<_TransferAction>(
-      context: context,
-      position: const RelativeRect.fromLTRB(64, 120, 24, 0),
-      items: [
-        PopupMenuItem(
+  List<OrbitaMenuAction<_TransferAction>> _actions(AppLocalizations l10n) => [
+        OrbitaMenuAction(
           value: _TransferAction.pause,
+          icon: Ionicons.pause_outline,
+          label: l10n.filePause,
           enabled:
               task.direction != FileTransferDirection.server && task.isActive,
-          child: Text(AppLocalizations.of(context)!.filePause),
         ),
-        PopupMenuItem(
+        OrbitaMenuAction(
           value: _TransferAction.resume,
+          icon: Ionicons.play_outline,
+          label: l10n.fileResume,
           enabled:
               (task.direction != FileTransferDirection.server &&
                   task.phase == FileTransferPhase.paused) ||
               task.phase == FileTransferPhase.failed,
-          child: Text(AppLocalizations.of(context)!.fileResume),
         ),
-        PopupMenuItem(
+        OrbitaMenuAction(
           value: _TransferAction.cancel,
+          icon: Ionicons.close_circle_outline,
+          label: l10n.commonCancel,
           enabled: task.isActive || task.phase == FileTransferPhase.paused,
-          child: Text(AppLocalizations.of(context)!.commonCancel),
         ),
-        PopupMenuItem(
+        OrbitaMenuAction(
           value: _TransferAction.delete,
-          child: Text(AppLocalizations.of(context)!.commonDelete),
+          icon: Ionicons.trash_outline,
+          label: l10n.commonDelete,
+          destructive: true,
+          dividerBefore: true,
         ),
-      ],
-    );
-    if (choice == null) return;
+      ];
+
+  Future<void> _handleAction(
+    WidgetRef ref,
+    _TransferAction choice,
+  ) async {
     final notifier = ref.read(fileTransferProvider.notifier);
     switch (choice) {
       case _TransferAction.pause:

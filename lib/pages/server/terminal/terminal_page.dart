@@ -23,6 +23,7 @@ import 'package:orbita/providers/terminal_metric_history_provider.dart';
 import 'package:orbita/services/ssh_connection_manager.dart';
 import 'package:orbita/services/ssh_service.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 import 'package:orbita/widgets/remote_script_output_dialog.dart';
 import 'package:xterm/xterm.dart';
 

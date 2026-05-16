@@ -23,6 +23,16 @@ void main() {
       ),
       "cd '/var/www' && tar -czf 'site.tar.gz' -- 'site'",
     );
+
+    expect(
+      buildCompressCommand(
+        parentPath: '/var/www',
+        sourceName: 'site',
+        targetName: 'site.7z',
+        format: ArchiveFormat.sevenZip,
+      ),
+      "cd '/var/www' && 7z a -y 'site.7z' 'site'",
+    );
   });
 
   test('builds password zip and extraction commands', () {
@@ -49,6 +59,7 @@ void main() {
 
   test('selects required archive tools', () {
     expect(compressRequiredTools(ArchiveFormat.zip), ['zip']);
+    expect(compressRequiredTools(ArchiveFormat.sevenZip), ['7z']);
     expect(extractRequiredTools('a.zip'), ['unzip']);
     expect(extractRequiredTools('a.7z'), ['7z']);
     expect(extractRequiredTools('a.tar.xz'), ['tar']);

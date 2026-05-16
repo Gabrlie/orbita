@@ -123,11 +123,12 @@ extension _FilesPageTransferActions on _FilesPageState {
       confirmLabel: l10n.fileInstallTools,
     );
     if (!confirmed || !mounted) return false;
-    final success = await showDialog<bool>(
+    final success = await showOrbitaDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => FileToolInstallDialog(
+      builder: (context, animation) => FileToolInstallDialog(
         tools: missing,
+        animation: animation,
         onInstall: (onOutput) => service.installToolsWithOutput(
           server,
           tools: missing,
@@ -140,35 +141,34 @@ extension _FilesPageTransferActions on _FilesPageState {
   }
 
   Future<FileTransferTarget?> _pickTarget() {
-    return showModalBottomSheet<FileTransferTarget>(
+    return showOrbitaBottomSheet<FileTransferTarget>(
       context: context,
-      showDragHandle: true,
+      mainAxisMaxRatio: null,
       builder: (context) {
         final l10n = AppLocalizations.of(context)!;
-        return SafeArea(
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
-                child: Text(
-                  l10n.fileTransferCenter,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+        return ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+              child: Text(
+                l10n.fileTransferCenter,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              for (final target in widget.transferTargets)
-                ListTile(
-                  leading: const Icon(Ionicons.folder_open_outline),
-                  title: Text(target.server.name),
-                  subtitle: Text(
-                    target.path,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  onTap: () => Navigator.of(context).pop(target),
+            ),
+            for (final target in widget.transferTargets)
+              FItem(
+                prefix: const Icon(Ionicons.folder_open_outline),
+                title: Text(target.server.name),
+                subtitle: Text(
+                  target.path,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-            ],
-          ),
+                onPress: () => Navigator.of(context).pop(target),
+              ),
+          ],
         );
       },
     );

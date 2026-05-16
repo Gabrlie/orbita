@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server.dart';
@@ -10,6 +11,7 @@ import 'package:orbita/providers/ssh_connection_provider.dart';
 import 'package:orbita/utils/format_utils.dart';
 import 'package:orbita/widgets/circular_metric.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 import 'package:orbita/widgets/os_icon.dart';
 
 part 'server_metric_resource_sections.dart';
@@ -147,12 +149,13 @@ class _ServerMetricSectionsState extends ConsumerState<ServerMetricSections> {
       _MetricTool.ipAddress => l10n.serverToolIpAddress,
       _MetricTool.traffic => l10n.serverToolTraffic,
     };
-    showDialog<void>(
+    showOrbitaDialog<void>(
       context: context,
-      builder: (context) => _MetricToolDialog(
+      builder: (context, animation) => _MetricToolDialog(
         server: widget.server,
         tool: tool,
         title: title,
+        animation: animation,
       ),
     );
   }
@@ -164,11 +167,13 @@ class _MetricToolDialog extends ConsumerStatefulWidget {
   final Server server;
   final _MetricTool tool;
   final String title;
+  final Animation<double> animation;
 
   const _MetricToolDialog({
     required this.server,
     required this.tool,
     required this.title,
+    required this.animation,
   });
 
   @override
@@ -187,9 +192,16 @@ class _MetricToolDialogState extends ConsumerState<_MetricToolDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(widget.title),
-      content: SizedBox(
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: widget.title,
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.commonOk,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+      ],
+      child: SizedBox(
         width: double.maxFinite,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 360),
@@ -197,7 +209,7 @@ class _MetricToolDialogState extends ConsumerState<_MetricToolDialog> {
             future: _future,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: FProgress());
               }
               if (snapshot.hasError) {
                 return SelectableText(
@@ -218,17 +230,12 @@ class _MetricToolDialogState extends ConsumerState<_MetricToolDialog> {
                 separatorBuilder: (_, _) => const Divider(height: 1),
                 itemBuilder: (context, index) {
                   final row = result.rows[index];
-                  return ListTile(
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
+                  return FItem(
                     title: Text(row.title),
                     subtitle: row.subtitle == null ? null : Text(row.subtitle!),
-                    trailing: row.trailing == null
+                    suffix: row.trailing == null
                         ? null
-                        : Text(
-                            row.trailing!,
-                            textAlign: TextAlign.right,
-                          ),
+                        : Text(row.trailing!, textAlign: TextAlign.right),
                   );
                 },
               );
@@ -236,12 +243,6 @@ class _MetricToolDialogState extends ConsumerState<_MetricToolDialog> {
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonOk),
-        ),
-      ],
     );
   }
 
@@ -338,10 +339,7 @@ _MetricToolResult _parseTraffic(String output) {
     final separator = line.indexOf(':');
     if (separator < 0) continue;
     final name = line.substring(0, separator).trim();
-    final parts = line
-        .substring(separator + 1)
-        .trim()
-        .split(RegExp(r'\s+'));
+    final parts = line.substring(separator + 1).trim().split(RegExp(r'\s+'));
     if (name.isEmpty || parts.length < 16) continue;
     final rx = int.tryParse(parts[0]) ?? 0;
     final tx = int.tryParse(parts[8]) ?? 0;

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/app_update.dart';
 import 'package:orbita/providers/update_provider.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class UpdatePromptGate extends ConsumerStatefulWidget {
   final Widget child;
@@ -39,10 +41,11 @@ class _UpdatePromptGateState extends ConsumerState<UpdatePromptGate> {
 
   Future<void> _showPrompt(UpdateInfo info) async {
     _dialogOpen = true;
-    final action = await showDialog<_UpdatePromptAction>(
+    final action = await showOrbitaDialog<_UpdatePromptAction>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => _UpdatePromptDialog(info: info),
+      builder: (context, animation) =>
+          _UpdatePromptDialog(info: info, animation: animation),
     );
     _dialogOpen = false;
     if (!mounted || action == null) return;
@@ -62,8 +65,9 @@ enum _UpdatePromptAction { download, skip, later }
 
 class _UpdatePromptDialog extends StatelessWidget {
   final UpdateInfo info;
+  final Animation<double> animation;
 
-  const _UpdatePromptDialog({required this.info});
+  const _UpdatePromptDialog({required this.info, required this.animation});
 
   @override
   Widget build(BuildContext context) {
@@ -71,32 +75,33 @@ class _UpdatePromptDialog extends StatelessWidget {
     final notes = info.releaseNotes.trim().isEmpty
         ? l10n.updateNoReleaseNotes
         : info.releaseNotes.trim();
-    return AlertDialog(
-      title: Text(l10n.updateAvailable(info.remoteVersion)),
-      content: SizedBox(
+    return OrbitaDialog(
+      animation: animation,
+      title: l10n.updateAvailable(info.remoteVersion),
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.updateSkip,
+          variant: FButtonVariant.ghost,
+          onPress: () => Navigator.of(context).pop(_UpdatePromptAction.skip),
+        ),
+        OrbitaDialogAction(
+          label: l10n.updateLater,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(_UpdatePromptAction.later),
+        ),
+        OrbitaDialogAction(
+          label: info.matchedAsset == null
+              ? l10n.updateNoAsset
+              : l10n.updateDownload,
+          onPress: info.matchedAsset == null
+              ? null
+              : () => Navigator.of(context).pop(_UpdatePromptAction.download),
+        ),
+      ],
+      child: SizedBox(
         width: double.maxFinite,
         child: SingleChildScrollView(child: SelectableText(notes)),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(_UpdatePromptAction.skip),
-          child: Text(l10n.updateSkip),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(_UpdatePromptAction.later),
-          child: Text(l10n.updateLater),
-        ),
-        FilledButton(
-          onPressed: info.matchedAsset == null
-              ? null
-              : () => Navigator.of(context).pop(_UpdatePromptAction.download),
-          child: Text(
-            info.matchedAsset == null
-                ? l10n.updateNoAsset
-                : l10n.updateDownload,
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/app/theme.dart';
 import 'package:orbita/models/app_theme_seed.dart';
 
@@ -64,5 +65,23 @@ void main() {
     );
 
     expect(theme.inputDecorationTheme.filled, isNot(isTrue));
+  });
+
+  test('forui popup surfaces inherit opaque app surface colors', () {
+    final scheme = AppTheme.lightScheme(AppThemeSeed.indigo.color);
+    final theme = AppTheme.resolveForuiTheme(scheme);
+
+    expect(theme.colors.card, scheme.surface);
+    expect(theme.dialogStyle.decoration.color, scheme.surface);
+    expect(theme.popoverStyle.decoration.color, scheme.surface);
+    expect(theme.selectStyle.contentStyle.decoration.color, scheme.surface);
+  });
+
+  test('material dialogs use opaque app surfaces without surface tint', () {
+    final scheme = AppTheme.lightScheme(AppThemeSeed.indigo.color);
+    final theme = AppTheme.themeFromScheme(scheme);
+
+    expect(theme.dialogTheme.backgroundColor, scheme.surface);
+    expect(theme.dialogTheme.surfaceTintColor, Colors.transparent);
   });
 }

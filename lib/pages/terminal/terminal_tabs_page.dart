@@ -15,11 +15,13 @@ import 'package:orbita/providers/remote_script_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/providers/terminal_connection_preference_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 import 'package:orbita/widgets/remote_script_output_dialog.dart';
 import 'package:orbita/widgets/server_picker_list.dart';
 import 'package:orbita/widgets/server_tabs_scaffold.dart';
 
 part 'terminal_tabs_tmux.dart';
+part 'terminal_tab_model.dart';
 
 class TerminalTabsPage extends ConsumerStatefulWidget {
   final String? initialServerId;
@@ -93,9 +95,9 @@ class _TerminalTabsPageState extends ConsumerState<TerminalTabsPage> {
     if (serverId == null || !widget.initialUseRememberedMode) {
       return widget.initialLaunchMode;
     }
-    return ref.read(terminalConnectionPreferenceProvider.notifier).modeFor(
-      serverId,
-    );
+    return ref
+        .read(terminalConnectionPreferenceProvider.notifier)
+        .modeFor(serverId);
   }
 
   @override
@@ -129,7 +131,9 @@ class _TerminalTabsPageState extends ConsumerState<TerminalTabsPage> {
           ? ServerPickerList(
               emptyIcon: Ionicons.terminal,
               onSelected: (server) => _assignServer(server.id),
-              onLongPress: _showConnectionMenu,
+              menuActionsBuilder: (context, ref, server) =>
+                  _connectionMenuActions(AppLocalizations.of(context)!),
+              onMenuSelected: _handleConnectionMenuAction,
             )
           : TerminalPage(
               key: ValueKey(activeTab.id),
@@ -165,15 +169,12 @@ class _TerminalTabsPageState extends ConsumerState<TerminalTabsPage> {
         l10n.fileServerMissing;
   }
 
-  void _assignServer(
-    String serverId, {
-    TerminalLaunchMode? launchMode,
-  }) {
+  void _assignServer(String serverId, {TerminalLaunchMode? launchMode}) {
     final resolvedMode =
         launchMode ??
-        ref.read(terminalConnectionPreferenceProvider.notifier).modeFor(
-          serverId,
-    );
+        ref
+            .read(terminalConnectionPreferenceProvider.notifier)
+            .modeFor(serverId);
     if (launchMode != null) {
       unawaited(
         ref
@@ -271,43 +272,6 @@ class _TerminalTabsPageState extends ConsumerState<TerminalTabsPage> {
           body: TerminalDashboard(serverId: serverId),
         ),
       ),
-    );
-  }
-}
-
-class _TerminalTab {
-  final String id;
-  final String? serverId;
-  final TerminalLaunchMode launchMode;
-  final String? initialCommand;
-  final String? titleOverride;
-
-  const _TerminalTab({
-    required this.id,
-    this.serverId,
-    this.launchMode = TerminalLaunchMode.direct,
-    this.initialCommand,
-    this.titleOverride,
-  });
-
-  _TerminalTab copyWith({
-    String? serverId,
-    TerminalLaunchMode? launchMode,
-    String? initialCommand,
-    String? titleOverride,
-    bool clearInitialCommand = false,
-    bool clearTitleOverride = false,
-  }) {
-    return _TerminalTab(
-      id: id,
-      serverId: serverId ?? this.serverId,
-      launchMode: launchMode ?? this.launchMode,
-      initialCommand: clearInitialCommand
-          ? null
-          : initialCommand ?? this.initialCommand,
-      titleOverride: clearTitleOverride
-          ? null
-          : titleOverride ?? this.titleOverride,
     );
   }
 }

@@ -787,6 +787,8 @@
   "fileKeepBoth": "保留两者",
   "fileArchiveFormat": "压缩格式",
   "fileUsePassword": "使用密码",
+  "fileNoPassword": "不使用密码",
+  "fileWithPassword": "使用密码",
   "filePasswordWarning": "密码会交给远程系统工具处理，请确认服务器可信。",
   "fileMissingToolsTitle": "缺少远程工具",
   "fileMissingToolsContent": "服务器缺少以下工具：{tools}。是否自动安装？",

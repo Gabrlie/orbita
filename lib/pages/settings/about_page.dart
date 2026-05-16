@@ -5,6 +5,7 @@ import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/pages/settings/about_update_panel.dart';
 import 'package:orbita/providers/update_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/settings_tiles.dart';
 
 class AboutPage extends ConsumerWidget {
   const AboutPage({super.key});
@@ -70,46 +71,41 @@ class AboutPage extends ConsumerWidget {
                 ),
               ),
             ),
-            SectionHeader(
-              title: l10n.updateTitle,
-              padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
-            ),
-            const AboutUpdatePanel(),
-            SectionHeader(
+            AboutUpdatePanel(title: l10n.updateTitle),
+            OrbitaSettingsTileGroup(
               title: l10n.aboutOverview,
-              padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
-            ),
-            _AboutPanel(
               children: [
-                _AboutTile(
+                orbitaSettingsTile(
+                  context,
                   icon: Ionicons.shield_checkmark_outline,
                   title: l10n.aboutPrivacyTitle,
                   subtitle: l10n.aboutPrivacyDesc,
                 ),
-                _AboutTile(
+                orbitaSettingsTile(
+                  context,
                   icon: Ionicons.git_branch_outline,
                   title: l10n.aboutCrossPlatformTitle,
                   subtitle: l10n.aboutCrossPlatformDesc,
                 ),
-                _AboutTile(
+                orbitaSettingsTile(
+                  context,
                   icon: Ionicons.server_outline,
                   title: l10n.aboutNoAgentTitle,
                   subtitle: l10n.aboutNoAgentDesc,
                 ),
               ],
             ),
-            SectionHeader(
+            OrbitaSettingsTileGroup(
               title: l10n.aboutTechStack,
-              padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
-            ),
-            _AboutPanel(
-              children: const [
-                _AboutTile(
+              children: [
+                orbitaSettingsTile(
+                  context,
                   icon: Ionicons.layers_outline,
                   title: 'Flutter',
                   subtitle: 'Material Design 3 / Riverpod',
                 ),
-                _AboutTile(
+                orbitaSettingsTile(
+                  context,
                   icon: Ionicons.terminal_outline,
                   title: 'SSH / SFTP',
                   subtitle: 'dartssh2',
@@ -119,52 +115,6 @@ class AboutPage extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _AboutPanel extends StatelessWidget {
-  final List<Widget> children;
-
-  const _AboutPanel({required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: tonalItemColor(context),
-      borderRadius: BorderRadius.circular(14),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          for (var i = 0; i < children.length; i++) ...[
-            if (i > 0) const Divider(height: 1, indent: 20, endIndent: 20),
-            children[i],
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _AboutTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  const _AboutTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      leading: Icon(icon, color: theme.colorScheme.primary, size: 20),
-      title: Text(title),
-      subtitle: Text(subtitle),
     );
   }
 }

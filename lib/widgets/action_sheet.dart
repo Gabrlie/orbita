@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 /// A single action item for [showActionSheet].
 class ActionSheetItem {
@@ -32,19 +34,22 @@ Future<void> showActionSheet(
   required String title,
   required List<ActionSheetItem> items,
 }) {
-  return showModalBottomSheet(
+  return showOrbitaBottomSheet<void>(
     context: context,
+    mainAxisMaxRatio: null,
     builder: (ctx) {
       final l10n = AppLocalizations.of(ctx)!;
       final theme = Theme.of(ctx);
       final disabledColor = theme.colorScheme.onSurface.withAlpha(97);
 
-      return SafeArea(
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
               child: Text(
                 title,
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -54,12 +59,10 @@ Future<void> showActionSheet(
                 textAlign: TextAlign.center,
               ),
             ),
-            const Divider(height: 1, indent: 24, endIndent: 24),
-            const SizedBox(height: 8),
+            const FDivider(),
             for (final item in items)
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                leading: Icon(
+              FItem(
+                prefix: Icon(
                   item.icon,
                   size: 20,
                   color: item.wip
@@ -82,14 +85,13 @@ Future<void> showActionSheet(
                         : theme.colorScheme.onSurface,
                   ),
                 ),
-                onTap: item.wip
+                onPress: item.wip
                     ? null
                     : () {
                         Navigator.pop(ctx);
                         item.onTap?.call();
                       },
               ),
-            const SizedBox(height: 16),
           ],
         ),
       );

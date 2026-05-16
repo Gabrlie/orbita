@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/app_security.dart';
 import 'package:orbita/providers/security_provider.dart';
 import 'package:orbita/widgets/orbita_select_field.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class PasswordDialog extends StatefulWidget {
   final String title;
+  final Animation<double>? animation;
 
-  const PasswordDialog({super.key, required this.title});
+  const PasswordDialog({super.key, required this.title, this.animation});
 
   @override
   State<PasswordDialog> createState() => _PasswordDialogState();
@@ -29,23 +32,31 @@ class _PasswordDialogState extends State<PasswordDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(widget.title),
-      content: Column(
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: widget.title,
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+        OrbitaDialogAction(
+          label: l10n.commonSave,
+          onPress: () => _submit(l10n),
+        ),
+      ],
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            controller: _password,
-            obscureText: true,
-            decoration: InputDecoration(labelText: l10n.password),
+          FTextField.password(
+            control: FTextFieldControl.managed(controller: _password),
+            label: Text(l10n.password),
           ),
           const SizedBox(height: 12),
-          TextField(
-            controller: _confirm,
-            obscureText: true,
-            decoration: InputDecoration(
-              labelText: l10n.securityConfirmPassword,
-            ),
+          FTextField.password(
+            control: FTextFieldControl.managed(controller: _confirm),
+            label: Text(l10n.securityConfirmPassword),
           ),
           if (_error != null) ...[
             const SizedBox(height: 12),
@@ -56,16 +67,6 @@ class _PasswordDialogState extends State<PasswordDialog> {
           ],
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
-        ),
-        FilledButton(
-          onPressed: () => _submit(l10n),
-          child: Text(l10n.commonSave),
-        ),
-      ],
     );
   }
 
@@ -84,8 +85,9 @@ class _PasswordDialogState extends State<PasswordDialog> {
 
 class LockPolicyDialog extends StatefulWidget {
   final AppSecurityState security;
+  final Animation<double>? animation;
 
-  const LockPolicyDialog({super.key, required this.security});
+  const LockPolicyDialog({super.key, required this.security, this.animation});
 
   @override
   State<LockPolicyDialog> createState() => _LockPolicyDialogState();
@@ -98,9 +100,22 @@ class _LockPolicyDialogState extends State<LockPolicyDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(l10n.securityLockPolicy),
-      content: Column(
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: l10n.securityLockPolicy,
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+        OrbitaDialogAction(
+          label: l10n.commonSave,
+          onPress: () =>
+              Navigator.of(context).pop((mode: _mode, minutes: _minutes)),
+        ),
+      ],
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           _modeTile(AppLockMode.never, l10n.securityLockNever),
@@ -119,29 +134,18 @@ class _LockPolicyDialogState extends State<LockPolicyDialog> {
             ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
-        ),
-        FilledButton(
-          onPressed: () =>
-              Navigator.of(context).pop((mode: _mode, minutes: _minutes)),
-          child: Text(l10n.commonSave),
-        ),
-      ],
     );
   }
 
   Widget _modeTile(AppLockMode mode, String title) {
     final selected = _mode == mode;
-    return ListTile(
-      leading: Icon(
+    return FItem(
+      prefix: Icon(
         selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
       ),
       title: Text(title),
       selected: selected,
-      onTap: () => _setMode(mode),
+      onPress: () => _setMode(mode),
     );
   }
 
@@ -157,9 +161,10 @@ Future<bool> verifySecurityPassword(
   String title,
 ) async {
   final l10n = AppLocalizations.of(context)!;
-  final password = await showDialog<String>(
+  final password = await showOrbitaDialog<String>(
     context: context,
-    builder: (context) => SinglePasswordDialog(title: title),
+    builder: (context, animation) =>
+        SinglePasswordDialog(title: title, animation: animation),
   );
   if (password == null) return false;
   final key = await ref
@@ -175,8 +180,9 @@ Future<bool> verifySecurityPassword(
 
 class SinglePasswordDialog extends StatefulWidget {
   final String title;
+  final Animation<double>? animation;
 
-  const SinglePasswordDialog({super.key, required this.title});
+  const SinglePasswordDialog({super.key, required this.title, this.animation});
 
   @override
   State<SinglePasswordDialog> createState() => _SinglePasswordDialogState();
@@ -194,24 +200,25 @@ class _SinglePasswordDialogState extends State<SinglePasswordDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(widget.title),
-      content: TextField(
-        controller: _controller,
-        obscureText: true,
-        decoration: InputDecoration(labelText: l10n.password),
-        onSubmitted: (_) => Navigator.of(context).pop(_controller.text),
-      ),
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: widget.title,
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
         ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: Text(l10n.commonOk),
+        OrbitaDialogAction(
+          label: l10n.commonOk,
+          onPress: () => Navigator.of(context).pop(_controller.text),
         ),
       ],
+      child: FTextField.password(
+        control: FTextFieldControl.managed(controller: _controller),
+        label: Text(l10n.password),
+        onSubmit: (_) => Navigator.of(context).pop(_controller.text),
+      ),
     );
   }
 }

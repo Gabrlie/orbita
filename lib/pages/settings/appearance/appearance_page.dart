@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/pages/settings/appearance/terminal_appearance_section.dart';
 import 'package:orbita/pages/settings/appearance/theme_color_picker.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
+import 'package:orbita/widgets/settings_tiles.dart';
 
 enum _LanguageOption { system, zh, en }
 
@@ -30,46 +33,77 @@ class AppearancePage extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
-            SectionHeader(
+            OrbitaSettingsTileGroup(
               title: l10n.appearanceTitle,
-              padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
-            ),
-            _AppearancePanel(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
               children: [
-                _PreferenceBlock(
-                  title: l10n.themeMode,
-                  child: _ThemeModePicker(
-                    selected: currentTheme,
-                    onChanged: (mode) =>
-                        ref.read(themeModeProvider.notifier).set(mode),
+                FTile.raw(
+                  child: _PreferenceBlock(
+                    title: l10n.themeMode,
+                    child: OrbitaSwipeableTabs<ThemeMode>(
+                      value: currentTheme,
+                      values: ThemeMode.values,
+                      labelBuilder: (mode) => switch (mode) {
+                        ThemeMode.system => l10n.themeModeSystem,
+                        ThemeMode.light => l10n.themeModeLight,
+                        ThemeMode.dark => l10n.themeModeDark,
+                      },
+                      iconBuilder: (mode) => Icon(
+                        switch (mode) {
+                          ThemeMode.system => Ionicons.contrast_outline,
+                          ThemeMode.light => Ionicons.sunny_outline,
+                          ThemeMode.dark => Ionicons.moon_outline,
+                        },
+                        size: 18,
+                      ),
+                      onChanged: (mode) =>
+                          ref.read(themeModeProvider.notifier).set(mode),
+                    ),
                   ),
                 ),
-                const Divider(height: 24),
-                _PreferenceBlock(
-                  title: l10n.language,
-                  child: _LanguagePicker(
-                    selected: _languageOptionFor(currentLocale),
-                    onChanged: (option) => _setLanguage(ref, option),
+                FTile.raw(
+                  child: _PreferenceBlock(
+                    title: l10n.language,
+                    child: OrbitaSwipeableTabs<_LanguageOption>(
+                      value: _languageOptionFor(currentLocale),
+                      values: _LanguageOption.values,
+                      labelBuilder: (option) => switch (option) {
+                        _LanguageOption.system => l10n.languageSystem,
+                        _LanguageOption.zh => l10n.languageZh,
+                        _LanguageOption.en => l10n.languageEn,
+                      },
+                      iconBuilder: (option) => Icon(
+                        switch (option) {
+                          _LanguageOption.system => Ionicons.earth_outline,
+                          _LanguageOption.zh => Ionicons.language_outline,
+                          _LanguageOption.en => Ionicons.text_outline,
+                        },
+                        size: 18,
+                      ),
+                      onChanged: (option) => _setLanguage(ref, option),
+                    ),
                   ),
                 ),
               ],
             ),
-            SectionHeader(
+            OrbitaSettingsTileGroup(
               title: l10n.themeColor,
-              padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
-            ),
-            _AppearancePanel(
               children: [
-                ThemeColorPicker(
-                  dynamicSelected: useDynamicColor,
-                  selectedSeed: currentSeed,
-                  onDynamicSelected: () {
-                    ref.read(dynamicColorProvider.notifier).set(true);
-                  },
-                  onSeedSelected: (seed) {
-                    ref.read(themeSeedProvider.notifier).set(seed);
-                    ref.read(dynamicColorProvider.notifier).set(false);
-                  },
+                FTile.raw(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: ThemeColorPicker(
+                      dynamicSelected: useDynamicColor,
+                      selectedSeed: currentSeed,
+                      onDynamicSelected: () {
+                        ref.read(dynamicColorProvider.notifier).set(true);
+                      },
+                      onSeedSelected: (seed) {
+                        ref.read(themeSeedProvider.notifier).set(seed);
+                        ref.read(dynamicColorProvider.notifier).set(false);
+                      },
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -98,28 +132,6 @@ class AppearancePage extends ConsumerWidget {
   }
 }
 
-class _AppearancePanel extends StatelessWidget {
-  final List<Widget> children;
-
-  const _AppearancePanel({required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: tonalItemColor(context),
-      borderRadius: BorderRadius.circular(14),
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: children,
-        ),
-      ),
-    );
-  }
-}
-
 class _PreferenceBlock extends StatelessWidget {
   final String title;
   final Widget child;
@@ -141,76 +153,6 @@ class _PreferenceBlock extends StatelessWidget {
         const SizedBox(height: 10),
         child,
       ],
-    );
-  }
-}
-
-class _ThemeModePicker extends StatelessWidget {
-  final ThemeMode selected;
-  final ValueChanged<ThemeMode> onChanged;
-
-  const _ThemeModePicker({required this.selected, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return SegmentedButton<ThemeMode>(
-      showSelectedIcon: false,
-      segments: [
-        ButtonSegment(
-          value: ThemeMode.system,
-          icon: const Icon(Ionicons.contrast_outline, size: 18),
-          label: Text(l10n.themeModeSystem),
-        ),
-        ButtonSegment(
-          value: ThemeMode.light,
-          icon: const Icon(Ionicons.sunny_outline, size: 18),
-          label: Text(l10n.themeModeLight),
-        ),
-        ButtonSegment(
-          value: ThemeMode.dark,
-          icon: const Icon(Ionicons.moon_outline, size: 18),
-          label: Text(l10n.themeModeDark),
-        ),
-      ],
-      selected: {selected},
-      onSelectionChanged: (selection) => onChanged(selection.first),
-    );
-  }
-}
-
-class _LanguagePicker extends StatelessWidget {
-  final _LanguageOption selected;
-  final ValueChanged<_LanguageOption> onChanged;
-
-  const _LanguagePicker({required this.selected, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return SegmentedButton<_LanguageOption>(
-      showSelectedIcon: false,
-      segments: [
-        ButtonSegment(
-          value: _LanguageOption.system,
-          icon: const Icon(Ionicons.earth_outline, size: 18),
-          label: Text(l10n.languageSystem),
-        ),
-        ButtonSegment(
-          value: _LanguageOption.zh,
-          icon: const Icon(Ionicons.language_outline, size: 18),
-          label: Text(l10n.languageZh),
-        ),
-        ButtonSegment(
-          value: _LanguageOption.en,
-          icon: const Icon(Ionicons.text_outline, size: 18),
-          label: Text(l10n.languageEn),
-        ),
-      ],
-      selected: {selected},
-      onSelectionChanged: (selection) => onChanged(selection.first),
     );
   }
 }

@@ -1,89 +1,49 @@
 part of 'terminal_tabs_page.dart';
 
 extension _TerminalTabsTmux on _TerminalTabsPageState {
-  void _showConnectionMenu(
+  List<OrbitaMenuAction<String>> _connectionMenuActions(AppLocalizations l10n) =>
+      [
+        OrbitaMenuAction(
+          value: 'direct',
+          icon: Ionicons.terminal_outline,
+          label: l10n.terminalConnectDirect,
+        ),
+        OrbitaMenuAction(
+          value: 'tmux',
+          icon: Ionicons.layers_outline,
+          label: l10n.terminalReuseTmuxShort,
+        ),
+        OrbitaMenuAction(
+          value: 'edit',
+          icon: Ionicons.create_outline,
+          label: l10n.commonEdit,
+          dividerBefore: true,
+        ),
+        OrbitaMenuAction(
+          value: 'delete',
+          icon: Ionicons.trash_outline,
+          label: l10n.commonDelete,
+          destructive: true,
+        ),
+      ];
+
+  void _handleConnectionMenuAction(
     BuildContext context,
     WidgetRef ref,
     Server server,
-    Offset position,
-  ) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final relativeRect = RelativeRect.fromRect(
-      Rect.fromLTWH(position.dx, position.dy, 0, 0),
-      Offset.zero & overlay.size,
-    );
-
-    showMenu<String>(
-      context: context,
-      position: relativeRect,
-      items: [
-        _terminalMenuItem(
-          'direct',
-          Ionicons.terminal_outline,
-          l10n.terminalConnectDirect,
-        ),
-        _terminalMenuItem(
-          'tmux',
-          Ionicons.layers_outline,
-          l10n.terminalReuseTmuxShort,
-        ),
-        const PopupMenuDivider(),
-        _terminalMenuItem('edit', Ionicons.create_outline, l10n.commonEdit),
-        PopupMenuItem(
-          value: 'delete',
-          height: 44,
-          child: Row(
-            children: [
-              Icon(
-                Ionicons.trash_outline,
-                size: 18,
-                color: theme.colorScheme.error,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                l10n.commonDelete,
-                style: TextStyle(
-                  color: theme.colorScheme.error,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ).then((value) {
-      if (value == null || !context.mounted) return;
-      switch (value) {
-        case 'direct':
-          _assignServer(server.id, launchMode: TerminalLaunchMode.direct);
-        case 'tmux':
-          unawaited(_openTmuxTerminal(context, ref, server));
-        case 'edit':
-          context.go('/settings/servers/${server.id}/edit');
-        case 'delete':
-          _confirmDeleteServer(context, ref, server);
-      }
-    });
-  }
-
-  PopupMenuItem<String> _terminalMenuItem(
     String value,
-    IconData icon,
-    String label,
   ) {
-    return PopupMenuItem(
-      value: value,
-      height: 44,
-      child: Row(
-        children: [
-          Icon(icon, size: 18),
-          const SizedBox(width: 10),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
-        ],
-      ),
-    );
+    if (!context.mounted) return;
+    switch (value) {
+      case 'direct':
+        _assignServer(server.id, launchMode: TerminalLaunchMode.direct);
+      case 'tmux':
+        unawaited(_openTmuxTerminal(context, ref, server));
+      case 'edit':
+        context.go('/settings/servers/${server.id}/edit');
+      case 'delete':
+        _confirmDeleteServer(context, ref, server);
+    }
   }
 
   Future<void> _confirmDeleteServer(
@@ -144,15 +104,16 @@ extension _TerminalTabsTmux on _TerminalTabsPageState {
             mirrorHuaweiLabel: l10n.scriptMirrorHuawei,
           )
           .firstWhere((script) => script.id == 'install-tmux');
-      final success = await showDialog<bool>(
+      final success = await showOrbitaDialog<bool>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => RemoteScriptOutputDialog(
+        builder: (context, animation) => RemoteScriptOutputDialog(
           title: l10n.scriptRunningOn(script.name, server.name),
           successMessage: l10n.scriptRunSucceeded,
           failureMessage: l10n.scriptRunFailed,
           onRun: (onOutput) =>
               service.run(server, script: script, key: key, onOutput: onOutput),
+          animation: animation,
         ),
       );
       if (success != true || !context.mounted) return;

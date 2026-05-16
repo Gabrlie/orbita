@@ -205,40 +205,48 @@ extension _FilesPageWidgets on _FilesPageState {
   }
 
   Widget _moreButton() {
-    return PopupMenuButton<_FilesMenuAction>(
-      tooltip: AppLocalizations.of(context)!.homeMoreActions,
-      icon: const Icon(Ionicons.ellipsis_horizontal),
+    final l10n = AppLocalizations.of(context)!;
+    return OrbitaIconMenuButton<_FilesMenuAction>(
+      tooltip: l10n.homeMoreActions,
+      icon: Ionicons.ellipsis_horizontal,
       enabled: !_isMutating,
+      title: l10n.homeMoreActions,
       onSelected: (action) {
         final server = ref.read(serverByIdProvider(widget.serverId));
         if (server == null) return;
         _FilesPageActions(this)._handleMoreAction(server, action);
       },
-      itemBuilder: (context) => [
-        PopupMenuItem(
+      actions: [
+        OrbitaMenuAction(
           value: _FilesMenuAction.uploadFile,
-          child: Text(AppLocalizations.of(context)!.fileUploadFile),
+          icon: Ionicons.cloud_upload_outline,
+          label: l10n.fileUploadFile,
         ),
-        PopupMenuItem(
+        OrbitaMenuAction(
           value: _FilesMenuAction.uploadDirectory,
-          child: Text(AppLocalizations.of(context)!.fileUploadDirectory),
+          icon: Ionicons.folder_open_outline,
+          label: l10n.fileUploadDirectory,
         ),
-        const PopupMenuDivider(),
-        PopupMenuItem(
+        OrbitaMenuAction(
           value: _FilesMenuAction.refresh,
-          child: Text(AppLocalizations.of(context)!.commonRefresh),
+          icon: Ionicons.refresh_outline,
+          label: l10n.commonRefresh,
+          dividerBefore: true,
         ),
-        PopupMenuItem(
+        OrbitaMenuAction(
           value: _FilesMenuAction.newFile,
-          child: Text(AppLocalizations.of(context)!.fileNewFile),
+          icon: Ionicons.document_outline,
+          label: l10n.fileNewFile,
         ),
-        PopupMenuItem(
+        OrbitaMenuAction(
           value: _FilesMenuAction.newFolder,
-          child: Text(AppLocalizations.of(context)!.fileNewFolder),
+          icon: Ionicons.folder_outline,
+          label: l10n.fileNewFolder,
         ),
-        PopupMenuItem(
+        OrbitaMenuAction(
           value: _FilesMenuAction.root,
-          child: Text(AppLocalizations.of(context)!.fileGoRoot),
+          icon: Ionicons.home_outline,
+          label: l10n.fileGoRoot,
         ),
       ],
     );

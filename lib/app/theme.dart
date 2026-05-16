@@ -64,12 +64,14 @@ class AppTheme {
       destructiveForeground: colorScheme.onError,
       error: colorScheme.error,
       errorForeground: colorScheme.onError,
-      card: colorScheme.surfaceContainerLow,
+      card: colorScheme.surface,
       border: colorScheme.outlineVariant,
     );
-    return base.copyWith(
+    return FThemeData(
       debugLabel: 'Orbita ${colorScheme.brightness.name}',
       colors: colors,
+      typography: base.typography,
+      touch: true,
     );
   }
 
@@ -95,6 +97,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
       popupMenuTheme: PopupMenuThemeData(

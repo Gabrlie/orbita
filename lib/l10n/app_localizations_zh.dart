@@ -1699,6 +1699,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fileUsePassword => '使用密码';
 
   @override
+  String get fileNoPassword => '不使用密码';
+
+  @override
+  String get fileWithPassword => '使用密码';
+
+  @override
   String get filePasswordWarning => '密码会交给远程系统工具处理，请确认服务器可信。';
 
   @override

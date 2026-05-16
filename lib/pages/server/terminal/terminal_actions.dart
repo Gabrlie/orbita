@@ -46,15 +46,16 @@ extension _TerminalActions on _TerminalPageState {
           mirrorHuaweiLabel: l10n.scriptMirrorHuawei,
         )
         .firstWhere((script) => script.id == 'install-tmux');
-    final success = await showDialog<bool>(
+    final success = await showOrbitaDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => RemoteScriptOutputDialog(
+      builder: (context, animation) => RemoteScriptOutputDialog(
         title: l10n.scriptRunningOn(script.name, server.name),
         successMessage: l10n.scriptRunSucceeded,
         failureMessage: l10n.scriptRunFailed,
         onRun: (onOutput) =>
             service.run(server, script: script, key: key, onOutput: onOutput),
+        animation: animation,
       ),
     );
     if (success == true && mounted) {

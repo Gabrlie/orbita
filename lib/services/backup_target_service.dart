@@ -58,7 +58,7 @@ class BackupTargetService {
       );
       await fileService.prune(
         settings.localFolder,
-        BackupFileService.currentDeviceRetentionCount,
+        settings.retentionCount,
         deviceName: deviceName,
       );
     }
@@ -76,7 +76,7 @@ class BackupTargetService {
         remoteFolder: settings.webdavRemoteFolder,
         username: settings.webdavUsername,
         password: webDavPassword,
-        retentionCount: BackupFileService.currentDeviceRetentionCount,
+        retentionCount: settings.retentionCount,
         deviceName: deviceName,
       );
     }

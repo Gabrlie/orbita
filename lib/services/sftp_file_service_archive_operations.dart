@@ -98,6 +98,17 @@ extension SftpFileArchiveOperations on SftpFileService {
     );
   }
 
+  Future<List<RemoteFileEntry>> extractAndList(
+    Server server, {
+    required RemoteFileEntry entry,
+    required String listPath,
+    String? password,
+    SshKey? key,
+  }) async {
+    await extract(server, entry: entry, password: password, key: key);
+    return listDirectory(server, path: listPath, key: key);
+  }
+
   Future<String> previewArchive(
     Server server, {
     required RemoteFileEntry entry,

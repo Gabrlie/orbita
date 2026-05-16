@@ -5,11 +5,13 @@ import 'package:orbita/widgets/remote_script_output_dialog.dart';
 class FileToolInstallDialog extends StatelessWidget {
   final List<String> tools;
   final Future<void> Function(void Function(String chunk) onOutput) onInstall;
+  final Animation<double>? animation;
 
   const FileToolInstallDialog({
     super.key,
     required this.tools,
     required this.onInstall,
+    this.animation,
   });
 
   @override
@@ -20,6 +22,7 @@ class FileToolInstallDialog extends StatelessWidget {
       successMessage: l10n.fileInstallSucceeded,
       failureMessage: l10n.fileInstallFailed,
       onRun: onInstall,
+      animation: animation,
     );
   }
 }

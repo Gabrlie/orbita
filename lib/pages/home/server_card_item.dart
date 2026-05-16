@@ -11,6 +11,7 @@ import 'package:orbita/providers/server_refresh_provider.dart';
 import 'package:orbita/providers/ssh_connection_provider.dart';
 import 'package:orbita/utils/format_utils.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 import 'package:orbita/widgets/server_card.dart';
 
 /// Wraps ServerCard with live status from SSH and popup menu.
@@ -39,7 +40,7 @@ class ServerCardItem extends ConsumerWidget {
       }
     }
 
-    return ServerCard(
+    final card = ServerCard(
       name: server.name,
       osType: server.osType,
       online: online,
@@ -61,8 +62,17 @@ class ServerCardItem extends ConsumerWidget {
       ioRead: status != null ? formatRate(status.ioReadRate) : '',
       ioReadTotal: status != null ? formatBytes(status.ioReadTotal) : '',
       onTap: () => context.go('/home/server/${server.id}'),
-      onLongPress: (position) =>
-          _showServerMenu(context, ref, server, position),
+    );
+
+    return OrbitaLongPressMenu<String>(
+      actions: _serverMenuActions(l10n),
+      onSelected: (value) => _handleServerMenuAction(
+        context,
+        ref,
+        server,
+        value,
+      ),
+      child: card,
     );
   }
 
@@ -72,44 +82,69 @@ class ServerCardItem extends ConsumerWidget {
     return parts.isEmpty || parts.first.isEmpty ? '' : parts.first;
   }
 
-  void _showServerMenu(
+  List<OrbitaMenuAction<String>> _serverMenuActions(AppLocalizations l10n) => [
+        OrbitaMenuAction(
+          value: 'terminal',
+          icon: Ionicons.terminal_outline,
+          label: l10n.navTerminal,
+        ),
+        OrbitaMenuAction(
+          value: 'files',
+          icon: Ionicons.folder_outline,
+          label: l10n.actionFileManager,
+        ),
+        OrbitaMenuAction(
+          value: 'docker',
+          icon: Ionicons.cube_outline,
+          label: l10n.navDocker,
+        ),
+        OrbitaMenuAction(
+          value: 'refresh',
+          icon: Ionicons.refresh_outline,
+          label: l10n.commonRefresh,
+        ),
+        OrbitaMenuAction(
+          value: 'test',
+          icon: Ionicons.speedometer_outline,
+          label: l10n.commonTest,
+        ),
+        OrbitaMenuAction(
+          value: 'logs',
+          icon: Ionicons.receipt_outline,
+          label: l10n.serverLogsShort,
+        ),
+        OrbitaMenuAction(
+          value: 'reboot',
+          icon: Ionicons.reload_outline,
+          label: l10n.serverReboot,
+          dividerBefore: true,
+        ),
+        OrbitaMenuAction(
+          value: 'shutdown',
+          icon: Ionicons.power_outline,
+          label: l10n.serverShutdown,
+        ),
+        OrbitaMenuAction(
+          value: 'edit',
+          icon: Ionicons.create_outline,
+          label: l10n.commonEdit,
+        ),
+        OrbitaMenuAction(
+          value: 'delete',
+          icon: Ionicons.trash_outline,
+          label: l10n.commonDelete,
+          destructive: true,
+        ),
+      ];
+
+  void _handleServerMenuAction(
     BuildContext context,
     WidgetRef ref,
     Server server,
-    Offset position,
+    String value,
   ) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final relativeRect = RelativeRect.fromRect(
-      Rect.fromLTWH(position.dx, position.dy, 0, 0),
-      Offset.zero & overlay.size,
-    );
-
-    showMenu<String>(
-      context: context,
-      position: relativeRect,
-      items: [
-        _menuItem('terminal', Ionicons.terminal_outline, l10n.navTerminal),
-        _menuItem('files', Ionicons.folder_outline, l10n.actionFileManager),
-        _menuItem('docker', Ionicons.cube_outline, l10n.navDocker),
-        _menuItem('refresh', Ionicons.refresh_outline, l10n.commonRefresh),
-        _menuItem('test', Ionicons.speedometer_outline, l10n.commonTest),
-        _menuItem('logs', Ionicons.receipt_outline, l10n.serverLogsShort),
-        const PopupMenuDivider(),
-        _menuItem('reboot', Ionicons.reload_outline, l10n.serverReboot),
-        _menuItem('shutdown', Ionicons.power_outline, l10n.serverShutdown),
-        _menuItem('edit', Ionicons.create_outline, l10n.commonEdit),
-        _menuItem(
-          'delete',
-          Ionicons.trash_outline,
-          l10n.commonDelete,
-          destructive: true,
-          color: theme.colorScheme.error,
-        ),
-      ],
-    ).then((value) {
-      if (value == null || !context.mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      if (!context.mounted) return;
       switch (value) {
         case 'terminal':
           context.go('/terminal/${server.id}');
@@ -148,33 +183,6 @@ class ServerCardItem extends ConsumerWidget {
         case 'delete':
           _confirmDelete(context, ref, server);
       }
-    });
-  }
-
-  PopupMenuItem<String> _menuItem(
-    String value,
-    IconData icon,
-    String label, {
-    bool destructive = false,
-    Color? color,
-  }) {
-    return PopupMenuItem(
-      value: value,
-      height: 44,
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 10),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontWeight: destructive ? FontWeight.w600 : FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   void _confirmDelete(

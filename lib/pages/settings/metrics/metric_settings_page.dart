@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/providers/settings_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/settings_tiles.dart';
 
 class MetricSettingsPage extends ConsumerWidget {
   const MetricSettingsPage({super.key});
@@ -24,13 +26,12 @@ class MetricSettingsPage extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           children: [
-            SectionHeader(
+            OrbitaSettingsTileGroup(
               title: l10n.metricPollingSection,
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            ),
-            _SettingsPanel(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
               children: [
-                _SecondsTile(
+                _secondsTile(
+                  context,
                   icon: Ionicons.timer_outline,
                   title: l10n.metricRefreshInterval,
                   value: settings.refreshIntervalSeconds,
@@ -42,24 +43,23 @@ class MetricSettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            SectionHeader(
+            OrbitaSettingsTileGroup(
               title: l10n.metricConnectionSection,
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            ),
-            _SettingsPanel(
               children: [
-                _SecondsTile(
+                _secondsTile(
+                  context,
                   icon: Ionicons.flash_outline,
                   title: l10n.metricSshConnectTimeout,
                   value: settings.sshConnectTimeoutSeconds,
-                  min: 3,
+                  min: 5,
                   max: 60,
+                  step: 5,
                   onChanged: (value) => notifier.set(
                     settings.copyWith(sshConnectTimeoutSeconds: value),
                   ),
                 ),
-                const Divider(height: 1, indent: 20, endIndent: 20),
-                _SecondsTile(
+                _secondsTile(
+                  context,
                   icon: Ionicons.pulse_outline,
                   title: l10n.metricKeepAliveInterval,
                   value: settings.keepAliveIntervalSeconds,
@@ -69,12 +69,11 @@ class MetricSettingsPage extends ConsumerWidget {
                     settings.copyWith(keepAliveIntervalSeconds: value),
                   ),
                 ),
-                const Divider(height: 1, indent: 20, endIndent: 20),
-                SwitchListTile(
-                  secondary: const Icon(Ionicons.repeat_outline, size: 20),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  title: Text(l10n.metricAutoReconnect),
-                  subtitle: Text(l10n.metricAutoReconnectDesc),
+                orbitaSettingsSwitchTile(
+                  context,
+                  icon: Ionicons.repeat_outline,
+                  title: l10n.metricAutoReconnect,
+                  subtitle: l10n.metricAutoReconnectDesc,
                   value: settings.autoReconnect,
                   onChanged: (value) => notifier.set(
                     settings.copyWith(autoReconnect: value),
@@ -89,74 +88,64 @@ class MetricSettingsPage extends ConsumerWidget {
   }
 }
 
-class _SettingsPanel extends StatelessWidget {
-  final List<Widget> children;
-
-  const _SettingsPanel({required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: tonalItemColor(context),
-      borderRadius: BorderRadius.circular(14),
-      clipBehavior: Clip.antiAlias,
-      child: Column(children: children),
-    );
-  }
+FTile _secondsTile(
+  BuildContext context, {
+  required IconData icon,
+  required String title,
+  required int value,
+  required int min,
+  required int max,
+  required ValueChanged<int> onChanged,
+  int step = 1,
+}) {
+  final l10n = AppLocalizations.of(context)!;
+  final down = _steppedValue(value, min: min, max: max, step: step, add: false);
+  final up = _steppedValue(value, min: min, max: max, step: step, add: true);
+  return orbitaSettingsTile(
+    context,
+    icon: icon,
+    title: title,
+    suffix: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FButton.icon(
+          size: FButtonSizeVariant.sm,
+          onPress: value <= min ? null : () => onChanged(down),
+          child: const Icon(Ionicons.remove_outline),
+        ),
+        SizedBox(
+          width: 64,
+          child: Text(
+            l10n.metricSecondsValue(value),
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+        ),
+        FButton.icon(
+          size: FButtonSizeVariant.sm,
+          onPress: value >= max ? null : () => onChanged(up),
+          child: const Icon(Ionicons.add_outline),
+        ),
+      ],
+    ),
+  );
 }
 
-class _SecondsTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final int value;
-  final int min;
-  final int max;
-  final ValueChanged<int> onChanged;
-
-  const _SecondsTile({
-    required this.icon,
-    required this.title,
-    required this.value,
-    required this.min,
-    required this.max,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      leading: Icon(icon, size: 20, color: theme.colorScheme.primary),
-      title: Text(title),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            visualDensity: VisualDensity.compact,
-            tooltip: '-',
-            icon: const Icon(Ionicons.remove_outline, size: 18),
-            onPressed: value <= min ? null : () => onChanged(value - 1),
-          ),
-          SizedBox(
-            width: 64,
-            child: Text(
-              l10n.metricSecondsValue(value),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          IconButton(
-            visualDensity: VisualDensity.compact,
-            tooltip: '+',
-            icon: const Icon(Ionicons.add_outline, size: 18),
-            onPressed: value >= max ? null : () => onChanged(value + 1),
-          ),
-        ],
-      ),
-    );
+int _steppedValue(
+  int value, {
+  required int min,
+  required int max,
+  required int step,
+  required bool add,
+}) {
+  if (step <= 1) {
+    return (value + (add ? 1 : -1)).clamp(min, max).toInt();
   }
+
+  final next = add
+      ? ((value ~/ step) + 1) * step
+      : (((value - 1) ~/ step) * step);
+  return next.clamp(min, max).toInt();
 }

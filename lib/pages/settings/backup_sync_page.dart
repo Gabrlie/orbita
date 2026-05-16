@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/pages/settings/backup_sync_actions.dart';
-import 'package:orbita/pages/settings/backup_sync_widgets.dart';
 import 'package:orbita/providers/backup_sync_provider.dart';
 import 'package:orbita/providers/security_provider.dart';
-import 'package:orbita/services/backup_file_service.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
+import 'package:orbita/widgets/settings_tiles.dart';
 
 class BackupSyncPage extends ConsumerWidget {
   const BackupSyncPage({super.key});
@@ -34,64 +35,95 @@ class BackupSyncPage extends ConsumerWidget {
             return ListView(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
               children: [
-                BackupPanel(
-                  children: [
-                    SwitchListTile(
-                      secondary: const Icon(Ionicons.folder_open_outline),
-                      title: Text(l10n.backupLocalFolder),
-                      subtitle: Text(
-                        backup.localFolder.isEmpty
-                            ? l10n.backupLocalFolderUnset
-                            : backup.localFolder,
-                      ),
-                      value: backup.localEnabled,
-                      onChanged: backup.localFolder.isEmpty
-                          ? null
-                          : ref
-                                .read(backupSyncProvider.notifier)
-                                .setLocalEnabled,
+                if (!hasPassword)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+                    child: FAlert(
+                      variant: FAlertVariant.destructive,
+                      icon: const Icon(Ionicons.lock_closed_outline),
+                      title: Text(l10n.backupPasswordSetupRequired),
+                      subtitle: Text(l10n.backupPasswordSetupDesc),
                     ),
-                    ListTile(
-                      leading: const Icon(Ionicons.folder_outline),
-                      title: Text(l10n.backupChooseFolder),
-                      onTap: ref
+                  ),
+                if (backup.lastBackupAt != null || backup.lastError != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+                    child: FAlert(
+                      variant: backup.lastError == null
+                          ? FAlertVariant.primary
+                          : FAlertVariant.destructive,
+                      icon: Icon(
+                        backup.lastError == null
+                            ? Ionicons.checkmark_circle_outline
+                            : Ionicons.alert_circle_outline,
+                      ),
+                      title: Text(
+                        backup.lastError == null
+                            ? l10n.backupOperationDone
+                            : l10n.commonActionFailed,
+                      ),
+                      subtitle: Text(
+                        backup.lastError ??
+                            l10n.backupLastAt('${backup.lastBackupAt}'),
+                      ),
+                    ),
+                  ),
+                OrbitaSettingsTileGroup(
+                  title: l10n.backupLocalFolder,
+                  padding: EdgeInsets.zero,
+                  children: [
+                    orbitaSettingsSwitchTile(
+                      context,
+                      icon: Ionicons.folder_open_outline,
+                      title: l10n.backupLocalFolder,
+                      subtitle: backup.localFolder.isEmpty
+                          ? l10n.backupLocalFolderUnset
+                          : backup.localFolder,
+                      value: backup.localEnabled,
+                      enabled: backup.localFolder.isNotEmpty,
+                      onChanged: ref
+                          .read(backupSyncProvider.notifier)
+                          .setLocalEnabled,
+                    ),
+                    orbitaSettingsTile(
+                      context,
+                      icon: Ionicons.folder_outline,
+                      title: l10n.backupChooseFolder,
+                      onPress: ref
                           .read(backupSyncProvider.notifier)
                           .pickLocalFolder,
                     ),
                   ],
                 ),
-                SectionHeader(
+                OrbitaSettingsTileGroup(
                   title: l10n.backupRemoteSection,
-                  padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
-                ),
-                BackupPanel(
                   children: [
-                    SwitchListTile(
-                      secondary: const Icon(Ionicons.cloud_upload_outline),
-                      title: Text(l10n.backupWebDav),
-                      subtitle: Text(
-                        backup.webdavUrl.isEmpty
-                            ? l10n.backupWebDavUnset
-                            : '${backup.webdavUrl}\n${backup.webdavRemoteFolder}',
-                      ),
+                    orbitaSettingsSwitchTile(
+                      context,
+                      icon: Ionicons.cloud_upload_outline,
+                      title: l10n.backupWebDav,
+                      subtitle: backup.webdavUrl.isEmpty
+                          ? l10n.backupWebDavUnset
+                          : '${backup.webdavUrl}\n${backup.webdavRemoteFolder}',
                       value: backup.webdavEnabled,
-                      onChanged: backup.webdavUrl.isEmpty
-                          ? null
-                          : ref
-                                .read(backupSyncProvider.notifier)
-                                .setWebDavEnabled,
+                      enabled: backup.webdavUrl.isNotEmpty,
+                      onChanged: ref
+                          .read(backupSyncProvider.notifier)
+                          .setWebDavEnabled,
                     ),
-                    ListTile(
-                      leading: const Icon(Ionicons.settings_outline),
-                      title: Text(l10n.backupWebDavConfig),
-                      onTap: () =>
+                    orbitaSettingsTile(
+                      context,
+                      icon: Ionicons.settings_outline,
+                      title: l10n.backupWebDavConfig,
+                      onPress: () =>
                           actions.configureWebDav(context, ref, backup),
                     ),
-                    ListTile(
-                      leading: const Icon(Ionicons.pulse_outline),
-                      title: Text(l10n.backupTestWebDav),
+                    orbitaSettingsTile(
+                      context,
+                      icon: Ionicons.pulse_outline,
+                      title: l10n.backupTestWebDav,
                       enabled: backup.webdavUrl.isNotEmpty,
-                      onTap: () => actions.run(
+                      onPress: () => actions.run(
                         context,
                         () {
                           return ref
@@ -106,82 +138,75 @@ class BackupSyncPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-                SectionHeader(
+                OrbitaSettingsTileGroup(
                   title: l10n.backupOperations,
-                  padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
-                ),
-                BackupPanel(
                   children: [
-                    if (!hasPassword)
-                      ListTile(
-                        leading: const Icon(Ionicons.lock_closed_outline),
-                        title: Text(l10n.backupPasswordSetupRequired),
-                        subtitle: Text(l10n.backupPasswordSetupDesc),
-                      ),
-                    SwitchListTile(
-                      secondary: const Icon(Ionicons.sync_outline),
-                      title: Text(l10n.backupAuto),
-                      subtitle: Text(
-                        hasPassword
-                            ? l10n.backupAutoDesc
-                            : l10n.backupPasswordSetupRequired,
-                      ),
+                    orbitaSettingsSwitchTile(
+                      context,
+                      icon: Ionicons.sync_outline,
+                      title: l10n.backupAuto,
+                      subtitle: hasPassword
+                          ? l10n.backupAutoDesc
+                          : l10n.backupPasswordSetupRequired,
                       value: hasPassword && backup.autoBackupEnabled,
-                      onChanged: hasPassword
-                          ? (value) => actions.setAuto(context, ref, value)
-                          : null,
+                      enabled: hasPassword,
+                      onChanged: (value) => actions.setAuto(context, ref, value),
                     ),
-                    ListTile(
-                      leading: const Icon(Ionicons.layers_outline),
-                      title: Text(l10n.backupRetentionCount),
-                      subtitle: Text(
-                        l10n.backupRetentionDesc(
-                          BackupFileService.currentDeviceRetentionCount,
-                        ),
+                    OrbitaSelectMenuTile<int>(
+                      title: l10n.backupRetentionCount,
+                      value: backup.retentionCount,
+                      options: _retentionOptions(backup.retentionCount),
+                      labelBuilder: (count) => '$count',
+                      subtitle: l10n.backupRetentionDesc(
+                        backup.retentionCount,
                       ),
+                      prefix: const Icon(Ionicons.layers_outline),
                       enabled: hasPassword,
+                      onChanged: ref
+                          .read(backupSyncProvider.notifier)
+                          .setRetentionCount,
                     ),
-                    ListTile(
-                      leading: const Icon(Ionicons.archive_outline),
-                      title: Text(l10n.backupManual),
-                      subtitle: Text(l10n.backupPasswordRequired),
+                    orbitaSettingsTile(
+                      context,
+                      icon: Ionicons.archive_outline,
+                      title: l10n.backupManual,
+                      subtitle: l10n.backupPasswordRequired,
                       enabled: hasPassword,
-                      onTap: hasPassword
+                      onPress: hasPassword
                           ? () => actions.manualBackup(context, ref, backup)
                           : null,
                     ),
-                    ListTile(
-                      leading: const Icon(Ionicons.download_outline),
-                      title: Text(l10n.backupRestoreLocal),
+                    orbitaSettingsTile(
+                      context,
+                      icon: Ionicons.download_outline,
+                      title: l10n.backupRestoreLocal,
                       enabled: hasPassword,
-                      onTap: hasPassword
+                      onPress: hasPassword
                           ? () => actions.restoreLocal(context, ref)
                           : null,
                     ),
-                    ListTile(
-                      leading: const Icon(Ionicons.cloud_download_outline),
-                      title: Text(l10n.backupRestoreWebDav),
+                    orbitaSettingsTile(
+                      context,
+                      icon: Ionicons.cloud_download_outline,
+                      title: l10n.backupRestoreWebDav,
                       enabled: hasPassword && backup.webdavEnabled,
-                      onTap: hasPassword && backup.webdavEnabled
+                      onPress: hasPassword && backup.webdavEnabled
                           ? () => actions.restoreWebDav(context, ref, backup)
                           : null,
                     ),
                   ],
                 ),
-                if (backup.lastBackupAt != null || backup.lastError != null)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 18, 12, 0),
-                    child: Text(
-                      backup.lastError ??
-                          l10n.backupLastAt('${backup.lastBackupAt}'),
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
               ],
             );
           },
         ),
       ),
     );
+  }
+
+  List<int> _retentionOptions(int current) {
+    final options = {1, 2, 3, 5, 7, 10, 20, 50, 100, current}.toList();
+    options.sort();
+    return options;
   }
 }

@@ -71,6 +71,14 @@ class BackupSyncNotifier extends AsyncNotifier<BackupSettings> {
     );
   }
 
+  Future<void> setRetentionCount(int count) async {
+    await _save(
+      (settings) => settings.copyWith(
+        retentionCount: BackupSettingsStore.normalizeRetention(count),
+      ),
+    );
+  }
+
   Future<void> testWebDav() async {
     final settings = await future;
     await ref

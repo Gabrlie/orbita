@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/pages/server/files/file_name_dialog.dart';
 
@@ -11,22 +12,28 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          ...AppLocalizations.localizationsDelegates,
+          FLocalizations.delegate,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
-        home: Builder(
-          builder: (context) {
-            return TextButton(
-              onPressed: () async {
-                result = await showFileNameDialog(
-                  context,
-                  title: 'Rename',
-                  label: 'Name',
-                  initialValue: 'old.txt',
-                );
-              },
-              child: const Text('Open'),
-            );
-          },
+        home: FTheme(
+          data: FThemes.blue.light.touch,
+          child: Builder(
+            builder: (context) {
+              return TextButton(
+                onPressed: () async {
+                  result = await showFileNameDialog(
+                    context,
+                    title: 'Rename',
+                    label: 'Name',
+                    initialValue: 'old.txt',
+                  );
+                },
+                child: const Text('Open'),
+              );
+            },
+          ),
         ),
       ),
     );

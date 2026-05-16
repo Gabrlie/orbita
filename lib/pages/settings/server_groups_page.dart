@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/server_group.dart';
@@ -7,6 +8,7 @@ import 'package:orbita/pages/settings/server_groups_widgets.dart';
 import 'package:orbita/providers/server_group_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class ServerGroupsPage extends ConsumerWidget {
   const ServerGroupsPage({super.key});
@@ -60,9 +62,10 @@ class ServerGroupsPage extends ConsumerWidget {
     WidgetRef ref, {
     ServerGroup? group,
   }) async {
-    final name = await showDialog<String>(
+    final name = await showOrbitaDialog<String>(
       context: context,
-      builder: (context) => _GroupNameDialog(group: group),
+      builder: (context, animation) =>
+          _GroupNameDialog(group: group, animation: animation),
     );
     if (name == null || name.trim().isEmpty) return;
     final notifier = ref.read(serverGroupProvider.notifier);
@@ -76,8 +79,9 @@ class ServerGroupsPage extends ConsumerWidget {
 
 class _GroupNameDialog extends StatefulWidget {
   final ServerGroup? group;
+  final Animation<double> animation;
 
-  const _GroupNameDialog({this.group});
+  const _GroupNameDialog({this.group, required this.animation});
 
   @override
   State<_GroupNameDialog> createState() => _GroupNameDialogState();
@@ -102,33 +106,33 @@ class _GroupNameDialogState extends State<_GroupNameDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(
-        widget.group == null ? l10n.serverGroupAdd : l10n.serverGroupEdit,
-      ),
-      content: Form(
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: widget.group == null ? l10n.serverGroupAdd : l10n.serverGroupEdit,
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+        OrbitaDialogAction(
+          label: l10n.commonSave,
+          onPress: () {
+            if (!_formKey.currentState!.validate()) return;
+            Navigator.of(context).pop(_controller.text.trim());
+          },
+        ),
+      ],
+      child: Form(
         key: _formKey,
-        child: TextFormField(
-          controller: _controller,
-          decoration: InputDecoration(labelText: l10n.serverGroupName),
+        child: FTextFormField(
+          control: FTextFieldControl.managed(controller: _controller),
+          label: Text(l10n.serverGroupName),
           validator: (value) => value == null || value.trim().isEmpty
               ? l10n.validationRequired
               : null,
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
-        ),
-        FilledButton(
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
-            Navigator.of(context).pop(_controller.text.trim());
-          },
-          child: Text(l10n.commonSave),
-        ),
-      ],
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:orbita/models/server.dart';
 import 'package:orbita/models/tailnet_models.dart';
 import 'package:orbita/providers/tailnet_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class ServerNetworkSection extends ConsumerWidget {
   final ServerConnectionMode connectionMode;
@@ -35,27 +36,28 @@ class ServerNetworkSection extends ConsumerWidget {
           title: l10n.serverNetworkSection,
           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
         ),
-        FSelectTileGroup<ServerConnectionMode>(
-          label: Text(l10n.serverConnectionMode),
-          control: FMultiValueControl.managedRadio(
-            initial: connectionMode,
-            onChange: (selection) {
-              if (selection.isEmpty) return;
-              onConnectionModeChanged(selection.first);
-            },
+        Text(
+          l10n.serverConnectionMode,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w700,
           ),
-          children: [
-            FSelectTile.suffix(
-              value: ServerConnectionMode.direct,
-              prefix: const Icon(Ionicons.server_outline),
-              title: Text(l10n.connectionModeDirect),
-            ),
-            FSelectTile.suffix(
-              value: ServerConnectionMode.tailscale,
-              prefix: const Icon(Ionicons.git_network_outline),
-              title: Text(l10n.connectionModeTailscale),
-            ),
-          ],
+        ),
+        const SizedBox(height: 8),
+        OrbitaSwipeableTabs<ServerConnectionMode>(
+          value: connectionMode,
+          values: ServerConnectionMode.values,
+          labelBuilder: (mode) => switch (mode) {
+            ServerConnectionMode.direct => l10n.connectionModeDirect,
+            ServerConnectionMode.tailscale => l10n.connectionModeTailscale,
+          },
+          iconBuilder: (mode) => Icon(
+            switch (mode) {
+              ServerConnectionMode.direct => Ionicons.server_outline,
+              ServerConnectionMode.tailscale => Ionicons.git_network_outline,
+            },
+            size: 18,
+          ),
+          onChanged: onConnectionModeChanged,
         ),
         if (connectionMode == ServerConnectionMode.tailscale) ...[
           const SizedBox(height: 12),
@@ -96,11 +98,9 @@ class ServerNetworkSection extends ConsumerWidget {
         );
         return;
       }
-      final peer = await showFSheet<TailnetPeer>(
+      final peer = await showOrbitaBottomSheet<TailnetPeer>(
         context: context,
-        side: FLayout.btt,
         mainAxisMaxRatio: null,
-        useSafeArea: true,
         builder: (context) => _TailnetPeerSheet(peers: peers),
       );
       if (peer == null) return;
@@ -167,10 +167,8 @@ class _TailnetStatusTile extends ConsumerWidget {
                 )
               : null,
         ),
-        loading: () => const Padding(
-          padding: EdgeInsets.all(16),
-          child: FProgress(),
-        ),
+        loading: () =>
+            const Padding(padding: EdgeInsets.all(16), child: FProgress()),
         error: (error, stackTrace) => FItem(
           prefix: Icon(
             Ionicons.alert_circle_outline,

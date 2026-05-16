@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class TerminalColorPickerDialog extends StatefulWidget {
   final Color initialColor;
+  final Animation<double>? animation;
 
-  const TerminalColorPickerDialog({super.key, required this.initialColor});
+  const TerminalColorPickerDialog({
+    super.key,
+    required this.initialColor,
+    this.animation,
+  });
 
   @override
   State<TerminalColorPickerDialog> createState() =>
@@ -28,9 +35,21 @@ class _TerminalColorPickerDialogState extends State<TerminalColorPickerDialog> {
     final red = (argb >> 16) & 0xff;
     final green = (argb >> 8) & 0xff;
     final blue = argb & 0xff;
-    return AlertDialog(
-      title: Text(l10n.terminalColorPicker),
-      content: SizedBox(
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: l10n.terminalColorPicker,
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+        OrbitaDialogAction(
+          label: l10n.commonConfirm,
+          onPress: () => Navigator.of(context).pop(color),
+        ),
+      ],
+      child: SizedBox(
         width: 360,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -70,16 +89,6 @@ class _TerminalColorPickerDialogState extends State<TerminalColorPickerDialog> {
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(color),
-          child: Text(l10n.commonConfirm),
-        ),
-      ],
     );
   }
 }

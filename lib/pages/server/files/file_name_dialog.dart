@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 Future<String?> showFileNameDialog(
   BuildContext context, {
@@ -9,14 +11,15 @@ Future<String?> showFileNameDialog(
 }) async {
   final l10n = AppLocalizations.of(context)!;
 
-  final result = await showDialog<String>(
+  final result = await showOrbitaDialog<String>(
     context: context,
-    builder: (context) => _FileNameDialog(
+    builder: (context, animation) => _FileNameDialog(
       title: title,
       label: label,
       initialValue: initialValue,
       cancelLabel: l10n.commonCancel,
       confirmLabel: l10n.commonConfirm,
+      animation: animation,
     ),
   );
 
@@ -30,6 +33,7 @@ class _FileNameDialog extends StatefulWidget {
   final String initialValue;
   final String cancelLabel;
   final String confirmLabel;
+  final Animation<double> animation;
 
   const _FileNameDialog({
     required this.title,
@@ -37,6 +41,7 @@ class _FileNameDialog extends StatefulWidget {
     required this.initialValue,
     required this.cancelLabel,
     required this.confirmLabel,
+    required this.animation,
   });
 
   @override
@@ -60,27 +65,29 @@ class _FileNameDialogState extends State<_FileNameDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.title),
-      content: TextField(
-        controller: _controller,
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: widget.title,
+      actions: [
+        OrbitaDialogAction(
+          label: widget.cancelLabel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+        OrbitaDialogAction(
+          label: widget.confirmLabel,
+          onPress: () => Navigator.of(context).pop(_controller.text.trim()),
+        ),
+      ],
+      child: FTextField(
+        control: FTextFieldControl.managed(controller: _controller),
         autofocus: true,
-        decoration: InputDecoration(labelText: widget.label),
+        label: Text(widget.label),
         textInputAction: TextInputAction.done,
-        onSubmitted: (_) {
+        onSubmit: (_) {
           Navigator.of(context).pop(_controller.text.trim());
         },
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(widget.cancelLabel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(_controller.text.trim()),
-          child: Text(widget.confirmLabel),
-        ),
-      ],
     );
   }
 }

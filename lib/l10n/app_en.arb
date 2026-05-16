@@ -787,6 +787,8 @@
   "fileKeepBoth": "Keep Both",
   "fileArchiveFormat": "Archive Format",
   "fileUsePassword": "Use Password",
+  "fileNoPassword": "No password",
+  "fileWithPassword": "Use password",
   "filePasswordWarning": "The password is passed to the remote system tool. Only continue on trusted servers.",
   "fileMissingToolsTitle": "Missing Remote Tools",
   "fileMissingToolsContent": "This server is missing: {tools}. Install automatically?",

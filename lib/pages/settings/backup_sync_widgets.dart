@@ -1,31 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/backup_models.dart';
-import 'package:orbita/widgets/common.dart';
-
-class BackupPanel extends StatelessWidget {
-  final List<Widget> children;
-
-  const BackupPanel({super.key, required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: tonalItemColor(context),
-      borderRadius: BorderRadius.circular(16),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          for (var i = 0; i < children.length; i++) ...[
-            if (i > 0) const Divider(height: 1, indent: 24, endIndent: 24),
-            children[i],
-          ],
-        ],
-      ),
-    );
-  }
-}
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class WebDavConfig {
   final String url;
@@ -40,12 +18,14 @@ class WebDavConfigDialog extends StatefulWidget {
   final String url;
   final String username;
   final String remoteFolder;
+  final Animation<double>? animation;
 
   const WebDavConfigDialog({
     super.key,
     this.url = '',
     this.username = '',
     this.remoteFolder = '/orbita',
+    this.animation,
   });
 
   @override
@@ -72,42 +52,18 @@ class _WebDavConfigDialogState extends State<WebDavConfigDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(l10n.backupWebDavConfig),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _url,
-              decoration: InputDecoration(labelText: l10n.backupWebDavUrl),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _username,
-              decoration: InputDecoration(labelText: l10n.backupWebDavUsername),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              decoration: InputDecoration(labelText: l10n.password),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _remoteFolder,
-              decoration: InputDecoration(labelText: l10n.backupWebDavFolder),
-            ),
-          ],
-        ),
-      ),
+    return OrbitaDialog(
+      animation: widget.animation,
+      title: l10n.backupWebDavConfig,
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
         ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(
+        OrbitaDialogAction(
+          label: l10n.commonSave,
+          onPress: () => Navigator.of(context).pop(
             WebDavConfig(
               _url.text,
               _username.text,
@@ -115,9 +71,34 @@ class _WebDavConfigDialogState extends State<WebDavConfigDialog> {
               _remoteFolder.text,
             ),
           ),
-          child: Text(l10n.commonSave),
         ),
       ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FTextField(
+              control: FTextFieldControl.managed(controller: _url),
+              label: Text(l10n.backupWebDavUrl),
+            ),
+            const SizedBox(height: 12),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _username),
+              label: Text(l10n.backupWebDavUsername),
+            ),
+            const SizedBox(height: 12),
+            FTextField.password(
+              control: FTextFieldControl.managed(controller: _password),
+              label: Text(l10n.password),
+            ),
+            const SizedBox(height: 12),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _remoteFolder),
+              label: Text(l10n.backupWebDavFolder),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -125,27 +106,35 @@ class _WebDavConfigDialogState extends State<WebDavConfigDialog> {
 class BackupSelectDialog extends StatelessWidget {
   final String title;
   final List<BackupEntry> entries;
+  final Animation<double>? animation;
 
   const BackupSelectDialog({
     super.key,
     required this.title,
     required this.entries,
+    this.animation,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final formatter = MaterialLocalizations.of(context);
-    return AlertDialog(
-      title: Text(title),
-      content: SizedBox(
+    return OrbitaDialog(
+      animation: animation,
+      title: title,
+      actions: [
+        OrbitaDialogAction(
+          label: l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(),
+        ),
+      ],
+      child: SizedBox(
         width: double.maxFinite,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.backupRestoreOverwriteNotice),
-            const SizedBox(height: 12),
             ListView.separated(
               shrinkWrap: true,
               itemCount: entries.length,
@@ -159,23 +148,17 @@ class BackupSelectDialog extends StatelessWidget {
                 final time = formatter.formatTimeOfDay(
                   TimeOfDay.fromDateTime(entry.modifiedAt),
                 );
-                return ListTile(
-                  leading: Icon(icon),
+                return FItem(
+                  prefix: Icon(icon),
                   title: Text(entry.name),
                   subtitle: Text('$date $time'),
-                  onTap: () => Navigator.of(context).pop(entry),
+                  onPress: () => Navigator.of(context).pop(entry),
                 );
               },
             ),
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
-        ),
-      ],
     );
   }
 }

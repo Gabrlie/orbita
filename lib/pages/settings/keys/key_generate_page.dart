@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:uuid/uuid.dart';
@@ -8,6 +9,7 @@ import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/providers/key_provider.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 /// Generate a new SSH key pair.
 class KeyGeneratePage extends ConsumerStatefulWidget {
@@ -62,31 +64,35 @@ class _KeyGeneratePageState extends ConsumerState<KeyGeneratePage> {
                 ),
               ),
             ),
-            SegmentedButton<SshKeyType>(
-              segments: const [
-                ButtonSegment(
-                  value: SshKeyType.ed25519,
-                  label: Text('Ed25519'),
-                ),
-                ButtonSegment(value: SshKeyType.rsa, label: Text('RSA 4096')),
-              ],
-              selected: {_keyType},
-              onSelectionChanged: _generated == null
-                  ? (s) => setState(() => _keyType = s.first)
-                  : null,
+            OrbitaSwipeableTabs<SshKeyType>(
+              value: _keyType,
+              values: SshKeyType.values,
+              labelBuilder: (type) => switch (type) {
+                SshKeyType.ed25519 => 'Ed25519',
+                SshKeyType.rsa => 'RSA 4096',
+              },
+              iconBuilder: (type) => Icon(
+                type == SshKeyType.rsa
+                    ? Ionicons.shield_checkmark_outline
+                    : Ionicons.key_outline,
+                size: 18,
+              ),
+              onChanged: (type) {
+                if (_generated == null) setState(() => _keyType = type);
+              },
             ),
             const SizedBox(height: 24),
             if (_generated == null)
-              FilledButton.icon(
-                onPressed: _generating ? null : _generate,
-                icon: _generating
+              FButton(
+                onPress: _generating ? null : _generate,
+                prefix: _generating
                     ? const SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Ionicons.sparkles_outline),
-                label: Text(
+                child: Text(
                   _generating ? l10n.keyGenerating : l10n.generateKey,
                 ),
               )

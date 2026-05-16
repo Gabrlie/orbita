@@ -6,6 +6,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/ssh_key.dart';
 import 'package:orbita/providers/key_provider.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class ServerKeyPicker extends ConsumerWidget {
   final String? selectedKeyId;
@@ -49,14 +50,12 @@ class ServerKeyPicker extends ConsumerWidget {
     List<SshKey> keys,
     AppLocalizations l10n,
   ) {
-    return showFSheet<void>(
+    return showOrbitaDialog<void>(
       context: context,
-      side: FLayout.btt,
-      mainAxisMaxRatio: null,
-      useSafeArea: true,
-      builder: (sheetContext) => _KeyPickerSheet(
+      builder: (sheetContext, animation) => _KeyPickerDialog(
         keys: keys,
         selectedKeyId: selectedKeyId,
+        animation: animation,
         onSelected: (id) {
           onSelected(id);
           Navigator.of(sheetContext).pop();
@@ -70,70 +69,70 @@ class ServerKeyPicker extends ConsumerWidget {
   }
 }
 
-class _KeyPickerSheet extends StatelessWidget {
+class _KeyPickerDialog extends StatelessWidget {
   final List<SshKey> keys;
   final String? selectedKeyId;
   final ValueChanged<String> onSelected;
   final VoidCallback onAdd;
+  final Animation<double> animation;
 
-  const _KeyPickerSheet({
+  const _KeyPickerDialog({
     required this.keys,
     required this.selectedKeyId,
     required this.onSelected,
     required this.onAdd,
+    required this.animation,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    return ListView(
-      shrinkWrap: true,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-          child: Text(
-            l10n.selectKey,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+    return OrbitaDialog(
+      animation: animation,
+      title: l10n.selectKey,
+      constraints: const BoxConstraints(minWidth: 280, maxWidth: 420),
+      child: SizedBox(
+        width: double.maxFinite,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            if (keys.isEmpty)
+              FItem(
+                prefix: const Icon(Ionicons.information_circle_outline),
+                title: Text(l10n.noKeys),
+                subtitle: Text(l10n.noKeysSubtitle),
+              ),
+            for (final key in keys)
+              FItem(
+                prefix: Icon(
+                  key.keyType == SshKeyType.rsa
+                      ? Ionicons.shield_checkmark_outline
+                      : Ionicons.key_outline,
+                  color: theme.colorScheme.primary,
+                ),
+                title: Text(key.name),
+                subtitle: Text(key.keyType.name.toUpperCase()),
+                suffix: selectedKeyId == key.id
+                    ? Icon(
+                        Ionicons.checkmark_circle_outline,
+                        color: theme.colorScheme.primary,
+                      )
+                    : null,
+                onPress: () => onSelected(key.id),
+              ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: FDivider(),
             ),
-          ),
-        ),
-        if (keys.isEmpty)
-          FItem(
-            prefix: const Icon(Ionicons.information_circle_outline),
-            title: Text(l10n.noKeys),
-            subtitle: Text(l10n.noKeysSubtitle),
-          ),
-        for (final key in keys)
-          FItem(
-            prefix: Icon(
-              key.keyType == SshKeyType.rsa
-                  ? Ionicons.shield_checkmark_outline
-                  : Ionicons.key_outline,
-              color: theme.colorScheme.primary,
+            FItem(
+              prefix: const Icon(Ionicons.add),
+              title: Text(l10n.addKey),
+              onPress: onAdd,
             ),
-            title: Text(key.name),
-            subtitle: Text(key.keyType.name.toUpperCase()),
-            suffix: selectedKeyId == key.id
-                ? Icon(
-                    Ionicons.checkmark_circle_outline,
-                    color: theme.colorScheme.primary,
-                  )
-                : null,
-            onPress: () => onSelected(key.id),
-          ),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: FDivider(),
+          ],
         ),
-        FItem(
-          prefix: const Icon(Ionicons.add),
-          title: Text(l10n.addKey),
-          onPress: onAdd,
-        ),
-      ],
+      ),
     );
   }
 }

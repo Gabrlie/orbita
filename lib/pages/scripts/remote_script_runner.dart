@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
 import 'package:orbita/models/remote_script.dart';
 import 'package:orbita/models/server.dart';
@@ -9,6 +10,7 @@ import 'package:orbita/providers/server_group_provider.dart';
 import 'package:orbita/providers/server_provider.dart';
 import 'package:orbita/services/orbita_script_syntax.dart';
 import 'package:orbita/widgets/common.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 import 'package:orbita/widgets/os_icon.dart';
 import 'package:orbita/widgets/remote_script_output_dialog.dart';
 
@@ -37,16 +39,17 @@ Future<void> runRemoteScriptFromContext(
 
   final key = await resolveRemoteScriptKey(ref, server);
   if (!context.mounted) return;
-  await showDialog<bool>(
+  await showOrbitaDialog<bool>(
     context: context,
     barrierDismissible: false,
-    builder: (context) => RemoteScriptOutputDialog(
+    builder: (context, animation) => RemoteScriptOutputDialog(
       title: l10n.scriptRunningOn(runnableScript.name, server.name),
       successMessage: l10n.scriptRunSucceeded,
       failureMessage: l10n.scriptRunFailed,
       onRun: (onOutput) => ref
           .read(remoteScriptServiceProvider)
           .run(server, script: runnableScript, key: key, onOutput: onOutput),
+      animation: animation,
     ),
   );
 }
@@ -63,44 +66,36 @@ Future<Server?> _selectServer(
     unnamedGroupName: l10n.serverGroupUnnamed,
   ).where((bucket) => bucket.servers.isNotEmpty).toList();
   final showHeaders = shouldShowServerGroupHeaders(buckets);
-  return showDialog<Server>(
+  return showOrbitaDialog<Server>(
     context: context,
-    builder: (context) => SimpleDialog(
-      title: Text(l10n.scriptSelectServer),
-      children: [
-        for (final bucket in buckets) ...[
-          if (showHeaders)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 10, 24, 4),
-              child: Text(
-                bucket.name,
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-            ),
-          for (final server in bucket.servers)
-            SimpleDialogOption(
-              onPressed: () => Navigator.of(context).pop(server),
-              child: Row(
-                children: [
-                  OsIcon(type: server.osType, size: 20),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(server.name),
-                        Text(
-                          server.displayEndpoint,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
+    builder: (context, animation) => OrbitaDialog(
+      animation: animation,
+      title: l10n.scriptSelectServer,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final bucket in buckets) ...[
+            if (showHeaders)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    bucket.name,
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
-                ],
+                ),
               ),
-            ),
+            for (final server in bucket.servers)
+              FItem(
+                prefix: OsIcon(type: server.osType, size: 20),
+                title: Text(server.name),
+                subtitle: Text(server.displayEndpoint),
+                onPress: () => Navigator.of(context).pop(server),
+              ),
+          ],
         ],
-      ],
+      ),
     ),
   );
 }
@@ -125,17 +120,21 @@ Future<String?> _selectScriptOption(
   BuildContext context,
   OrbitaScriptSelect select,
 ) {
-  return showDialog<String>(
+  return showOrbitaDialog<String>(
     context: context,
-    builder: (context) => SimpleDialog(
-      title: Text(select.title),
-      children: [
-        for (final option in select.options)
-          SimpleDialogOption(
-            onPressed: () => Navigator.of(context).pop(option.value),
-            child: Text(option.label),
-          ),
-      ],
+    builder: (context, animation) => OrbitaDialog(
+      animation: animation,
+      title: select.title,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final option in select.options)
+            FItem(
+              title: Text(option.label),
+              onPress: () => Navigator.of(context).pop(option.value),
+            ),
+        ],
+      ),
     ),
   );
 }

@@ -13,6 +13,7 @@ List<String> compressRequiredTools(ArchiveFormat format, {String? password}) {
     ArchiveFormat.zip => ['zip'],
     ArchiveFormat.tarGz => ['tar'],
     ArchiveFormat.tarXz => ['tar'],
+    ArchiveFormat.sevenZip => ['7z'],
   };
 }
 
@@ -45,6 +46,7 @@ String buildCompressCommand({
           : 'cd $parent && zip -r -P ${shellQuote(cleanPassword)} -- $target $source',
     ArchiveFormat.tarGz => 'cd $parent && tar -czf $target -- $source',
     ArchiveFormat.tarXz => 'cd $parent && tar -cJf $target -- $source',
+    ArchiveFormat.sevenZip => 'cd $parent && 7z a -y $target $source',
   };
 }
 

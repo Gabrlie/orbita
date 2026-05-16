@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 PreferredSizeWidget compactPageAppBar(
   BuildContext context, {
@@ -29,9 +31,7 @@ PreferredSizeWidget compactPageAppBar(
     ),
     title: Text(
       title,
-      style: theme.textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.w700,
-      ),
+      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
     ),
     actions: actions,
   );
@@ -144,32 +144,27 @@ Future<bool> showConfirmDialog(
   bool destructive = false,
 }) async {
   final l10n = AppLocalizations.of(context)!;
-  final result = await showDialog<bool>(
+  final result = await showOrbitaDialog<bool>(
     context: context,
-    builder: (context) {
-      final theme = Theme.of(context);
-      return AlertDialog(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        content: Text(content),
-        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(cancelLabel ?? l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: destructive
-                ? FilledButton.styleFrom(
-                    backgroundColor: theme.colorScheme.error,
-                    foregroundColor: theme.colorScheme.onError,
-                  )
-                : null,
-            child: Text(confirmLabel ?? l10n.commonConfirm),
-          ),
-        ],
-      );
-    },
+    builder: (context, animation) => OrbitaDialog(
+      animation: animation,
+      title: title,
+      actions: [
+        OrbitaDialogAction(
+          label: cancelLabel ?? l10n.commonCancel,
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.of(context).pop(false),
+        ),
+        OrbitaDialogAction(
+          label: confirmLabel ?? l10n.commonConfirm,
+          variant: destructive
+              ? FButtonVariant.destructive
+              : FButtonVariant.primary,
+          onPress: () => Navigator.of(context).pop(true),
+        ),
+      ],
+      child: Text(content),
+    ),
   );
   return result ?? false;
 }
@@ -181,18 +176,18 @@ Future<void> showInfoDialog(
   required String content,
 }) async {
   final l10n = AppLocalizations.of(context)!;
-  await showDialog<void>(
+  await showOrbitaDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      content: Text(content),
-      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+    builder: (context, animation) => OrbitaDialog(
+      animation: animation,
+      title: title,
       actions: [
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonOk),
+        OrbitaDialogAction(
+          label: l10n.commonOk,
+          onPress: () => Navigator.of(context).pop(),
         ),
       ],
+      child: Text(content),
     ),
   );
 }

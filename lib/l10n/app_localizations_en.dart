@@ -1733,6 +1733,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fileUsePassword => 'Use Password';
 
   @override
+  String get fileNoPassword => 'No password';
+
+  @override
+  String get fileWithPassword => 'Use password';
+
+  @override
   String get filePasswordWarning =>
       'The password is passed to the remote system tool. Only continue on trusted servers.';
 

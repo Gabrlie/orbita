@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:orbita/l10n/app_localizations.dart';
+import 'package:orbita/widgets/orbita_forui.dart';
 
 class RemoteScriptOutputDialog extends StatefulWidget {
   final String title;
   final String successMessage;
   final String failureMessage;
   final Future<void> Function(void Function(String chunk) onOutput) onRun;
+  final Animation<double>? animation;
 
   const RemoteScriptOutputDialog({
     super.key,
@@ -13,6 +16,7 @@ class RemoteScriptOutputDialog extends StatefulWidget {
     required this.successMessage,
     required this.failureMessage,
     required this.onRun,
+    this.animation,
   });
 
   @override
@@ -60,9 +64,19 @@ class _RemoteScriptOutputDialogState extends State<RemoteScriptOutputDialog> {
     final colorScheme = Theme.of(context).colorScheme;
     return PopScope(
       canPop: !_isRunning,
-      child: AlertDialog(
-        title: Text(widget.title),
-        content: SizedBox(
+      child: OrbitaDialog(
+        animation: widget.animation,
+        title: widget.title,
+        actions: [
+          if (_isRunning)
+            const SizedBox(width: 28, height: 28, child: FProgress())
+          else
+            OrbitaDialogAction(
+              label: l10n.commonOk,
+              onPress: () => Navigator.of(context).pop(_error == null),
+            ),
+        ],
+        child: SizedBox(
           width: 520,
           height: 320,
           child: DecoratedBox(
@@ -83,22 +97,6 @@ class _RemoteScriptOutputDialogState extends State<RemoteScriptOutputDialog> {
             ),
           ),
         ),
-        actions: [
-          if (_isRunning)
-            const Padding(
-              padding: EdgeInsetsDirectional.only(end: 12),
-              child: SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            )
-          else
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(_error == null),
-              child: Text(l10n.commonOk),
-            ),
-        ],
       ),
     );
   }
